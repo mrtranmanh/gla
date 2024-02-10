@@ -22,10 +22,10 @@
             "js/vendor/jquery.min.js",
             "js/vendor/jquery-ui.js",
             "js/reloadpage.js",
+            "js/buymerchan.js",
             "js/work.js",
             "js/trainning.js",
             "js/circusProvinciarum.js",
-            "js/heal.js",
             "js/auction.js",
             "js/quest.js"
         ],
