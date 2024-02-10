@@ -1,0 +1,35 @@
+{
+    "name": "TDM tools Gladiatus",
+    "description": "TDM tools Gladiatus Chrome Extension",
+    "version": "1.0",
+    "action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "host_permissions": [
+        "https://*.gladiatus.gameforge.com/*"
+    ],
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "background.js",
+        "type":"module"
+    },
+    "content_scripts": [ {
+        "all_frames": true,
+        "css": [ "css/styles.css" ],
+        "exclude_matches": [ "*://*.gladiatus.gameforge.com/game/index.php?mod=start" ],
+        "js": [
+            "js/vendor/jquery.min.js",
+            "js/vendor/jquery-ui.js",
+            "js/reloadpage.js",
+            "js/work.js",
+            "js/trainning.js",
+            "js/circusProvinciarum.js",
+            "js/heal.js",
+            "js/auction.js",
+            "js/quest.js"
+        ],
+        "matches": [ "https://*.gladiatus.gameforge.com/*" ],
+        "run_at": "document_idle"
+     } ]
+}
