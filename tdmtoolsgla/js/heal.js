@@ -14,13 +14,20 @@ function heal() {
     
     const avatar = document.querySelector('#avatar .ui-droppable');
     
-    if (enableHeal === 1) {
+    if (enableHeal === 1 && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
         console.log('Heal da duoc bat');
     
         if ( player.hp < underHP && !window.location.href.includes("mod=overview")) {
             mainMenu.overview.click();
         } else if ( player.hp < underHP && window.location.href.includes("mod=overview")) {
             
+            const mainDoll1Active = document.querySelector('.charmercsel.active .charmercpic.doll1');
+            const mainDoll1 = document.querySelector('.charmercsel .charmercpic.doll1');
+
+            if (!mainDoll1Active) {
+                mainDoll1.click();
+            }
+
             if (avatar) {
                 function Ka() {    
                     var A = avatar.getBoundingClientRect();

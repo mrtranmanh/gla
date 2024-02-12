@@ -1,14 +1,14 @@
-function buymerchan() {
+document.addEventListener('DOMContentLoaded', function() {
 
     const enableBuymerchan = 0;
-    const aboveGold = 20.000;
+    const aboveGold = 20000;
 
     const player = {
         level: Number(document.getElementById("header_values_level").textContent.trim()),
         hp: Number(document.getElementById("header_values_hp_percent").textContent.trim().replace(/[^0-9]/g, '')),
         gold: Number(document.getElementById("sstat_gold_val").textContent.trim().replace(/\./g, '')),
     };
-
+    
     const menuItems = document.querySelectorAll('#mainmenu #submenu1 a.menuitem');
 
     if (enableBuymerchan === 1) {
@@ -31,5 +31,4 @@ function buymerchan() {
         console.log('buymerchan dang tat');
     }
 
-}
-buymerchan();
+});

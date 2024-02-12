@@ -20,9 +20,8 @@ const trainingData = {
 };
 
 const enableTrainning = 0;
-const shouldEnableTrainning = enableTrainning === 1 ? true : false;
 
-if (shouldEnableTrainning) {
+if (enableTrainning == 1) {
     console.log('Trainning co hoat dong');
 
     if (trainingData.goldValueElement) {
@@ -35,7 +34,7 @@ if (shouldEnableTrainning) {
             console.log('Giá trị vàng là:', goldValue);
 
             // Lấy đối tượng div có class là "training_costs"
-            var trainingCostsElement_ag = trainingData.trainingCosts.constitution;
+            var trainingCostsElement_ag = trainingData.trainingCosts.agility;
 
 
             if (trainingCostsElement_ag) {
@@ -50,7 +49,7 @@ if (shouldEnableTrainning) {
                     // So sánh giá trị vàng và chi phí đào tạo
                     if (goldValue > trainingCosts_ag) {
                         // Nếu điều kiện đúng, nhấp chuột vào phần tử '#char_f2_tt + .training_link a.training_button'
-                        var trainingButton = trainingData.trainingButton.constitution;
+                        var trainingButton = trainingData.trainingButton.agility;
                         if (trainingButton) {
                             trainingButton.click(); // Kích hoạt sự kiện nhấp chuột
                             console.log('Đã nhấp chuột vào nút đào tạo.');
