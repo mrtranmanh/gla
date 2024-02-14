@@ -121,7 +121,6 @@
     //     doDungeon = false;
     // }
     //End tdm custom
-    
 
     let dungeonDifficulty = localStorage.getItem('dungeonDifficulty') === 'advanced' ? 'advanced' : 'normal';
 
@@ -133,7 +132,7 @@
     } else {
         doArena = false;
     };
-    if (player.level < 2) {
+    if (player.level < 100) {
         doArena = false;
     };
 
@@ -919,7 +918,7 @@
                     const inSelectDifficultyPage = !document.getElementById("content").getElementsByTagName("area")[0];
 
                     if (inSelectDifficultyPage) {
-                        if (dungeonDifficulty === "advanced") {
+                        if (dungeonDifficulty === "advanced" && player.level >= 80) {
                             document.getElementById("content").getElementsByClassName("button1")[1].click();
                         } else {
                             document.getElementById("content").getElementsByClassName("button1")[0].click();

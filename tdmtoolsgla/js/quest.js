@@ -1,5 +1,5 @@
 function quest() {
-    const enableQuest = 1;
+    const enableQuest = 0;
 
     if (enableQuest === 1) {
     
@@ -10,15 +10,20 @@ function quest() {
             pantheon: document.querySelector('#mainmenu a.menuitem[title="Pantheon"]'),
         }
     
-        if (!window.location.href.includes("mod=quest") && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
+        if (!window.location.href.includes("mod=quest") && questTime.textContent != '(New)' && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
             
-            setInterval(function () {
+            setTimeout(function () {
                 mainMenu.pantheon.click();
             }, (questTimeFormat[1] * 60 + questTimeFormat[2]) * 1000);
 
             console.log ('Quest moi co sau: ' + questTimeFormat[1] + ':' + questTimeFormat[2])
 
+        } else if (!window.location.href.includes("mod=quest") && questTime.textContent == '(New)' && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
+            
+            mainMenu.pantheon.click();
+
         } else if (window.location.href.includes("mod=quest")) {
+            
             const finishBtn = document.querySelector('#content .contentboard_start .quest_slot_button.quest_slot_button_finish');
             if (finishBtn) {
                 finishBtn.click();

@@ -24,6 +24,7 @@
             "js/work.js",
             "js/trainning.js",
             "js/circusProvinciarum.js",
+            "js/dungeon.js",
             "js/heal.js",
             "js/auction.js",
             "js/quest.js"
