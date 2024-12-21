@@ -39,7 +39,7 @@ function heal() {
                     var itemTab1 = document.querySelector('#inventory_nav .awesome-tabs');
                     itemTab1.click();
     
-                    var item = document.querySelector('.inventory_options_group #inv .ui-draggable.ui-droppable.ui-draggable-handle');
+                    var item = document.querySelector('#inv .ui-draggable.ui-droppable.ui-draggable-handle');
     
                     var mousedown = new MouseEvent('mousedown', {
                         bubbles: true,

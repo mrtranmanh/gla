@@ -1,5 +1,5 @@
 function dungeon() {
-    const enableDungeon = 1;
+    const enableDungeon = 0;
 
     if (enableDungeon === 1) {
         console.log('Dungeon da duoc bat');
@@ -21,7 +21,7 @@ function dungeon() {
                     console.log('Have Boss.');
                     checkBoss = true;
                 } else {
-                    console.log('No boss');    
+                    console.log('No boss');
                 }
             });
         
