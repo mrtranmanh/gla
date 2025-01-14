@@ -1,4 +1,4 @@
-const enableSmelter = 1;
+const enableSmelter = 0;
 const shouldEnableSmelter = enableSmelter === 1;
 
 if (shouldEnableSmelter) {
@@ -22,34 +22,37 @@ if (shouldEnableSmelter) {
         storeResources.click();
     }
 
-    if (inventoryNav3) {
-        console.log('Đang click vào tab Inventory Nav 3...');        
-        inventoryNav3.click();
-        setTimeout(() => {
-            const startMeltButton = document.querySelector('.smelter-actions button.awesome-button:first-of-type');
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mod') === 'forge' && params.get('submod') === 'smeltery') {
+        if (inventoryNav3) {
+            console.log('Đang click vào tab Inventory Nav 3...');        
+            inventoryNav3.click();
+            setTimeout(() => {
+                const startMeltButton = document.querySelector('.smelter-actions button.awesome-button:first-of-type');
 
-            if (startMeltButton && startMeltButton.textContent.trim() === 'Start melt') {
-                console.log('Đang click vào nút Start melt...');
-                startMeltButton.click();
-            } else {
-                console.log('Không tìm thấy nút Start melt');
-            }
+                if (startMeltButton && startMeltButton.textContent.trim() === 'Start melt') {
+                    console.log('Đang click vào nút Start melt...');
+                    startMeltButton.click();
+                } else {
+                    console.log('Không tìm thấy nút Start melt');
+                }
 
-            // const invItems = document.querySelectorAll('#inv [class^="item-i-"]');
+                // const invItems = document.querySelectorAll('#inv [class^="item-i-"]');
 
-            // if (invItems) {
-            //     invItems.forEach(item => {
-            //         item.click();
-            //         console.log('Đã click vào:', item);
-            //     });
-            // }
+                // if (invItems) {
+                //     invItems.forEach(item => {
+                //         item.click();
+                //         console.log('Đã click vào:', item);
+                //     });
+                // }
 
-            const invItem = document.querySelector('#inv [class^="item-i-"]');
-            invItem.click();
+                const invItem = document.querySelector('#inv [class^="item-i-"]');
+                invItem.click();
 
-        }, 1000);
-    } else {
-        console.log('Không tìm thấy inventoryNav3');
+            }, 1000);
+        } else {
+            console.log('Không tìm thấy inventoryNav3');
+        }
     }
 } else {
     console.log('Smelter không hoạt động');
