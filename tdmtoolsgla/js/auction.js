@@ -40,10 +40,10 @@ if (shouldEnableAuction && window.location.href.includes("mod=auction")) {
         if (auctionItemDiv) {
             valueElement = auctionItemDiv.querySelector('[data-tooltip*="Value"]');
             skipNameElement = [
-                auctionItemDiv.querySelector('[data-tooltip*="Lucius"]'),
-                auctionItemDiv.querySelector('[data-tooltip*="Antonius"]'),
-                auctionItemDiv.querySelector('[data-tooltip*="Ichorus"]'),
-                auctionItemDiv.querySelector('[data-tooltip*="T\u00e1liths"]')
+                // auctionItemDiv.querySelector('[data-tooltip*="Lucius"]'),
+                // auctionItemDiv.querySelector('[data-tooltip*="Antonius"]'),
+                // auctionItemDiv.querySelector('[data-tooltip*="Ichorus"]'),
+                // auctionItemDiv.querySelector('[data-tooltip*="T\u00e1liths"]')
             ]
 
             if (valueElement) {

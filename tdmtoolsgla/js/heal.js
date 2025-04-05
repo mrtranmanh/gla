@@ -1,6 +1,6 @@
 function heal() {
     const enableHeal = 1;
-    const underHP = 35;
+    const underHP = 40;
     
     const player = {
         level: Number(document.getElementById("header_values_level").textContent.trim()),
@@ -15,7 +15,7 @@ function heal() {
     const avatar = document.querySelector('#avatar .ui-droppable');
     
     if (enableHeal === 1 && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
-        console.log('Heal da duoc bat');
+        console.log('Heal da duoc bat tai:' + underHP);
     
         if ( player.hp < underHP && !window.location.href.includes("mod=overview")) {
             mainMenu.overview.click();
