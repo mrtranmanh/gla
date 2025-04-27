@@ -775,59 +775,70 @@
                 }
             }
 
+            // Start Fix custom
             function takeQuest() {
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
-
-                if (canTakeQuest.length) {
-                    function getIconName(url) {
-                        // Start Fix custom
+            
+                if (canTakeQuest.length) {                    
+                    function getIconName(url, title = "") {                        
                         if (url.includes('icon_combat_inactive.jpg')) {
                             return 'combat';
                         }
-
+            
                         if (url.includes('icon_arena_inactive.jpg')) {
                             return 'arena';
                         }
-
+            
                         if (url.includes('icon_grouparena_inactive.jpg')) {
                             return 'circus';
                         }
-
+            
                         if (url.includes('icon_expedition_inactive.jpg')) {
+                            // Nếu là expedition nhưng title chứa Forest Fortress thì tính là arena
+                            if (title.includes('Forest Fortress: Defeat the boss in this territory') || title.includes('Forest Fortress: Defeat 4 opponents of your choice')) {
+                                return 'arena';
+                            }
                             return 'expedition';
                         }
-
+            
                         if (url.includes('icon_dungeon_inactive.jpg')) {
                             return 'dungeon';
                         }
-
+            
                         if (url.includes('icon_items_inactive.jpg')) {
                             return 'items';
-                        }
-                        // End fix custom
-
+                        }                        
+            
                         return null;
-                    }
-
+                    }                    
+            
                     const availableQuests = $("#content .contentboard_slot_inactive");
-
+            
                     for (const quest of availableQuests) {
-                        let icon = getIconName(quest.getElementsByClassName("quest_slot_icon")[0].style.backgroundImage);
-
+                        const iconDiv = quest.getElementsByClassName("quest_slot_icon")[0];
+                        const titleDiv = quest.getElementsByClassName("quest_slot_title")[0];
+            
+                        const icon = getIconName(
+                            iconDiv?.style.backgroundImage || '',
+                            titleDiv?.innerText || ''
+                        );
+            
                         if (!icon) {
-                            console.log('No quest was found')
-                        };
-
+                            console.log('No quest was found');
+                            continue;
+                        }
+            
                         if (questTypes[icon]) {
                             return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
-                        };
+                        }
                     }
-
-                    $("#quest_footer_reroll input").first().click()
+            
+                    $("#quest_footer_reroll input").first().click();
                 }
-
+            
                 checkNextQuestTime();
             }
+            // End fix custom
 
             function checkNextQuestTime() {
                 const isTimer = $("#quest_header_cooldown")
