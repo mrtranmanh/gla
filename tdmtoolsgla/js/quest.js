@@ -849,7 +849,7 @@
                     nextQuestTime = currentTime + nextQuestIn
                     localStorage.setItem('nextQuestTime', nextQuestTime)
                 } else {
-                    nextQuestTime = currentTime + 300000;
+                    nextQuestTime = currentTime + 360000;
                     localStorage.setItem('nextQuestTime', nextQuestTime)
                 }
 
