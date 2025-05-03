@@ -792,12 +792,80 @@
                         if (url.includes('icon_grouparena_inactive.jpg')) {
                             return 'circus';
                         }
+
+                        if (
+                            title.includes('Circus Turma: Win 3 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 4 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 5 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 6 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 7 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 8 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 9 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 10 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 11 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 12 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 13 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 14 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 15 attacks against opponents from whom you can loot Gold') ||
+                            title.includes('Circus Turma: Win 3 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 4 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 5 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 6 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 7 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 8 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 9 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 10 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 11 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 12 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 13 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 14 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Circus Turma: Win 15 upgrade battles or battles in the Circus Provinciarum') ||
+                            title.includes('Defeat 3 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 4 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 5 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 6 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 7 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 8 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 9 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 10 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 11 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 12 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 13 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 14 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Defeat 15 opponents at expeditions, in dungeons or in the arenas') ||
+                            title.includes('Forest Fortress: Defeat 3 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 4 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 5 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 6 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 7 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 8 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 9 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 10 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 11 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 12 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 13 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 14 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat 15 opponents of your choice') ||
+                            title.includes('Forest Fortress: Defeat the boss in this territory')
+                        ) {
+                            return 'arena';
+                        }
+
+                        // const arenaPatterns = [
+                        //     /^Circus Turma: Win \d+ attacks against opponents from whom you can loot Gold$/,
+                        //     /^Circus Turma: Win \d+ upgrade battles or battles in the Circus Provinciarum$/,
+                        //     /^Defeat \d+ opponents at expeditions, in dungeons or in the arenas$/,
+                        //     /^Forest Fortress: Defeat the boss in this territory$/,
+                        //     /^Forest Fortress: Defeat \d+ opponents of your choice$/
+                        // ];
+                        
+                        // for (const pattern of arenaPatterns) {
+                        //     if (pattern.test(title)) {
+                        //         return 'arena';
+                        //     }
+                        // }
             
                         if (url.includes('icon_expedition_inactive.jpg')) {
-                            // Nếu là expedition nhưng title chứa Forest Fortress thì tính là arena
-                            if (title.includes('Forest Fortress: Defeat the boss in this territory') || title.includes('Forest Fortress: Defeat 4 opponents of your choice')) {
-                                return 'arena';
-                            }
                             return 'expedition';
                         }
             
