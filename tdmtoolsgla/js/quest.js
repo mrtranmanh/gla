@@ -780,10 +780,10 @@
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
             
                 if (canTakeQuest.length) {                    
-                    function getIconName(url, title = "") {                        
-                        if (url.includes('icon_combat_inactive.jpg')) {
-                            return 'combat';
-                        }
+                    function getIconName(url, title = "", timeDiv = null) {                        
+                        // if (url.includes('icon_combat_inactive.jpg')) {
+                        //     return 'combat';
+                        // }
             
                         if (url.includes('icon_arena_inactive.jpg')) {
                             return 'arena';
@@ -793,85 +793,35 @@
                         //     return 'circus';
                         // }
 
-                        if (
-                            title === 'Circus Turma: Win 3 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 4 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 5 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 6 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 7 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 8 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 9 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 10 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 11 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 12 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 13 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 14 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 15 attacks against opponents from whom you can loot Gold' ||
-                            title === 'Circus Turma: Win 3 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 4 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 5 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 6 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 7 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 8 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 9 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 10 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 11 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 12 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 13 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 14 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Circus Turma: Win 15 upgrade battles or battles in the Circus Provinciarum' ||
-                            title === 'Defeat 3 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 4 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 5 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 6 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 7 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 8 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 9 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 10 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 11 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 12 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 13 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 14 opponents at expeditions, in dungeons or in the arenas' ||
-                            title === 'Defeat 15 opponents at expeditions, in dungeons or in the arenas'
-                            // title === 'Forest Fortress: Defeat 3 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 4 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 5 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 6 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 7 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 8 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 9 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 10 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 11 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 12 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 13 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 14 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat 15 opponents of your choice' ||
-                            // title === 'Forest Fortress: Defeat the boss in this territory')
-                        ) {
-                            return 'arena';
+                        if (!timeDiv) {
+                            const patterns1 = [
+                                /^Circus Turma: Win ([3-9]|1[0-9]) attacks against opponents from whom you can loot Gold$/,
+                                /^Circus Turma: Win ([3-9]|1[0-9]) upgrade battles or battles in the Circus Provinciarum$/
+                            ];
+                        
+                            if (patterns1.some(pattern => pattern.test(title))) {
+                                return 'arena';
+                            }
                         }
 
-                        // const arenaPatterns = [
-                        //     /^Circus Turma: Win \d+ attacks against opponents from whom you can loot Gold$/,
-                        //     /^Circus Turma: Win \d+ upgrade battles or battles in the Circus Provinciarum$/,
-                        //     /^Defeat \d+ opponents at expeditions, in dungeons or in the arenas$/,
-                        //     /^Forest Fortress: Defeat the boss in this territory$/,
-                        //     /^Forest Fortress: Defeat \d+ opponents of your choice$/
-                        // ];
+                        if (timeDiv) {
+                            const patterns2 = [
+                                'Forest Fortress: Defeat the boss in this territory',
+                                /^Defeat ([3-9]|1[0-9]) opponents at expeditions, in dungeons or in the arenas$/
+                            ];
                         
-                        // for (const pattern of arenaPatterns) {
-                        //     if (pattern.test(title)) {
-                        //         return 'arena';
-                        //     }
+                            if (patterns2.some(pattern => pattern.test(title))) {
+                                return 'arena';
+                            }
+                        }
+            
+                        // if (url.includes('icon_expedition_inactive.jpg')) {
+                        //     return 'expedition';
                         // }
             
-                        if (url.includes('icon_expedition_inactive.jpg')) {
-                            return 'expedition';
-                        }
-            
-                        if (url.includes('icon_dungeon_inactive.jpg')) {
-                            return 'dungeon';
-                        }
+                        // if (url.includes('icon_dungeon_inactive.jpg')) {
+                        //     return 'dungeon';
+                        // }
             
                         if (url.includes('icon_items_inactive.jpg')) {
                             return 'items';
@@ -885,10 +835,12 @@
                     for (const quest of availableQuests) {
                         const iconDiv = quest.getElementsByClassName("quest_slot_icon")[0];
                         const titleDiv = quest.getElementsByClassName("quest_slot_title")[0];
+                        const timeDiv = quest.getElementsByClassName("quest_slot_time")[0];
             
                         const icon = getIconName(
                             iconDiv?.style.backgroundImage || '',
-                            titleDiv?.innerText || ''
+                            titleDiv?.innerText || '',
+                            timeDiv
                         );
             
                         if (!icon) {
