@@ -785,9 +785,9 @@
                         //     return 'combat';
                         // }
             
-                        if (url.includes('icon_arena_inactive.jpg')) {
-                            return 'arena';
-                        }
+                        // if (url.includes('icon_arena_inactive.jpg')) {
+                        //     return 'arena';
+                        // }
             
                         // if (url.includes('icon_grouparena_inactive.jpg')) {
                         //     return 'circus';
@@ -795,9 +795,12 @@
 
                         if (!timeDiv) {
                             const patterns1 = [
+                                /^Arena: Win ([3-9]|1[0-9]) attacks against opponents from whom you can loot Gold$/,
+                                /^Arena: Win ([3-9]|1[0-9]) upgrade battles or battles in the Provinciarum Arena$/,
                                 /^Circus Turma: Win ([3-9]|1[0-9]) attacks against opponents from whom you can loot Gold$/,
                                 /^Circus Turma: Win ([3-9]|1[0-9]) upgrade battles or battles in the Circus Provinciarum$/,
-                                /^Forest Fortress: Defeat ([3-9]|1[0-9]) opponents of your choice$/
+                                /^Forest Fortress: Defeat ([3-9]|1[0-9]) opponents of your choice$/,
+                                /^Defeat ([3-9]|1[0-9]) opponents at expeditions, in dungeons or in the arenas$/
                             ];
                         
                             if (patterns1.some(pattern => pattern.test(title))) {
@@ -807,9 +810,8 @@
 
                         if (timeDiv) {
                             const patterns2 = [
-                                'Forest Fortress: Defeat the boss in this territory',
-                                // 'The Moor: Defeat the boss in this territory',
-                                /^Defeat ([3-9]|1[0-9]) opponents at expeditions, in dungeons or in the arenas$/
+                                'Forest Fortress: Defeat the boss in this territory'
+                                // 'The Moor: Defeat the boss in this territory',                            
                             ];
                         
                             if (patterns2.some(pattern => pattern.test(title))) {
@@ -871,7 +873,7 @@
                     nextQuestTime = currentTime + nextQuestIn
                     localStorage.setItem('nextQuestTime', nextQuestTime)
                 } else {
-                    nextQuestTime = currentTime + 360000;
+                    nextQuestTime = currentTime + 260000;
                     localStorage.setItem('nextQuestTime', nextQuestTime)
                 }
 
