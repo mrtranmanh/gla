@@ -796,7 +796,8 @@
                         if (!timeDiv) {
                             const patterns1 = [
                                 /^Circus Turma: Win ([3-9]|1[0-9]) attacks against opponents from whom you can loot Gold$/,
-                                /^Circus Turma: Win ([3-9]|1[0-9]) upgrade battles or battles in the Circus Provinciarum$/
+                                /^Circus Turma: Win ([3-9]|1[0-9]) upgrade battles or battles in the Circus Provinciarum$/,
+                                /^Forest Fortress: Defeat ([3-9]|1[0-9]) opponents of your choice$/
                             ];
                         
                             if (patterns1.some(pattern => pattern.test(title))) {
@@ -807,6 +808,7 @@
                         if (timeDiv) {
                             const patterns2 = [
                                 'Forest Fortress: Defeat the boss in this territory',
+                                // 'The Moor: Defeat the boss in this territory',
                                 /^Defeat ([3-9]|1[0-9]) opponents at expeditions, in dungeons or in the arenas$/
                             ];
                         
