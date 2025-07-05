@@ -1,30 +1,5 @@
-// ==UserScript==
-// @name         Gladiatus Script
-// @version      2.6.4
-// @description  Dodatek do gry Gladiatus
-// @author       Eryk Bodziony
-// @match        *://*.gladiatus.gameforge.com/game/index.php*
-// @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
-// @downloadURL  https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
-// @updateURL    https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
-// @grant        GM_addStyle
-// @grant        GM_getResourceText
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.6.4
-// ==/UserScript==
-
-
 (function() {
     'use strict';
-
-    // Add CSS
-
-    function addCustomCSS() {
-        const globalCSS = GM_getResourceText("customCSS_global");
-        GM_addStyle(globalCSS);
-    };
-
-    addCustomCSS();
 
     /*****************
     *     Global     *
@@ -704,11 +679,16 @@
 
         // Close Notifications
 
-        if (document.getElementById("blackoutDialognotification") !== null && document.getElementById("blackoutDialognotification").isDisplayed()) {
-            setTimeout(function(){
-                document.getElementById("blackoutDialognotification").getElementsByTagName("input")[0].click();
-            }, clickDelay);
-        };
+        const dialog = document.getElementById("blackoutDialognotification");
+
+        if (
+          dialog &&
+          dialog.offsetParent !== null
+        ) {
+          setTimeout(function () {
+            dialog.getElementsByTagName("input")[0]?.click();
+          }, clickDelay);
+        }
 
         /***************
         *   Use Food   *
@@ -814,9 +794,9 @@
                                 // 'The Moor: Defeat the boss in this territory',                            
                             ];
                         
-                            if (patterns2.some(pattern => pattern.test(title))) {
+                            if (patterns2.some(pattern => title.includes(pattern))) {
                                 return 'arena';
-                            }
+                              }
                         }
             
                         // if (url.includes('icon_expedition_inactive.jpg')) {
@@ -951,8 +931,8 @@
                 } else if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[2].click();
                 } else {
-                    const inArenaProvPage = document.getElementById("mainnav").getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
-
+                    const inArenaProvPage = document .getElementById("mainnav") ?.getElementsByTagName("td")[1] ?.firstElementChild ?.classList.contains("awesome-tabs") && document .getElementById("mainnav") ?.getElementsByTagName("td")[1] ?.firstElementChild ?.classList.contains("current");
+                    
                     if (!inArenaProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
                     } else {
@@ -995,8 +975,8 @@
                 if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[3].click();
                 } else {
-                    const inCircusProvPage = document.getElementById("mainnav").getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
-
+                    const inCircusProvPage = document.getElementById("mainnav")?.getElementsByTagName("td")[3] ?.firstElementChild?.classList.contains("awesome-tabs") && document.getElementById("mainnav")?.getElementsByTagName("td")[3] ?.firstElementChild?.classList.contains("current");
+                    
                     if (!inCircusProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[3].firstElementChild.click();
                     } else {
