@@ -12,23 +12,45 @@
     "manifest_version": 3,
     "background": {
         "service_worker": "background.js",
-        "type":"module"
+        "type": "module"
     },
-    "content_scripts": [ {
-        "all_frames": true,
-        "css": [ "css/styles.css" ],
-        "exclude_matches": [ "*://*.gladiatus.gameforge.com/game/index.php?mod=start" ],
-        "js": [
-            "js/vendor/jquery.min.js",
-            "js/base.js",
-            "js/reloadpage.js",
-            "js/trainning.js",
-            "js/circusProvinciarum.js",
-            "js/heal.js",
-            "js/auction.js",            
-            "js/searchitem.js"
-        ],
-        "matches": [ "https://*.gladiatus.gameforge.com/*" ],
-        "run_at": "document_idle"
-     } ]
+    "content_scripts": [
+        {
+            "all_frames": true,
+            "css": [
+                "css/styles.css"
+            ],
+            "exclude_matches": [
+                "*://*.gladiatus.gameforge.com/game/index.php?mod=start"
+            ],
+            "js": [
+                "js/vendor/jquery.min.js",
+                "js/base.js",
+                "js/reloadpage.js",
+                "js/trainning.js",
+                "js/circusProvinciarum.js",
+                "js/heal.js",
+                "js/auction.js",
+                "js/searchitem.js"
+            ],
+            "matches": [
+                "https://*.gladiatus.gameforge.com/*"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/*.svg",
+                "assets/*.png",
+                "assets/*.jpg",
+                "assets/*.jpeg",
+                "assets/*.gif"
+            ],
+            "matches": [
+                "https://*.gladiatus.gameforge.com/*"
+            ]
+        }
+    ]
 }
