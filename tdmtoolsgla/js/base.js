@@ -845,22 +845,23 @@
             // End fix custom
 
             function checkNextQuestTime() {
-                const isTimer = $("#quest_header_cooldown")
-
-                if (isTimer.length) {
-                    const nextQuestIn = Number($("#quest_header_cooldown b span").attr("data-ticker-time-left"))
-
-                    nextQuestTime = currentTime + nextQuestIn
-                    localStorage.setItem('nextQuestTime', nextQuestTime)
+                const span = document.querySelector("#quest_header_cooldown span[data-ticker-time-left]");
+                
+                let nextQuestIn;
+                
+                if (span) {
+                    nextQuestIn = Number(span.getAttribute("data-ticker-time-left"));
                 } else {
-                    // nextQuestTime = currentTime + 260000;
-                    nextQuestTime = currentTime + 75000;
-                    localStorage.setItem('nextQuestTime', nextQuestTime)
+                    nextQuestIn = 75000; // fallback nếu không có dữ liệu
                 }
-
+                
+                const currentTime = Date.now(); // đảm bảo currentTime có giá trị mới nhất
+                const nextQuestTime = currentTime + nextQuestIn;
+                
+                localStorage.setItem('nextQuestTime', nextQuestTime);
+                
                 autoGo();
             }
-
             setTimeout(function(){
                 completeQuests();
             }, clickDelay);
