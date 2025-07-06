@@ -885,15 +885,20 @@
 
         else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready") === true) {
             function goExpedition() {
-                const inExpeditionPage = $("body").first().attr("id") === "locationPage";
-                const inEventExpeditionPage = document.getElementById("content").getElementsByTagName('img')[1].getAttribute('src') === 'img/ui/expedition_points2.png';
-
+                const inExpeditionPage = document.body.id === "locationPage"; // không cần jQuery nếu bạn muốn nhẹ
+            
+                const content = document.getElementById("content");
+                const imgs = content?.getElementsByTagName('img');
+                const secondImg = imgs?.[1];
+                const src = secondImg?.getAttribute('src');
+                const inEventExpeditionPage = src === 'img/ui/expedition_points2.png';
+            
                 if (!inExpeditionPage || inEventExpeditionPage) {
-                    document.getElementsByClassName("cooldown_bar_link")[0].click();
+                    document.getElementsByClassName("cooldown_bar_link")?.[0]?.click();
                 } else {
-                    document.getElementsByClassName("expedition_button")[monsterId].click();
-                };
-            };
+                    document.getElementsByClassName("expedition_button")?.[monsterId]?.click();
+                }
+            }
 
             setTimeout(function(){
                 goExpedition();
