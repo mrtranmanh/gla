@@ -22,10 +22,8 @@
             "js/vendor/jquery.min.js",
             "js/base.js",
             "js/reloadpage.js",
-            "js/work.js",
             "js/trainning.js",
             "js/circusProvinciarum.js",
-            "js/dungeon.js",
             "js/heal.js",
             "js/auction.js",            
             "js/searchitem.js"
