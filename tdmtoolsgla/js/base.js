@@ -104,9 +104,11 @@
     if (localStorage.getItem('doEventExpedition')) {
         doEventExpedition = localStorage.getItem('doEventExpedition') === "true" ? true : false;
     };
-    if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]){
+
+    const submenu2 = document.getElementById("submenu2");
+    if (!submenu2 || !submenu2.getElementsByClassName("menuitem glow")[0]) {
         doEventExpedition = false;
-    };
+    }
 
     let eventMonsterId = 0;
     if (localStorage.getItem('eventMonsterId')) {
@@ -845,22 +847,32 @@
             // End fix custom
 
             function checkNextQuestTime() {
-                const span = document.querySelector("#quest_header_cooldown span[data-ticker-time-left]");
+                const span = document.querySelector("#quest_header_cooldown span.ticker");
                 
                 let nextQuestIn;
-                
+            
                 if (span) {
-                    nextQuestIn = Number(span.getAttribute("data-ticker-time-left"));
+                    const text = span.textContent.trim(); // Ví dụ: "0:04:39"
+            
+                    const parts = text.split(':').map(Number);
+                    if (parts.length === 3) {
+                        const [h, m, s] = parts;
+                        nextQuestIn = ((h * 60 + m) * 60 + s) * 1000;
+                    } else if (parts.length === 2) {
+                        const [m, s] = parts;
+                        nextQuestIn = (m * 60 + s) * 1000;
+                    } else {
+                        nextQuestIn = 6 * 60 * 1000; // fallback nếu không đúng định dạng
+                    }
+            
                 } else {
-                    nextQuestIn = 75000; // fallback nếu không có dữ liệu
+                    nextQuestIn = 6 * 60 * 1000; // fallback nếu không tìm thấy span
                 }
-                
-                const currentTime = Date.now(); // đảm bảo currentTime có giá trị mới nhất
-                const nextQuestTime = currentTime + nextQuestIn;
-                
+            
+                const nextQuestTime = Date.now() + nextQuestIn;
                 localStorage.setItem('nextQuestTime', nextQuestTime);
-                
-                autoGo();
+            
+                autoGo(); // tiếp tục logic tự động
             }
             setTimeout(function(){
                 completeQuests();
