@@ -1,6 +1,6 @@
 // buy market
 function buy_market() {
-    const elements = document.querySelectorAll('#market_table > .awesome-button');
+    const elements = document.querySelectorAll('#market_table .awesome-button');
     let delay = 0;
 
     elements.forEach((element, index) => {
