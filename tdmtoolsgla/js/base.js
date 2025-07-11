@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /*****************
@@ -87,7 +87,7 @@
     // Circus
 
     let doCircus = true;
-    if (localStorage.getItem('doCircus')){
+    if (localStorage.getItem('doCircus')) {
         doCircus = localStorage.getItem('doCircus') === "true" ? true : false;
     };
     if (player.level < 10) {
@@ -237,8 +237,8 @@
     function setAutoGoActive() {
         sessionStorage.setItem('autoGoActive', true);
         document.getElementById("autoGoButton").innerHTML = 'STOP'
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoInactive);
+        document.getElementById("autoGoButton").removeEventListener("click", setAutoGoActive);
+        document.getElementById("autoGoButton").addEventListener("click", setAutoGoInactive);
         autoGo();
     };
 
@@ -246,8 +246,8 @@
     function setAutoGoInactive() {
         sessionStorage.setItem('autoGoActive', false);
         document.getElementById("autoGoButton").innerHTML = 'Auto GO'
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoInactive);
+        document.getElementById("autoGoButton").addEventListener("click", setAutoGoActive);
+        document.getElementById("autoGoButton").removeEventListener("click", setAutoGoInactive);
 
         clearTimeout(setTimeout);
 
@@ -261,7 +261,7 @@
     };
 
     // Open Settings
-    function openSettings(){
+    function openSettings() {
 
         function closeSettings() {
             document.getElementById("settingsWindow").remove();
@@ -269,8 +269,8 @@
         };
 
         var settingsWindow = document.createElement("div");
-            settingsWindow.setAttribute("id", "settingsWindow")
-            settingsWindow.innerHTML = `
+        settingsWindow.setAttribute("id", "settingsWindow")
+        settingsWindow.innerHTML = `
                 <span id="settingsLanguage">
                     <img id="languageEN" src="${assetsUrl}/GB.png">
                     <img id="languagePL" src="${assetsUrl}/PL.png">
@@ -395,10 +395,10 @@
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
         var overlayBack = document.createElement("div");
-            const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
-            overlayBack.setAttribute("id", "overlayBack");
-            overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
-            overlayBack.addEventListener ("click", closeSettings);
+        const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
+        overlayBack.setAttribute("id", "overlayBack");
+        overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
+        overlayBack.addEventListener("click", closeSettings);
         document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
         // Set Language
@@ -423,9 +423,9 @@
             reloadSettings();
         };
 
-        $("#languageEN").click(function() { setLanguage('EN') });
-        $("#languagePL").click(function() { setLanguage('PL') });
-        $("#languageES").click(function() { setLanguage('ES') });
+        $("#languageEN").click(function () { setLanguage('EN') });
+        $("#languagePL").click(function () { setLanguage('PL') });
+        $("#languageES").click(function () { setLanguage('ES') });
 
         // Change Settings
 
@@ -435,8 +435,8 @@
             reloadSettings();
         };
 
-        $("#do_expedition_true").click(function() { setDoExpedition(true) });
-        $("#do_expedition_false").click(function() { setDoExpedition(false) });
+        $("#do_expedition_true").click(function () { setDoExpedition(true) });
+        $("#do_expedition_false").click(function () { setDoExpedition(false) });
 
         function setMonster(id) {
             monsterId = id;
@@ -444,10 +444,10 @@
             reloadSettings();
         };
 
-        $("#set_monster_id_0").click(function() { setMonster('0') });
-        $("#set_monster_id_1").click(function() { setMonster('1') });
-        $("#set_monster_id_2").click(function() { setMonster('2') });
-        $("#set_monster_id_3").click(function() { setMonster('3') });
+        $("#set_monster_id_0").click(function () { setMonster('0') });
+        $("#set_monster_id_1").click(function () { setMonster('1') });
+        $("#set_monster_id_2").click(function () { setMonster('2') });
+        $("#set_monster_id_3").click(function () { setMonster('3') });
 
         function setDoDungeon(bool) {
             doDungeon = bool;
@@ -455,8 +455,8 @@
             reloadSettings();
         };
 
-        $("#do_dungeon_true").click(function() { setDoDungeon(true) });
-        $("#do_dungeon_false").click(function() { setDoDungeon(false) });
+        $("#do_dungeon_true").click(function () { setDoDungeon(true) });
+        $("#do_dungeon_false").click(function () { setDoDungeon(false) });
 
         function setDungeonDifficulty(difficulty) {
             dungeonDifficulty = difficulty;
@@ -464,8 +464,8 @@
             reloadSettings();
         };
 
-        $("#set_dungeon_difficulty_normal").click(function() { setDungeonDifficulty("normal") });
-        $("#set_dungeon_difficulty_advanced").click(function() { setDungeonDifficulty("advanced") });
+        $("#set_dungeon_difficulty_normal").click(function () { setDungeonDifficulty("normal") });
+        $("#set_dungeon_difficulty_advanced").click(function () { setDungeonDifficulty("advanced") });
 
         function setDoArena(bool) {
             doArena = bool;
@@ -473,8 +473,8 @@
             reloadSettings();
         };
 
-        $("#do_arena_true").click(function() { setDoArena(true) });
-        $("#do_arena_false").click(function() { setDoArena(false) });
+        $("#do_arena_true").click(function () { setDoArena(true) });
+        $("#do_arena_false").click(function () { setDoArena(false) });
 
         function setArenaOpponentLevel(level) {
             arenaOpponentLevel = level;
@@ -482,9 +482,9 @@
             reloadSettings();
         };
 
-        $("#set_arena_opponent_level_min").click(function() { setArenaOpponentLevel('min') });
-        $("#set_arena_opponent_level_max").click(function() { setArenaOpponentLevel('max') });
-        $("#set_arena_opponent_level_random").click(function() { setArenaOpponentLevel('random') });
+        $("#set_arena_opponent_level_min").click(function () { setArenaOpponentLevel('min') });
+        $("#set_arena_opponent_level_max").click(function () { setArenaOpponentLevel('max') });
+        $("#set_arena_opponent_level_random").click(function () { setArenaOpponentLevel('random') });
 
         function setDoCircus(bool) {
             doCircus = bool;
@@ -492,8 +492,8 @@
             reloadSettings();
         };
 
-        $("#do_circus_true").click(function() { setDoCircus(true) });
-        $("#do_circus_false").click(function() { setDoCircus(false) });
+        $("#do_circus_true").click(function () { setDoCircus(true) });
+        $("#do_circus_false").click(function () { setDoCircus(false) });
 
         function setCircusOpponentLevel(level) {
             circusOpponentLevel = level;
@@ -501,9 +501,9 @@
             reloadSettings();
         };
 
-        $("#set_circus_opponent_level_min").click(function() { setCircusOpponentLevel('min') });
-        $("#set_circus_opponent_level_max").click(function() { setCircusOpponentLevel('max') });
-        $("#set_circus_opponent_level_random").click(function() { setCircusOpponentLevel('random') });
+        $("#set_circus_opponent_level_min").click(function () { setCircusOpponentLevel('min') });
+        $("#set_circus_opponent_level_max").click(function () { setCircusOpponentLevel('max') });
+        $("#set_circus_opponent_level_random").click(function () { setCircusOpponentLevel('random') });
 
         function setDoQuests(bool) {
             doQuests = bool;
@@ -511,8 +511,8 @@
             reloadSettings();
         };
 
-        $("#do_quests_true").click(function() { setDoQuests(true) });
-        $("#do_quests_false").click(function() { setDoQuests(false) });
+        $("#do_quests_true").click(function () { setDoQuests(true) });
+        $("#do_quests_false").click(function () { setDoQuests(false) });
 
         function setQuestTypes(type) {
             questTypes[type] = !questTypes[type];
@@ -520,12 +520,12 @@
             reloadSettings();
         };
 
-        $("#do_combat_quests").click(function() { setQuestTypes('combat') });
-        $("#do_arena_quests").click(function() { setQuestTypes('arena') });
-        $("#do_circus_quests").click(function() { setQuestTypes('circus') });
-        $("#do_expedition_quests").click(function() { setQuestTypes('expedition') });
-        $("#do_dungeon_quests").click(function() { setQuestTypes('dungeon') });
-        $("#do_items_quests").click(function() { setQuestTypes('items') });
+        $("#do_combat_quests").click(function () { setQuestTypes('combat') });
+        $("#do_arena_quests").click(function () { setQuestTypes('arena') });
+        $("#do_circus_quests").click(function () { setQuestTypes('circus') });
+        $("#do_expedition_quests").click(function () { setQuestTypes('expedition') });
+        $("#do_dungeon_quests").click(function () { setQuestTypes('dungeon') });
+        $("#do_items_quests").click(function () { setQuestTypes('items') });
 
         function setDoEventExpedition(bool) {
             doEventExpedition = bool;
@@ -533,8 +533,8 @@
             reloadSettings();
         };
 
-        $("#do_event_expedition_true").click(function() { setDoEventExpedition(true) });
-        $("#do_event_expedition_false").click(function() { setDoEventExpedition(false) });
+        $("#do_event_expedition_true").click(function () { setDoEventExpedition(true) });
+        $("#do_event_expedition_false").click(function () { setDoEventExpedition(false) });
 
         function setEventMonster(id) {
             eventMonsterId = id;
@@ -542,10 +542,10 @@
             reloadSettings();
         };
 
-        $("#set_event_monster_id_0").click(function() { setEventMonster('0') });
-        $("#set_event_monster_id_1").click(function() { setEventMonster('1') });
-        $("#set_event_monster_id_2").click(function() { setEventMonster('2') });
-        $("#set_event_monster_id_3").click(function() { setEventMonster('3') });
+        $("#set_event_monster_id_0").click(function () { setEventMonster('0') });
+        $("#set_event_monster_id_1").click(function () { setEventMonster('1') });
+        $("#set_event_monster_id_2").click(function () { setEventMonster('2') });
+        $("#set_event_monster_id_3").click(function () { setEventMonster('3') });
 
         function reloadSettings() {
             closeSettings();
@@ -592,12 +592,12 @@
     autoGoButton.setAttribute("id", "autoGoButton")
     autoGoButton.className = 'menuitem';
 
-    if (autoGoActive == false){
+    if (autoGoActive == false) {
         autoGoButton.innerHTML = 'Auto GO';
-        autoGoButton.addEventListener ("click", setAutoGoActive);
+        autoGoButton.addEventListener("click", setAutoGoActive);
     } else {
         autoGoButton.innerHTML = 'STOP';
-        autoGoButton.addEventListener ("click", setAutoGoInactive);
+        autoGoButton.addEventListener("click", setAutoGoInactive);
     };
 
     document.getElementById("mainmenu").insertBefore(autoGoButton, document.getElementById("mainmenu").children[0]);
@@ -607,8 +607,8 @@
     var settingsButton = document.createElement("button");
     settingsButton.className = 'menuitem';
     settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
-    settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')" );
-    settingsButton.addEventListener ("click", openSettings);
+    settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')");
+    settingsButton.addEventListener("click", openSettings);
     document.getElementById("mainmenu").insertBefore(settingsButton, document.getElementById("mainmenu").children[1]);
 
     /****************
@@ -674,7 +674,7 @@
         // Claim Daily Reward
 
         if (document.getElementById("blackoutDialogLoginBonus") !== null) {
-            setTimeout(function(){
+            setTimeout(function () {
                 document.getElementById("blackoutDialogLoginBonus").getElementsByTagName("input")[0].click();
             }, clickDelay);
         };
@@ -684,12 +684,12 @@
         const dialog = document.getElementById("blackoutDialognotification");
 
         if (
-          dialog &&
-          dialog.offsetParent !== null
+            dialog &&
+            dialog.offsetParent !== null
         ) {
-          setTimeout(function () {
-            dialog.getElementsByTagName("input")[0]?.click();
-          }, clickDelay);
+            setTimeout(function () {
+                dialog.getElementsByTagName("input")[0]?.click();
+            }, clickDelay);
         }
 
         /***************
@@ -760,17 +760,17 @@
             // Start Fix custom
             function takeQuest() {
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
-            
-                if (canTakeQuest.length) {                    
-                    function getIconName(url, title = "", timeDiv = null) {                        
+
+                if (canTakeQuest.length) {
+                    function getIconName(url, title = "", timeDiv = null) {
                         // if (url.includes('icon_combat_inactive.jpg')) {
                         //     return 'combat';
                         // }
-            
+
                         // if (url.includes('icon_arena_inactive.jpg')) {
                         //     return 'arena';
                         // }
-            
+
                         // if (url.includes('icon_grouparena_inactive.jpg')) {
                         //     return 'circus';
                         // }
@@ -784,7 +784,7 @@
                                 /^Forest Fortress: Defeat ([3-9]|1[0-9]) opponents of your choice$/,
                                 /^Defeat ([3-9]|1[0-9]) opponents at expeditions, in dungeons or in the arenas$/
                             ];
-                        
+
                             if (patterns1.some(pattern => pattern.test(title))) {
                                 return 'arena';
                             }
@@ -795,86 +795,97 @@
                                 'Forest Fortress: Defeat the boss in this territory'
                                 // 'The Moor: Defeat the boss in this territory',                            
                             ];
-                        
+
                             if (patterns2.some(pattern => title.includes(pattern))) {
                                 return 'arena';
-                              }
+                            }
                         }
-            
+
                         // if (url.includes('icon_expedition_inactive.jpg')) {
                         //     return 'expedition';
                         // }
-            
+
                         // if (url.includes('icon_dungeon_inactive.jpg')) {
                         //     return 'dungeon';
                         // }
-            
+
                         if (url.includes('icon_items_inactive.jpg')) {
                             return 'items';
-                        }                        
-            
+                        }
+
                         return null;
-                    }                    
-            
+                    }
+
                     const availableQuests = $("#content .contentboard_slot_inactive");
-            
+
                     for (const quest of availableQuests) {
                         const iconDiv = quest.getElementsByClassName("quest_slot_icon")[0];
                         const titleDiv = quest.getElementsByClassName("quest_slot_title")[0];
                         const timeDiv = quest.getElementsByClassName("quest_slot_time")[0];
-            
+
                         const icon = getIconName(
                             iconDiv?.style.backgroundImage || '',
                             titleDiv?.innerText || '',
                             timeDiv
                         );
-            
+
                         if (!icon) {
                             console.log('No quest was found');
                             continue;
                         }
-            
+
                         if (questTypes[icon]) {
                             return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
                         }
                     }
-            
+
                     $("#quest_footer_reroll input").first().click();
                 }
-            
+
                 checkNextQuestTime();
             }
             // End fix custom
 
+            // function checkNextQuestTime() {
+            //     const span = document.querySelector("#quest_header_cooldown span.ticker");
+
+            //     let nextQuestIn;
+
+            //     if (span) {
+            //         const text = span.textContent.trim(); // Ví dụ: "0:04:39"
+
+            //         const parts = text.split(':').map(Number);
+            //         if (parts.length === 3) {
+            //             const [h, m, s] = parts;
+            //             nextQuestIn = ((h * 60 + m) * 60 + s) * 1000;
+            //         } else if (parts.length === 2) {
+            //             const [m, s] = parts;
+            //             nextQuestIn = (m * 60 + s) * 1000;
+            //         } else {
+            //             nextQuestIn = 6 * 60 * 1000; // fallback nếu không đúng định dạng
+            //         }
+
+            //     } else {
+            //         nextQuestIn = 6 * 60 * 1000; // fallback nếu không tìm thấy span
+            //     }
+
+            //     const nextQuestTime = Date.now() + nextQuestIn;
+            //     localStorage.setItem('nextQuestTime', nextQuestTime);
+
+            //     autoGo(); // tiếp tục logic tự động
+            // }
+
             function checkNextQuestTime() {
-                const span = document.querySelector("#quest_header_cooldown span.ticker");
-                
-                let nextQuestIn;
-            
-                if (span) {
-                    const text = span.textContent.trim(); // Ví dụ: "0:04:39"
-            
-                    const parts = text.split(':').map(Number);
-                    if (parts.length === 3) {
-                        const [h, m, s] = parts;
-                        nextQuestIn = ((h * 60 + m) * 60 + s) * 1000;
-                    } else if (parts.length === 2) {
-                        const [m, s] = parts;
-                        nextQuestIn = (m * 60 + s) * 1000;
-                    } else {
-                        nextQuestIn = 6 * 60 * 1000; // fallback nếu không đúng định dạng
-                    }
-            
-                } else {
-                    nextQuestIn = 6 * 60 * 1000; // fallback nếu không tìm thấy span
-                }
-            
-                const nextQuestTime = Date.now() + nextQuestIn;
+                // hằng số: 6 phút = 360 000 ms
+                const FIXED_COOLDOWN = 6 * 60 * 1000;
+
+                const nextQuestTime = Date.now() + FIXED_COOLDOWN;
                 localStorage.setItem('nextQuestTime', nextQuestTime);
-            
-                autoGo(); // tiếp tục logic tự động
+
+                autoGo();           // tiếp tục logic tự động
             }
-            setTimeout(function(){
+
+            setTimeout(function () {
                 completeQuests();
             }, clickDelay);
         }
@@ -886,13 +897,13 @@
         else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready") === true) {
             function goExpedition() {
                 const inExpeditionPage = document.body.id === "locationPage"; // không cần jQuery nếu bạn muốn nhẹ
-            
+
                 const content = document.getElementById("content");
                 const imgs = content?.getElementsByTagName('img');
                 const secondImg = imgs?.[1];
                 const src = secondImg?.getAttribute('src');
                 const inEventExpeditionPage = src === 'img/ui/expedition_points2.png';
-            
+
                 if (!inExpeditionPage || inEventExpeditionPage) {
                     document.getElementsByClassName("cooldown_bar_link")?.[0]?.click();
                 } else {
@@ -900,7 +911,7 @@
                 }
             }
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goExpedition();
             }, clickDelay);
 
@@ -931,7 +942,7 @@
                 };
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goDungeon();
             }, clickDelay);
         }
@@ -949,8 +960,8 @@
                 } else if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[2].click();
                 } else {
-                    const inArenaProvPage = document .getElementById("mainnav") ?.getElementsByTagName("td")[1] ?.firstElementChild ?.classList.contains("awesome-tabs") && document .getElementById("mainnav") ?.getElementsByTagName("td")[1] ?.firstElementChild ?.classList.contains("current");
-                    
+                    const inArenaProvPage = document.getElementById("mainnav")?.getElementsByTagName("td")[1]?.firstElementChild?.classList.contains("awesome-tabs") && document.getElementById("mainnav")?.getElementsByTagName("td")[1]?.firstElementChild?.classList.contains("current");
+
                     if (!inArenaProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
                     } else {
@@ -976,7 +987,7 @@
                 }
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goArena();
             }, clickDelay + 600);
 
@@ -993,8 +1004,8 @@
                 if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[3].click();
                 } else {
-                    const inCircusProvPage = document.getElementById("mainnav")?.getElementsByTagName("td")[3] ?.firstElementChild?.classList.contains("awesome-tabs") && document.getElementById("mainnav")?.getElementsByTagName("td")[3] ?.firstElementChild?.classList.contains("current");
-                    
+                    const inCircusProvPage = document.getElementById("mainnav")?.getElementsByTagName("td")[3]?.firstElementChild?.classList.contains("awesome-tabs") && document.getElementById("mainnav")?.getElementsByTagName("td")[3]?.firstElementChild?.classList.contains("current");
+
                     if (!inCircusProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[3].firstElementChild.click();
                     } else {
@@ -1020,7 +1031,7 @@
                 };
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goCircus();
             }, clickDelay + 600);
 
@@ -1038,7 +1049,7 @@
                     document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
                 } else {
                     eventPoints = document.getElementById("content").getElementsByClassName("section-header")[0].getElementsByTagName("p")[1].firstChild.nodeValue.replace(/[^0-9]/gi, '')
-                    localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints, date: currentDate}));
+                    localStorage.setItem('eventPoints', JSON.stringify({ count: eventPoints, date: currentDate }));
 
                     const isTimer = $('#content .ticker').first()
 
@@ -1050,14 +1061,14 @@
                     } else if (eventPoints == 0) {
                         location.reload();
                     } else if (eventPoints == 1 && eventMonsterId == 3) {
-                        localStorage.setItem('eventPoints', JSON.stringify({count: 0, date: currentDate}));
+                        localStorage.setItem('eventPoints', JSON.stringify({ count: 0, date: currentDate }));
 
                         document.getElementsByClassName("expedition_button")[2].click();
                     } else {
                         if (eventMonsterId == 3) {
-                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 2, date: currentDate}));
+                            localStorage.setItem('eventPoints', JSON.stringify({ count: eventPoints - 2, date: currentDate }));
                         } else {
-                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 1, date: currentDate}));
+                            localStorage.setItem('eventPoints', JSON.stringify({ count: eventPoints - 1, date: currentDate }));
                         }
 
                         nextEventExpeditionTime = currentTime + 303000;
@@ -1068,7 +1079,7 @@
                 }
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goEventExpedition();
             }, clickDelay);
 
@@ -1206,7 +1217,7 @@
 
                 let nextActionCounter;
 
-                nextActionCounter = setInterval(function() {
+                nextActionCounter = setInterval(function () {
                     nextAction.time = nextAction.time - 1000;
 
                     nextActionWindow.innerHTML = `
@@ -1220,7 +1231,7 @@
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
                         }
                         else {
-                            setTimeout(function(){
+                            setTimeout(function () {
                                 document.getElementsByClassName("cooldown_bar_link")[nextAction.index].click();
                             }, clickDelay);
                         };
