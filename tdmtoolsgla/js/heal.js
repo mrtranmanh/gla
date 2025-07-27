@@ -34,6 +34,7 @@ function heal() {
                     const itemTab1 = tabs[0]; // tab 1
                     const itemTab4 = tabs[3]; // tab 4
                     const itemTab5 = tabs[4]; // tab 5
+                    // const itemTab5 = tabs[2]; // tab 3
 
                     const A = avatar.getBoundingClientRect();
                     const x = A.left;

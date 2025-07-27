@@ -862,11 +862,11 @@
             //             const [m, s] = parts;
             //             nextQuestIn = (m * 60 + s) * 1000;
             //         } else {
-            //             nextQuestIn = 6 * 60 * 1000; // fallback nếu không đúng định dạng
+            //             nextQuestIn = 1 * 60 * 1000; // fallback nếu không đúng định dạng
             //         }
 
             //     } else {
-            //         nextQuestIn = 6 * 60 * 1000; // fallback nếu không tìm thấy span
+            //         nextQuestIn = 1 * 60 * 1000; // fallback nếu không tìm thấy span
             //     }
 
             //     const nextQuestTime = Date.now() + nextQuestIn;
@@ -877,7 +877,7 @@
 
             function checkNextQuestTime() {
                 // hằng số: 6 phút = 360 000 ms
-                const FIXED_COOLDOWN = 6 * 60 * 1000;
+                const FIXED_COOLDOWN = 4 * 60 * 1000;
 
                 const nextQuestTime = Date.now() + FIXED_COOLDOWN;
                 localStorage.setItem('nextQuestTime', nextQuestTime);
