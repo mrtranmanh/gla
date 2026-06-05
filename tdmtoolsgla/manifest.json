@@ -31,7 +31,8 @@
                 "js/circusProvinciarum.js",
                 "js/heal.js",
                 "js/auction.js",
-                "js/searchitem.js"
+                "js/searchitem.js",
+                "js/shop.js"
             ],
             "matches": [
                 "https://*.gladiatus.gameforge.com/*"
