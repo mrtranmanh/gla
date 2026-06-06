@@ -1,37 +1,75 @@
-function dungeon() {
-    const enableDungeon = 0;
+(function () {
+    'use strict';
 
-    if (enableDungeon === 1) {
-        console.log('Dungeon da duoc bat');
+    function isDungeonEnabled() {
+        return localStorage.getItem('doDungeon') === null ?
+            true :
+            localStorage.getItem('doDungeon') === 'true';
+    }
 
-        const player = {
-            level: Number(document.getElementById("header_values_level").textContent.trim()),
-            hp: Number(document.getElementById("header_values_hp_percent").textContent.trim().replace(/[^0-9]/g, '')),
-            gold: Number(document.getElementById("sstat_gold_val").textContent.trim().replace(/\./g, '')),
-        };
+    function getDungeonDifficulty() {
+        return localStorage.getItem('dungeonDifficulty') === 'advanced' ? 'advanced' : 'normal';
+    }
 
-        if ( player.level > 100 && window.location.href.includes("mod=dungeon")) {
+    function shouldFightBoss() {
+        return localStorage.getItem('dungeonFightBoss') === 'true';
+    }
 
-            const dungeonMonster = document.querySelectorAll('#content .map_label');
-            const dungeonCancel = document.querySelector('#content form .button1[type="submit"]');
-        
-            let checkBoss = false;
-            dungeonMonster.forEach(monster => {
-                if (monster.textContent.trim() === 'Boss') {
-                    console.log('Have Boss.');
-                    checkBoss = true;
-                } else {
-                    console.log('No boss');
-                }
-            });
-        
-            if (checkBoss) {
-                dungeonCancel.click();
-            }
+    function isDungeonCooldownReady() {
+        const cooldown = document.getElementById('cooldown_bar_fill_dungeon');
+        return cooldown && cooldown.classList.contains('cooldown_bar_fill_ready');
+    }
+
+    function hasBoss(content) {
+        return Array.from(content.querySelectorAll('.map_label')).some(function (monster) {
+            return monster.textContent.trim() === 'Boss';
+        });
+    }
+
+    function goDungeon(clickDelay) {
+        if (!isDungeonEnabled() || !isDungeonCooldownReady()) {
+            return false;
         }
 
-    } else {
-        console.log('Dungeon chua duoc bat');
+        setTimeout(function () {
+            const inDungeonPage = document.body.id === 'dungeonPage';
+
+            if (!inDungeonPage) {
+                document.getElementsByClassName('cooldown_bar_link')[1]?.click();
+                return;
+            }
+
+            const dungeonContent = document.getElementById('content');
+            const dungeonAreas = dungeonContent.getElementsByTagName('area');
+            const inSelectDifficultyPage = !dungeonAreas[0];
+
+            if (inSelectDifficultyPage) {
+                const buttons = dungeonContent.getElementsByClassName('button1');
+                if (getDungeonDifficulty() === 'advanced') {
+                    buttons[1]?.click();
+                } else {
+                    buttons[0]?.click();
+                }
+                return;
+            }
+
+            const dungeonCancel = dungeonContent.querySelector('form .button1[type="submit"]');
+            if (hasBoss(dungeonContent) && !shouldFightBoss() && dungeonCancel) {
+                console.log('Have Boss. Skip dungeon boss.');
+                dungeonCancel.click();
+                return;
+            }
+
+            dungeonAreas[0].click();
+        }, clickDelay || 0);
+
+        return true;
     }
-}
-dungeon();
+
+    window.tdmDungeon = {
+        go: goDungeon,
+        isReady: function () {
+            return isDungeonEnabled() && isDungeonCooldownReady();
+        },
+    };
+})();

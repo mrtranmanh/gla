@@ -69,6 +69,10 @@
         doDungeon = false;
     };
     let dungeonDifficulty = localStorage.getItem('dungeonDifficulty') === 'advanced' ? 'advanced' : 'normal';
+    let dungeonFightBoss = false;
+    if (localStorage.getItem('dungeonFightBoss')) {
+        dungeonFightBoss = localStorage.getItem('dungeonFightBoss') === "true" ? true : false;
+    };
 
     // Arena
 
@@ -160,6 +164,13 @@
         }
     };
 
+    // Auction
+
+    let auctionEnabled = true;
+    if (localStorage.getItem('auctionEnabled')) {
+        auctionEnabled = localStorage.getItem('auctionEnabled') === "true" ? true : false;
+    };
+
     /*****************
     *  Translations  *
     *****************/
@@ -167,9 +178,11 @@
     const contentEN = {
         advanced: 'Advanced',
         arena: 'Arena',
+        auction: 'Auction',
         circusTurma: 'Circus Turma',
         difficulty: 'Difficulty',
         dungeon: 'Dungeon',
+        fightBoss: 'Fight Boss',
         eventExpedition: 'Event Expedition',
         expedition: 'Expedition',
         heal: 'Auto Heal',
@@ -196,9 +209,11 @@
     const contentPL = {
         advanced: 'Zaawansowane',
         arena: 'Arena',
+        auction: 'Aukcja',
         circusTurma: 'Circus Turma',
         difficulty: 'Trudność',
         dungeon: 'Lochy',
+        fightBoss: 'Bij Bossa',
         eventExpedition: 'Wyprawa Eventowa',
         expedition: 'Wyprawa',
         heal: 'Auto Heal',
@@ -225,9 +240,11 @@
     const contentES = {
         advanced: 'Avanzado',
         arena: 'Arena',
+        auction: 'Subasta',
         circusTurma: 'Circus Turma',
         difficulty: 'Dificultad',
         dungeon: 'Mazmorra',
+        fightBoss: 'Atacar jefe',
         eventExpedition: 'Expedición de Evento',
         expedition: 'Expedición',
         heal: 'Auto Heal',
@@ -354,6 +371,11 @@
                             <div id="set_dungeon_difficulty_normal" class="settingsButton">${content.normal}</div>
                             <div id="set_dungeon_difficulty_advanced" class="settingsButton">${content.advanced}</div>
                         </div>
+                        <div class="settingsHeaderSmall">${content.fightBoss}</div>
+                        <div class="settingsSubcontent">
+                            <div id="set_dungeon_fight_boss_true" class="settingsButton">${content.yes}</div>
+                            <div id="set_dungeon_fight_boss_false" class="settingsButton">${content.no}</div>
+                        </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
                             <div id="set_dungeon_location" class="settingsButton">${content.lastUsed}</div>
@@ -454,6 +476,17 @@
                             <div id="set_heal_tab_5" class="settingsButton">5</div>
                         </div>
                     </div>
+
+                    <div
+                        id="auction_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.auction}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_auction_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_auction_false" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
                 </div>`;
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
@@ -529,6 +562,15 @@
 
         $("#set_dungeon_difficulty_normal").click(function () { setDungeonDifficulty("normal") });
         $("#set_dungeon_difficulty_advanced").click(function () { setDungeonDifficulty("advanced") });
+
+        function setDungeonFightBoss(bool) {
+            dungeonFightBoss = bool;
+            localStorage.setItem('dungeonFightBoss', bool);
+            reloadSettings();
+        };
+
+        $("#set_dungeon_fight_boss_true").click(function () { setDungeonFightBoss(true) });
+        $("#set_dungeon_fight_boss_false").click(function () { setDungeonFightBoss(false) });
 
         function setDoArena(bool) {
             doArena = bool;
@@ -647,6 +689,15 @@
         $("#set_heal_tab_4").click(function () { setHealTab(4) });
         $("#set_heal_tab_5").click(function () { setHealTab(5) });
 
+        function setAuctionEnabled(bool) {
+            auctionEnabled = bool;
+            localStorage.setItem('auctionEnabled', bool);
+            reloadSettings();
+        };
+
+        $("#do_auction_true").click(function () { setAuctionEnabled(true) });
+        $("#do_auction_false").click(function () { setAuctionEnabled(false) });
+
         function reloadSettings() {
             closeSettings();
             openSettings();
@@ -660,6 +711,7 @@
             $('#dungeon_settings').addClass(doDungeon ? 'active' : 'inactive');
             $(`#do_dungeon_${doDungeon}`).addClass('active');
             $(`#set_dungeon_difficulty_${dungeonDifficulty}`).addClass('active');
+            $(`#set_dungeon_fight_boss_${dungeonFightBoss}`).addClass('active');
 
             $('#arena_settings').addClass(doArena ? 'active' : 'inactive');
             $(`#do_arena_${doArena}`).addClass('active');
@@ -687,6 +739,9 @@
             healTabs.forEach(function (tab) {
                 $(`#set_heal_tab_${tab}`).addClass('active');
             });
+
+            $('#auction_settings').addClass(auctionEnabled ? 'active' : 'inactive');
+            $(`#do_auction_${auctionEnabled}`).addClass('active');
         };
 
         setActiveButtons();
@@ -1027,30 +1082,8 @@
         * Go Dungeon  *
         **************/
 
-        else if (doDungeon === true && document.getElementById("cooldown_bar_fill_dungeon").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goDungeon() {
-                const inDungeonPage = $("body").first().attr("id") === "dungeonPage";
-
-                if (!inDungeonPage) {
-                    document.getElementsByClassName("cooldown_bar_link")[1].click();
-                } else {
-                    const inSelectDifficultyPage = !document.getElementById("content").getElementsByTagName("area")[0];
-
-                    if (inSelectDifficultyPage) {
-                        if (dungeonDifficulty === "advanced") {
-                            document.getElementById("content").getElementsByClassName("button1")[1].click();
-                        } else {
-                            document.getElementById("content").getElementsByClassName("button1")[0].click();
-                        }
-                    } else {
-                        document.getElementById("content").getElementsByTagName("area")[0].click();
-                    };
-                };
-            };
-
-            setTimeout(function () {
-                goDungeon();
-            }, clickDelay);
+        else if (window.tdmDungeon?.isReady()) {
+            window.tdmDungeon.go(clickDelay);
         }
 
         /************************
