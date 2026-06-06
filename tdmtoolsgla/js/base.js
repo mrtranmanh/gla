@@ -171,6 +171,10 @@
         auctionEnabled = localStorage.getItem('auctionEnabled') === "true" ? true : false;
     };
 
+    // Sell to shop
+
+    let sellShopGoldLimit = parseGoldValue(localStorage.getItem('tdmSellShopGoldLimit'));
+
     /*****************
     *  Translations  *
     *****************/
@@ -201,6 +205,8 @@
         quests: 'Quests',
         random: 'Random',
         settings: 'Settings',
+        sellShop: 'Sell to shop',
+        sellShopGoldLimit: 'Gold limit',
         soon: 'Soon...',
         type: 'Type',
         yes: 'Yes'
@@ -232,6 +238,8 @@
         quests: 'Zadania',
         random: 'Losowy',
         settings: 'Ustawienia',
+        sellShop: 'Sell to shop',
+        sellShopGoldLimit: 'Gold limit',
         soon: 'Wkrótce...',
         type: 'Rodzaj',
         yes: 'Tak'
@@ -263,6 +271,8 @@
         quests: 'Misiones',
         random: 'Aleatorio',
         settings: 'Configuración',
+        sellShop: 'Sell to shop',
+        sellShopGoldLimit: 'Gold limit',
         soon: 'Próximamente...',
         type: 'Tipo',
         yes: 'Si'
@@ -334,7 +344,7 @@
                     <img id="languageES" src="${assetsUrl}/ES.png">
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
-                <div id="settingsContent">
+                <div id="settingsContent" style=" row-gap: 30px; ">
                     <div
                         id="expedition_settings"
                         class="settings_box"
@@ -485,6 +495,17 @@
                         <div class="settingsSubcontent">
                             <div id="do_auction_true" class="settingsButton">${content.yes}</div>
                             <div id="do_auction_false" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+
+                    <div
+                        id="sell_shop_settings"
+                        class="settings_box active"
+                    >
+                        <div class="settingsHeaderBig">${content.sellShop}</div>
+                        <div class="settingsHeaderSmall">${content.sellShopGoldLimit}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_sell_shop_gold_limit" class="settingsInput" type="text" placeholder="500k" value="${sellShopGoldLimit > 0 ? formatGoldValue(sellShopGoldLimit) : ''}">
                         </div>
                     </div>
                 </div>`;
@@ -698,6 +719,20 @@
         $("#do_auction_true").click(function () { setAuctionEnabled(true) });
         $("#do_auction_false").click(function () { setAuctionEnabled(false) });
 
+        function setSellShopGoldLimit(value) {
+            sellShopGoldLimit = parseGoldValue(value);
+
+            if (sellShopGoldLimit > 0) {
+                localStorage.setItem('tdmSellShopGoldLimit', String(sellShopGoldLimit));
+            } else {
+                localStorage.removeItem('tdmSellShopGoldLimit');
+            }
+
+            reloadSettings();
+        };
+
+        $("#set_sell_shop_gold_limit").change(function () { setSellShopGoldLimit(this.value) });
+
         function reloadSettings() {
             closeSettings();
             openSettings();
@@ -775,6 +810,29 @@
     /****************
     *    Helpers    *
     ****************/
+
+    function parseGoldValue(value) {
+        if (value === null || value === undefined) {
+            return 0;
+        }
+
+        const normalizedValue = String(value).trim().toLowerCase();
+        if (!normalizedValue) {
+            return 0;
+        }
+
+        const multiplier = normalizedValue.endsWith('k') ? 1000 :
+            normalizedValue.endsWith('m') ? 1000000 : 1;
+        const numericValue = Number(normalizedValue
+            .replace(/[km]$/i, '')
+            .replace(/[^\d]/g, ''));
+
+        return Number.isFinite(numericValue) ? numericValue * multiplier : 0;
+    }
+
+    function formatGoldValue(value) {
+        return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
 
     function getRandomInt(min, max) {
         min = Math.ceil(min);

@@ -11,6 +11,7 @@
     const SELL_FILTER_STORAGE = {
         itemTypes: 'tdmSellShopItemTypes',
         itemQualities: 'tdmSellShopItemQualities',
+        goldLimit: 'tdmSellShopGoldLimit',
     };
     const ITEM_TYPES = [
         { value: '1', icon: 'item-i-1-13', label: 'Weapons' },
@@ -360,6 +361,62 @@
         localStorage.setItem(key, JSON.stringify(values));
     }
 
+    function parseGoldValue(value) {
+        if (value === null || value === undefined) {
+            return 0;
+        }
+
+        const normalizedValue = String(value).trim().toLowerCase();
+        if (!normalizedValue) {
+            return 0;
+        }
+
+        const multiplier = normalizedValue.endsWith('k') ? 1000 :
+            normalizedValue.endsWith('m') ? 1000000 : 1;
+        const numericValue = Number(normalizedValue
+            .replace(/[km]$/i, '')
+            .replace(/[^\d]/g, ''));
+
+        return Number.isFinite(numericValue) ? numericValue * multiplier : 0;
+    }
+
+    function formatGoldValue(value) {
+        return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function getStoredGoldLimit() {
+        return parseGoldValue(localStorage.getItem(SELL_FILTER_STORAGE.goldLimit));
+    }
+
+    function getActiveGoldLimit() {
+        const goldLimitInput = document.getElementById('tdm-sell-shop-gold-limit');
+        if (!goldLimitInput) {
+            return getStoredGoldLimit();
+        }
+
+        const goldLimit = setStoredGoldLimit(goldLimitInput.value);
+        goldLimitInput.value = goldLimit > 0 ? formatGoldValue(goldLimit) : '';
+
+        return goldLimit;
+    }
+
+    function setStoredGoldLimit(value) {
+        const goldLimit = parseGoldValue(value);
+
+        if (goldLimit > 0) {
+            localStorage.setItem(SELL_FILTER_STORAGE.goldLimit, String(goldLimit));
+        } else {
+            localStorage.removeItem(SELL_FILTER_STORAGE.goldLimit);
+        }
+
+        return goldLimit;
+    }
+
+    function getCurrentGold() {
+        const gold = document.getElementById('sstat_gold_val');
+        return parseGoldValue(gold && gold.textContent);
+    }
+
     function getSellFilters() {
         return {
             itemTypes: getStoredFilterValues(SELL_FILTER_STORAGE.itemTypes, ITEM_TYPES.map(function (type) {
@@ -518,6 +575,14 @@
         if (gold) {
             gold.textContent = header.gold.text || header.gold.value;
         }
+    }
+
+    function getUpdatedGold(header) {
+        if (header && header.gold) {
+            return parseGoldValue(header.gold.text || header.gold.value);
+        }
+
+        return getCurrentGold();
     }
 
     async function getInventorySpot(width, height) {
@@ -710,6 +775,14 @@
         }
 
         const filters = getSellFilters();
+        const goldLimit = getActiveGoldLimit();
+        const currentGold = getCurrentGold();
+
+        if (goldLimit > 0 && currentGold >= goldLimit) {
+            setStatus(`Gold hien tai da dat gioi han ${formatGoldValue(goldLimit)}.`);
+            return;
+        }
+
         setStatus('Dang quet cac page packages...');
         const items = await getFilteredPackageItems(filters);
 
@@ -718,7 +791,8 @@
             return;
         }
 
-        if (!confirm(`Ban ${items.length} item khop filter trong tat ca page packages vao shop?`)) {
+        const limitText = goldLimit > 0 ? `\nDung khi gold dat ${formatGoldValue(goldLimit)}.` : '';
+        if (!confirm(`Ban ${items.length} item khop filter trong tat ca page packages vao shop?${limitText}`)) {
             return;
         }
 
@@ -742,6 +816,12 @@
 
             for (let index = 0; index < items.length; index++) {
                 if (shouldStop) {
+                    break;
+                }
+
+                if (goldLimit > 0 && getCurrentGold() >= goldLimit) {
+                    finalStatus = `Da dat gioi han ${formatGoldValue(goldLimit)} gold.`;
+                    setStatus(finalStatus);
                     break;
                 }
 
@@ -780,6 +860,11 @@
                 }
 
                 updateGold(soldResult.header);
+                if (goldLimit > 0 && getUpdatedGold(soldResult.header) >= goldLimit) {
+                    shouldStop = true;
+                    finalStatus = `Da dat gioi han ${formatGoldValue(goldLimit)} gold.`;
+                }
+
                 markGrid(shop.grid, shop.spot.x, shop.spot.y, item.width, item.height, true);
                 item.element.remove();
                 sold++;
@@ -792,7 +877,9 @@
             isSelling = false;
             shouldStop = false;
             button.textContent = 'Sell to shop';
-            if (sold || skipped) {
+            if (finalStatus && goldLimit > 0 && getCurrentGold() >= goldLimit) {
+                setStatus(`${finalStatus} Da ban ${sold}/${items.length} item, bo qua ${skipped}.`);
+            } else if (sold || skipped) {
                 setStatus(`Da ban ${sold}/${items.length} item, bo qua ${skipped}.`);
             } else {
                 setStatus(finalStatus || `Da ban ${sold}/${items.length} item, bo qua ${skipped}.`);
@@ -852,6 +939,27 @@
         const filters = getSellFilters();
         const filterBox = document.createElement('div');
         filterBox.id = 'tdm-sell-shop-filters';
+
+        const goldLimitRow = document.createElement('div');
+        goldLimitRow.className = 'tdm-sell-shop-filter-row';
+        goldLimitRow.appendChild(createFilterLabel('Gold limit'));
+
+        const goldLimitControls = document.createElement('div');
+        goldLimitControls.className = 'tdm-sell-shop-gold-limit';
+
+        const goldLimitInput = document.createElement('input');
+        goldLimitInput.type = 'text';
+        goldLimitInput.id = 'tdm-sell-shop-gold-limit';
+        goldLimitInput.placeholder = 'VD: 500k';
+        goldLimitInput.value = getStoredGoldLimit() > 0 ? formatGoldValue(getStoredGoldLimit()) : '';
+        goldLimitInput.addEventListener('change', function () {
+            const goldLimit = setStoredGoldLimit(goldLimitInput.value);
+            goldLimitInput.value = goldLimit > 0 ? formatGoldValue(goldLimit) : '';
+        });
+
+        goldLimitControls.appendChild(goldLimitInput);
+        goldLimitRow.appendChild(goldLimitControls);
+        filterBox.appendChild(goldLimitRow);
 
         const typeRow = document.createElement('div');
         typeRow.className = 'tdm-sell-shop-filter-row';
