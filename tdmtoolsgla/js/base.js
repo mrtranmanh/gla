@@ -252,6 +252,13 @@
 
     let sellShopGoldLimit = parseGoldValue(localStorage.getItem('tdmSellShopGoldLimit'));
 
+    // Smelter
+
+    let smelterEnabled = true;
+    if (localStorage.getItem('smelterEnabled')) {
+        smelterEnabled = localStorage.getItem('smelterEnabled') === "true" ? true : false;
+    };
+
     /*****************
     *  Translations  *
     *****************/
@@ -284,6 +291,7 @@
         settings: 'Settings',
         sellShop: 'Sell to shop',
         sellShopGoldLimit: 'Gold limit',
+        smelter: 'Smelter',
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
         auctionStatusBar: 'Auction Status Bar',
@@ -323,6 +331,7 @@
         settings: 'Ustawienia',
         sellShop: 'Sell to shop',
         sellShopGoldLimit: 'Gold limit',
+        smelter: 'Smelter',
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
         auctionStatusBar: 'Auction Status Bar',
@@ -362,6 +371,7 @@
         settings: 'Configuración',
         sellShop: 'Sell to shop',
         sellShopGoldLimit: 'Gold limit',
+        smelter: 'Smelter',
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
         auctionStatusBar: 'Auction Status Bar',
@@ -628,12 +638,24 @@
 
                     <div
                         id="sell_shop_settings"
-                        class="settings_box active"
+                        class="settings_box"
                     >
                         <div class="settingsHeaderBig">${content.sellShop}</div>
                         <div class="settingsHeaderSmall">${content.sellShopGoldLimit}</div>
                         <div class="settingsSubcontent">
                             <input id="set_sell_shop_gold_limit" class="settingsInput" type="text" placeholder="500k" value="${sellShopGoldLimit > 0 ? formatGoldValue(sellShopGoldLimit) : ''}">
+                        </div>
+                    </div>
+
+                    <div
+                        id="smelter_settings"
+                        class="settings_box"
+                        style=" opacity: 0.5; "
+                    >
+                        <div class="settingsHeaderBig">${content.smelter}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_smelter_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_smelter_false" class="settingsButton">${content.no}</div>
                         </div>
                     </div>
                 </div>`;
@@ -934,6 +956,15 @@
 
         $("#set_sell_shop_gold_limit").change(function () { setSellShopGoldLimit(this.value) });
 
+        function setSmelterEnabled(bool) {
+            smelterEnabled = bool;
+            localStorage.setItem('smelterEnabled', bool);
+            reloadSettings();
+        };
+
+        $("#do_smelter_true").click(function () { setSmelterEnabled(true) });
+        $("#do_smelter_false").click(function () { setSmelterEnabled(false) });
+
         function reloadSettings() {
             closeSettings();
             openSettings();
@@ -988,6 +1019,11 @@
             shortcutButtons.forEach(function (shortcut) {
                 $(`#set_shortcut_${shortcut}`).addClass('active');
             });
+
+            $('#sell_shop_settings').addClass('active');
+
+            $('#smelter_settings').addClass(smelterEnabled ? 'active' : 'inactive');
+            $(`#do_smelter_${smelterEnabled}`).addClass('active');
         };
 
         setActiveButtons();
