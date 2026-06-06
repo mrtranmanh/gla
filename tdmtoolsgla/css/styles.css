@@ -215,6 +215,94 @@
     background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg');
 }
 
+#tdm-sell-shop-filters
+{
+    margin: 8px 0;
+    padding: 8px;
+    border: 1px solid #5b3a1b;
+    background: rgba(0, 0, 0, 0.35);
+    color: #f3d27a;
+}
+
+.tdm-sell-shop-filter-row
+{
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.tdm-sell-shop-filter-label
+{
+    width: 94px;
+    flex: 0 0 94px;
+    padding-top: 5px;
+    font-weight: 700;
+}
+
+.tdm-sell-shop-filter-list
+{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.tdm-sell-shop-filter-chip,
+.tdm-sell-shop-quality-chip
+{
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #5b3a1b;
+    background: rgba(20, 10, 3, 0.75);
+    opacity: 0.35;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.tdm-sell-shop-filter-chip.active,
+.tdm-sell-shop-quality-chip.active
+{
+    border-color: #44dc46;
+    box-shadow: 0 0 4px #44dc46;
+    opacity: 1;
+}
+
+.tdm-sell-shop-filter-icon
+{
+    display: block;
+    margin: auto;
+    transform: scale(0.72);
+    transform-origin: center;
+}
+
+.tdm-sell-shop-filter-chip,
+.tdm-sell-shop-quality-chip
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tdm-sell-shop-quality-swatch
+{
+    width: 18px;
+    height: 18px;
+    border: 1px solid #111;
+}
+
+.tdm-sell-shop-filter-actions
+{
+    margin-left: 6px;
+    white-space: nowrap;
+}
+
+.tdm-sell-shop-filter-actions a
+{
+    color: #f3d27a;
+}
+
 #overlayBack
 {
     position: absolute;

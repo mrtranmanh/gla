@@ -8,6 +8,66 @@
     const SHOP_SIZE = { width: 6, height: 8 };
     const INVENTORY_SIZE = { width: 8, height: 5 };
     const FALLBACK_INVENTORY_BAGS = [512, 513, 514, 515];
+    const SELL_FILTER_STORAGE = {
+        itemTypes: 'tdmSellShopItemTypes',
+        itemQualities: 'tdmSellShopItemQualities',
+    };
+    const ITEM_TYPES = [
+        { value: '1', icon: 'item-i-1-13', label: 'Weapons' },
+        { value: '2', icon: 'item-i-2-10 icon-big-size', label: 'Shields' },
+        { value: '3', icon: 'item-i-3-2 icon-big-size', label: 'Chest Armour' },
+        { value: '4', icon: 'item-i-4-11 icon-big-size', label: 'Helmets' },
+        { value: '5', icon: 'item-i-5-7 icon-big-size', label: 'Gloves' },
+        { value: '8', icon: 'item-i-8-10 icon-big-size', label: 'Shoes' },
+        { value: '6', icon: 'item-i-6-1 icon-small-size', label: 'Rings' },
+        { value: '9', icon: 'item-i-9-1 icon-small-size', label: 'Amulets' },
+        { value: '7', icon: 'item-i-7-1 icon-small-size', label: 'Usable' },
+        { value: '21', icon: 'item-i-21-6 icon-small-size', label: 'Event Items' },
+        { value: '11', icon: 'item-i-11-5 icon-medium-size', label: 'Reinforcements' },
+        { value: '12', icon: 'item-i-12-17 icon-medium-size', label: 'Upgrades' },
+        { value: '15', icon: 'item-i-15-5 icon-medium-size', label: 'Mercenary' },
+        { value: '13', icon: 'item-i-13-2 icon-medium-size', label: 'Recipes' },
+        { value: '18', icon: 'item-i-18-4 icon-medium-size', label: 'Forging goods' },
+        { value: '19', icon: 'item-i-19-11 icon-medium-size', label: 'Tools' },
+        { value: '20', icon: 'item-i-20-13 icon-medium-size', label: 'Scroll' },
+        { value: '12-2', icon: 'item-i-12-2 icon-medium-size', label: 'Grindstone' },
+        { value: '12-1', icon: 'item-i-12-1 icon-medium-size', label: 'Small Grindstone' },
+        { value: '12-4', icon: 'item-i-12-4 icon-medium-size', label: 'Protective Gear' },
+        { value: '12-3', icon: 'item-i-12-3 icon-medium-size', label: 'Shred of leather' },
+        { value: '12-22', icon: 'item-i-12-22 icon-medium-size', label: 'Damage Oil' },
+        { value: '12-20', icon: 'item-i-12-20 icon-medium-size', label: 'Armour Oil' },
+        { value: '12-19', icon: 'item-i-12-19 icon-medium-size', label: 'Dexterity Oil' },
+        { value: '12-21', icon: 'item-i-12-21 icon-medium-size', label: 'Agility Oil' },
+        { value: '12-18', icon: 'item-i-12-18 icon-medium-size', label: 'Charisma Oil' },
+        { value: '12-23', icon: 'item-i-12-23 icon-medium-size', label: 'Intelligence Oil' },
+        { value: '12-8', icon: 'item-i-12-8 icon-medium-size', label: 'Yellow powder' },
+        { value: '12-10', icon: 'item-i-12-10 icon-medium-size', label: 'Green powder' },
+        { value: '12-6', icon: 'item-i-12-6 icon-medium-size', label: 'Blue powder' },
+        { value: '12-17', icon: 'item-i-12-17 icon-medium-size', label: 'Red powder' },
+        { value: '12-12', icon: 'item-i-12-12 icon-medium-size', label: 'Orange powder' },
+        { value: '12-14', icon: 'item-i-12-14 icon-medium-size', label: 'Violet powder' },
+        { value: '12-7', icon: 'item-i-12-7 icon-medium-size', label: 'Yellow dust' },
+        { value: '12-9', icon: 'item-i-12-9 icon-medium-size', label: 'Green dust' },
+        { value: '12-5', icon: 'item-i-12-5 icon-medium-size', label: 'Blue dust' },
+        { value: '12-16', icon: 'item-i-12-16 icon-medium-size', label: 'Red dust' },
+        { value: '12-11', icon: 'item-i-12-11 icon-medium-size', label: 'Orange dust' },
+        { value: '12-13', icon: 'item-i-12-13 icon-medium-size', label: 'Violet dust' },
+        { value: '7-23', icon: 'item-i-7-23 icon-medium-size', label: '+1 dungeon point' },
+        { value: '7-24', icon: 'item-i-7-24 icon-medium-size', label: '+1 expedition point' },
+        { value: '7-25', icon: 'item-i-7-25 icon-medium-size', label: 'Skip dungeon cooldown' },
+        { value: '7-26', icon: 'item-i-7-26 icon-medium-size', label: 'Skip expedition cooldown' },
+        { value: '7-27', icon: 'item-i-7-27 icon-medium-size', label: '+4 hours stable boy wages' },
+        { value: '7-29', icon: 'item-i-7-29 icon-medium-size', label: '+1 ruby' },
+        { value: '7-31', icon: 'item-i-7-31 icon-medium-size', label: 'Skip quest cooldown' },
+    ];
+    const ITEM_QUALITIES = [
+        { value: '-1', label: 'White', color: 'white' },
+        { value: '0', label: 'Green', color: 'green' },
+        { value: '1', label: 'Blue', color: 'blue' },
+        { value: '2', label: 'Purple', color: 'purple' },
+        { value: '3', label: 'Orange', color: 'orange' },
+        { value: '4', label: 'Red', color: 'red' },
+    ];
     const SHOP_PAGES = [
         { sub: 1, subsub: 2 },
         { sub: 2, subsub: 2 },
@@ -267,10 +327,148 @@
         return {
             element: packageItem,
             containerId: String(containerId).replace(/^-/, ''),
+            itemType,
+            basis,
+            quality: item.dataset.quality || '0',
             amount: parseInt(item.dataset.amount || '1', 10) || 1,
             width: parseInt(item.dataset.measurementX || '1', 10) || 1,
             height: parseInt(item.dataset.measurementY || '1', 10) || 1,
         };
+    }
+
+    function getStoredFilterValues(key, fallback) {
+        const savedValue = localStorage.getItem(key);
+        if (!savedValue) {
+            return fallback.slice();
+        }
+
+        try {
+            const parsedValue = JSON.parse(savedValue);
+            if (Array.isArray(parsedValue)) {
+                return parsedValue.map(String);
+            }
+        } catch (error) {
+            return savedValue.split(',').map(function (value) {
+                return value.trim();
+            }).filter(Boolean);
+        }
+
+        return fallback.slice();
+    }
+
+    function setStoredFilterValues(key, values) {
+        localStorage.setItem(key, JSON.stringify(values));
+    }
+
+    function getSellFilters() {
+        return {
+            itemTypes: getStoredFilterValues(SELL_FILTER_STORAGE.itemTypes, ITEM_TYPES.map(function (type) {
+                return type.value;
+            })),
+            itemQualities: getStoredFilterValues(SELL_FILTER_STORAGE.itemQualities, ITEM_QUALITIES.map(function (quality) {
+                return quality.value;
+            })),
+        };
+    }
+
+    function packageItemMatchesSellFilters(item, filters) {
+        return (filters.itemTypes.includes(item.itemType) || filters.itemTypes.includes(item.basis)) &&
+            filters.itemQualities.includes(item.quality);
+    }
+
+    function getPackageFilterParams() {
+        const query = getQuery();
+        const filterForm = document.getElementById('pf');
+        const formData = filterForm ? new FormData(filterForm) : null;
+
+        return {
+            f: formData && formData.get('f') !== null ? formData.get('f') : (query.get('f') || '0'),
+            fq: formData && formData.get('fq') !== null ? formData.get('fq') : (query.get('fq') || '-1'),
+            qry: formData && formData.get('qry') !== null ? formData.get('qry') : (query.get('qry') || ''),
+        };
+    }
+
+    function getPackagePageNumbers() {
+        const pages = Array.from(document.querySelectorAll('.pagination .paging_numbers a, .pagination .paging_numbers_current'))
+            .map(function (page) {
+                return parseInt(page.textContent.trim(), 10);
+            })
+            .filter(function (page) {
+                return !Number.isNaN(page) && page > 0;
+            });
+
+        Array.from(document.querySelectorAll('.pagination a[href*="page="]')).forEach(function (link) {
+            const matches = link.getAttribute('href').match(/(?:[?&])page=(\d+)/g) || [];
+            matches.forEach(function (match) {
+                const page = parseInt(match.replace(/^\D+/, ''), 10);
+                if (!Number.isNaN(page) && page > 0) {
+                    pages.push(page);
+                }
+            });
+        });
+
+        const maxPage = pages.length ? Math.max.apply(null, pages) : 1;
+        const pageNumbers = [];
+        for (let page = 1; page <= maxPage; page++) {
+            pageNumbers.push(page);
+        }
+
+        return pageNumbers;
+    }
+
+    function getCurrentPackagePage() {
+        const currentPage = document.querySelector('.pagination .paging_numbers_current');
+        if (currentPage) {
+            const page = parseInt(currentPage.textContent.trim(), 10);
+            if (!Number.isNaN(page) && page > 0) {
+                return page;
+            }
+        }
+
+        return parseInt(getQuery().get('page') || '1', 10);
+    }
+
+    async function getPackageItemsFromPage(page, filters) {
+        const currentPage = getCurrentPackagePage();
+        let doc = document;
+
+        if (page !== currentPage) {
+            setStatus(`Dang tai package page ${page}...`);
+            const html = await gameGet('index.php', Object.assign({
+                mod: 'packages',
+                page,
+            }, getPackageFilterParams()));
+            doc = parseHtml(html);
+        }
+
+        return Array.from(doc.querySelectorAll('#packages .packageItem'))
+            .map(getPackageItemData)
+            .filter(Boolean)
+            .filter(function (item) {
+                return packageItemMatchesSellFilters(item, filters);
+            })
+            .map(function (item) {
+                item.page = page;
+                return item;
+            });
+    }
+
+    async function getFilteredPackageItems(filters) {
+        const pages = getPackagePageNumbers();
+        const items = [];
+
+        for (const page of pages) {
+            if (shouldStop) {
+                break;
+            }
+
+            const pageItems = await getPackageItemsFromPage(page, filters);
+            items.push.apply(items, pageItems);
+        }
+
+        return items.sort(function (left, right) {
+            return (left.width * left.height) - (right.width * right.height);
+        });
     }
 
     function setStatus(text) {
@@ -463,6 +661,7 @@
                 return {
                     containerId: shopMap.containerId,
                     spot,
+                    grid: shopMap.grid,
                 };
             }
         }
@@ -505,24 +704,21 @@
             return;
         }
 
-        const items = Array.from(document.querySelectorAll('#packages .packageItem'))
-            .map(getPackageItemData)
-            .filter(Boolean)
-            .sort(function (left, right) {
-                return (left.width * left.height) - (right.width * right.height);
-            });
-
-        if (!items.length) {
-            setStatus('Khong co item de ban.');
-            return;
-        }
-
         if (!getSecureHash()) {
             setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.');
             return;
         }
 
-        if (!confirm(`Ban ${items.length} item dang hien thi vao shop?`)) {
+        const filters = getSellFilters();
+        setStatus('Dang quet cac page packages...');
+        const items = await getFilteredPackageItems(filters);
+
+        if (!items.length) {
+            setStatus('Khong co item khop filter de ban.');
+            return;
+        }
+
+        if (!confirm(`Ban ${items.length} item khop filter trong tat ca page packages vao shop?`)) {
             return;
         }
 
@@ -584,6 +780,7 @@
                 }
 
                 updateGold(soldResult.header);
+                markGrid(shop.grid, shop.spot.x, shop.spot.y, item.width, item.height, true);
                 item.element.remove();
                 sold++;
             }
@@ -601,6 +798,141 @@
                 setStatus(finalStatus || `Da ban ${sold}/${items.length} item, bo qua ${skipped}.`);
             }
         }
+    }
+
+    function createFilterLabel(text) {
+        const label = document.createElement('div');
+        label.className = 'tdm-sell-shop-filter-label';
+        label.textContent = text;
+        return label;
+    }
+
+    function toggleFilterValue(values, value) {
+        const index = values.indexOf(value);
+        if (index > -1) {
+            values.splice(index, 1);
+        } else {
+            values.push(value);
+        }
+    }
+
+    function createFilterActions(container, values, storageKey, allValues, rerender) {
+        const selectAll = document.createElement('a');
+        selectAll.href = 'javascript:void(0)';
+        selectAll.textContent = 'Select All';
+        selectAll.addEventListener('click', function () {
+            values.length = 0;
+            allValues.forEach(function (value) {
+                values.push(value);
+            });
+            setStoredFilterValues(storageKey, values);
+            rerender();
+        });
+
+        const clearAll = document.createElement('a');
+        clearAll.href = 'javascript:void(0)';
+        clearAll.textContent = 'Clear All';
+        clearAll.addEventListener('click', function () {
+            values.length = 0;
+            setStoredFilterValues(storageKey, values);
+            rerender();
+        });
+
+        container.appendChild(selectAll);
+        container.appendChild(document.createTextNode(' - '));
+        container.appendChild(clearAll);
+    }
+
+    function addSellFilters(actions) {
+        const existingFilters = document.getElementById('tdm-sell-shop-filters');
+        if (existingFilters) {
+            existingFilters.remove();
+        }
+
+        const filters = getSellFilters();
+        const filterBox = document.createElement('div');
+        filterBox.id = 'tdm-sell-shop-filters';
+
+        const typeRow = document.createElement('div');
+        typeRow.className = 'tdm-sell-shop-filter-row';
+        typeRow.appendChild(createFilterLabel('Item types'));
+        const typeList = document.createElement('div');
+        typeList.className = 'tdm-sell-shop-filter-list';
+
+        ITEM_TYPES.forEach(function (type) {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'tdm-sell-shop-filter-chip';
+            chip.title = type.label;
+            chip.setAttribute('aria-label', type.label);
+
+            if (filters.itemTypes.includes(type.value)) {
+                chip.classList.add('active');
+            }
+
+            const icon = document.createElement('i');
+            icon.className = `${type.icon} tdm-sell-shop-filter-icon`;
+            chip.appendChild(icon);
+            chip.addEventListener('click', function () {
+                toggleFilterValue(filters.itemTypes, type.value);
+                setStoredFilterValues(SELL_FILTER_STORAGE.itemTypes, filters.itemTypes);
+                addSellFilters(actions);
+            });
+            typeList.appendChild(chip);
+        });
+
+        const typeActions = document.createElement('span');
+        typeActions.className = 'tdm-sell-shop-filter-actions';
+        createFilterActions(typeActions, filters.itemTypes, SELL_FILTER_STORAGE.itemTypes, ITEM_TYPES.map(function (type) {
+            return type.value;
+        }), function () {
+            addSellFilters(actions);
+        });
+        typeList.appendChild(typeActions);
+        typeRow.appendChild(typeList);
+        filterBox.appendChild(typeRow);
+
+        const qualityRow = document.createElement('div');
+        qualityRow.className = 'tdm-sell-shop-filter-row';
+        qualityRow.appendChild(createFilterLabel('Item qualities'));
+        const qualityList = document.createElement('div');
+        qualityList.className = 'tdm-sell-shop-filter-list';
+
+        ITEM_QUALITIES.forEach(function (quality) {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'tdm-sell-shop-quality-chip';
+            chip.title = quality.label;
+            chip.setAttribute('aria-label', quality.label);
+
+            if (filters.itemQualities.includes(quality.value)) {
+                chip.classList.add('active');
+            }
+
+            const swatch = document.createElement('span');
+            swatch.className = 'tdm-sell-shop-quality-swatch';
+            swatch.style.backgroundColor = quality.color;
+            chip.appendChild(swatch);
+            chip.addEventListener('click', function () {
+                toggleFilterValue(filters.itemQualities, quality.value);
+                setStoredFilterValues(SELL_FILTER_STORAGE.itemQualities, filters.itemQualities);
+                addSellFilters(actions);
+            });
+            qualityList.appendChild(chip);
+        });
+
+        const qualityActions = document.createElement('span');
+        qualityActions.className = 'tdm-sell-shop-filter-actions';
+        createFilterActions(qualityActions, filters.itemQualities, SELL_FILTER_STORAGE.itemQualities, ITEM_QUALITIES.map(function (quality) {
+            return quality.value;
+        }), function () {
+            addSellFilters(actions);
+        });
+        qualityList.appendChild(qualityActions);
+        qualityRow.appendChild(qualityList);
+        filterBox.appendChild(qualityRow);
+
+        actions.parentNode.insertBefore(filterBox, actions);
     }
 
     function addButton() {
@@ -627,6 +959,7 @@
 
         actions.appendChild(button);
         packages.parentNode.insertBefore(actions, packages);
+        addSellFilters(actions);
     }
 
     addButton();
