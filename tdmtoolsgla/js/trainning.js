@@ -20,8 +20,9 @@ const trainingData = {
 };
 
 const enableTrainning = 0;
+const autoGoActive = sessionStorage.getItem('autoGoActive') === 'true';
 
-if (enableTrainning == 1) {
+if (autoGoActive && enableTrainning == 1) {
     console.log('Trainning co hoat dong');
 
     if (trainingData.goldValueElement) {

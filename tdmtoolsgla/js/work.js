@@ -3,7 +3,7 @@ const workBlacksmith = document.querySelector('#job_row_7');
 const workTime = document.querySelector('#workTime');
 const workDoWork = document.querySelector('#doWork');
 const enableWork = 0;
-const shouldEnableWork = enableWork === 1 ? true : false;
+const shouldEnableWork = sessionStorage.getItem('autoGoActive') === 'true' && enableWork === 1 ? true : false;
 
 if (shouldEnableWork) {
     console.log('Work co hoat dong');

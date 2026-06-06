@@ -1,7 +1,9 @@
 const enableSearchItem = 1;
 const shouldEnableSearchItem = enableSearchItem === 1 ? true : false;
 
-if (shouldEnableSearchItem) {
+if (sessionStorage.getItem('autoGoActive') !== 'true') {
+    console.log('SearchItem khong chay vi Auto GO dang tat');
+} else if (shouldEnableSearchItem) {
     console.log('SearchItem co hoat dong');
 
     const searchType = {

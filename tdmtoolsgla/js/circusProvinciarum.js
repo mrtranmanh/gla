@@ -1,4 +1,4 @@
-if (window.location.href.includes("mod=arena") && window.location.href.includes("submod=serverArena")) {
+if (sessionStorage.getItem('autoGoActive') === 'true' && window.location.href.includes("mod=arena") && window.location.href.includes("submod=serverArena")) {
     // Mục tiêu cần quan sát
     const targetNode = document.body;
 

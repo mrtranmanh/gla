@@ -19,6 +19,7 @@
     ];
 
     let auctionStatusTimer = null;
+    let auctionBuyingStarted = false;
 
     function isEnabled(key, defaultValue) {
         const savedValue = localStorage.getItem(key);
@@ -132,8 +133,8 @@
         const statusBar = document.createElement('div');
         statusBar.id = 'tdm-auction-status-bar';
         statusBar.innerHTML = [
-            '<a id="tdm-auction-status-gladiator" class="tdm-auction-status-item" href="' + buildGameUrl({ mod: 'auction', itemLevel: '999', itemQuality: '2' }) + '">Gladiator: ...</a>',
-            '<a id="tdm-auction-status-mercenary" class="tdm-auction-status-item" href="' + buildGameUrl({ mod: 'auction', ttype: '3', itemLevel: '999', itemQuality: '2' }) + '">Mercenary: ...</a>'
+            '<a id="tdm-auction-status-gladiator" class="tdm-auction-status-item" href="' + buildGameUrl({ mod: 'auction', itemQuality: '-1' }) + '">Gladiator: ...</a>',
+            '<a id="tdm-auction-status-mercenary" class="tdm-auction-status-item" href="' + buildGameUrl({ mod: 'auction', ttype: '3', itemQuality: '-1' }) + '">Mercenary: ...</a>'
         ].join('');
         header.appendChild(statusBar);
 
@@ -149,8 +150,8 @@
     }
 
     function updateAuctionStatus() {
-        fetchAuctionStatus('gladiator', { mod: 'auction', itemLevel: '999', itemQuality: '2' });
-        fetchAuctionStatus('mercenary', { mod: 'auction', ttype: '3', itemLevel: '999', itemQuality: '2' });
+        fetchAuctionStatus('gladiator', { mod: 'auction', itemQuality: '-1' });
+        fetchAuctionStatus('mercenary', { mod: 'auction', ttype: '3', itemQuality: '-1' });
     }
 
     function fetchAuctionStatus(type, params) {
@@ -164,10 +165,73 @@
             .then(function (html) {
                 const status = parseAuctionStatus(html);
                 statusNode.textContent = status.label + ': ' + status.value;
+                startAuctionBuyingIfReady(type, status.value);
             })
             .catch(function () {
                 statusNode.textContent = typeLabel(type) + ': error';
             });
+    }
+
+    function startAuctionBuyingIfReady(type, status) {
+        if (auctionBuyingStarted || !isEnabled('auctionEnabled', true) || isAuctionPage()) {
+            return;
+        }
+
+        if (getCurrentGold() <= 0 || getCurrentGold() < getAuctionMinGold()) {
+            return;
+        }
+
+        if (!getAuctionBuyStatuses().includes(String(status || '').trim().toLowerCase())) {
+            return;
+        }
+
+        auctionBuyingStarted = true;
+        window.location.href = buildAuctionAmuletsUrl(type);
+    }
+
+    function getCurrentGold() {
+        const goldValueElement = document.getElementById('sstat_gold_val');
+        return Number(String(goldValueElement ? goldValueElement.textContent : '').replace(/[^\d]/g, '')) || 0;
+    }
+
+    function getAuctionMinGold() {
+        return Number(String(localStorage.getItem('tdmAuctionMinGold') || '').replace(/[^\d]/g, '')) || 0;
+    }
+
+    function isAuctionPage() {
+        const url = new URL(window.location.href);
+        return url.searchParams.get('mod') === 'auction';
+    }
+
+    function getAuctionBuyStatuses() {
+        const defaultStatuses = ['short', 'very short'];
+
+        try {
+            const savedStatuses = JSON.parse(localStorage.getItem('tdmAuctionBuyStatuses'));
+            if (Array.isArray(savedStatuses)) {
+                return savedStatuses.map(function (status) {
+                    return String(status).trim().toLowerCase();
+                });
+            }
+        } catch (error) {
+            return defaultStatuses;
+        }
+
+        return defaultStatuses;
+    }
+
+    function buildAuctionAmuletsUrl(type) {
+        const params = {
+            mod: 'auction',
+            itemType: '9',
+            itemQuality: '-1'
+        };
+
+        if (type === 'mercenary') {
+            params.ttype = '3';
+        }
+
+        return buildGameUrl(params);
     }
 
     function parseAuctionStatus(html) {

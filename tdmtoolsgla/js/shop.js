@@ -28,6 +28,7 @@
         { value: '12', icon: 'item-i-12-17 icon-medium-size', label: 'Upgrades' },
         { value: '15', icon: 'item-i-15-5 icon-medium-size', label: 'Mercenary' },
         { value: '13', icon: 'item-i-13-2 icon-medium-size', label: 'Recipes' },
+        { value: '14', icon: 'item-i-14-1 icon-medium-size', label: 'Gold' },
         { value: '18', icon: 'item-i-18-4 icon-medium-size', label: 'Forging goods' },
         { value: '19', icon: 'item-i-19-11 icon-medium-size', label: 'Tools' },
         { value: '20', icon: 'item-i-20-13 icon-medium-size', label: 'Scroll' },
@@ -313,10 +314,6 @@
         const contentType = item.dataset.contentType || '';
         const itemType = basis.split('-')[0] || contentType;
 
-        if (itemType === '14') {
-            return null;
-        }
-
         const inputContainerId = input && input.value;
         const dataContainerId = item.dataset.containerNumber || packageItem.dataset.containerNumber;
         const containerId = inputContainerId || dataContainerId;
@@ -332,8 +329,9 @@
             basis,
             quality: item.dataset.quality || '0',
             amount: parseInt(item.dataset.amount || '1', 10) || 1,
-            width: parseInt(item.dataset.measurementX || '1', 10) || 1,
-            height: parseInt(item.dataset.measurementY || '1', 10) || 1,
+            priceGold: parseGoldValue(item.dataset.priceGold || '0'),
+            width: itemType === '14' ? 1 : parseInt(item.dataset.measurementX || '1', 10) || 1,
+            height: itemType === '14' ? 1 : parseInt(item.dataset.measurementY || '1', 10) || 1,
         };
     }
 
@@ -429,8 +427,16 @@
     }
 
     function packageItemMatchesSellFilters(item, filters) {
+        if (item.itemType === '14') {
+            return false;
+        }
+
         return (filters.itemTypes.includes(item.itemType) || filters.itemTypes.includes(item.basis)) &&
             filters.itemQualities.includes(item.quality);
+    }
+
+    function packageItemIsGold(item) {
+        return item.itemType === '14';
     }
 
     function getPackageFilterParams() {
@@ -445,8 +451,9 @@
         };
     }
 
-    function getPackagePageNumbers() {
-        const pages = Array.from(document.querySelectorAll('.pagination .paging_numbers a, .pagination .paging_numbers_current'))
+    function getPackagePageNumbers(root) {
+        const pageRoot = root || document;
+        const pages = Array.from(pageRoot.querySelectorAll('.pagination .paging_numbers a, .pagination .paging_numbers_current'))
             .map(function (page) {
                 return parseInt(page.textContent.trim(), 10);
             })
@@ -454,7 +461,7 @@
                 return !Number.isNaN(page) && page > 0;
             });
 
-        Array.from(document.querySelectorAll('.pagination a[href*="page="]')).forEach(function (link) {
+        Array.from(pageRoot.querySelectorAll('.pagination a[href*="page="]')).forEach(function (link) {
             const matches = link.getAttribute('href').match(/(?:[?&])page=(\d+)/g) || [];
             matches.forEach(function (match) {
                 const page = parseInt(match.replace(/^\D+/, ''), 10);
@@ -525,6 +532,54 @@
 
         return items.sort(function (left, right) {
             return (left.width * left.height) - (right.width * right.height);
+        });
+    }
+
+    async function getGoldPackageItems() {
+        const goldFilterParams = {
+            f: '14',
+            fq: '-1',
+            qry: '',
+        };
+        setStatus('Dang tai package gold page 1...');
+        const firstPageHtml = await gameGet('index.php', Object.assign({
+            mod: 'packages',
+            page: 1,
+        }, goldFilterParams));
+        const firstPageDoc = parseHtml(firstPageHtml);
+        const pages = getPackagePageNumbers(firstPageDoc);
+        const items = [];
+
+        for (const page of pages) {
+            if (shouldStop) {
+                break;
+            }
+
+            let doc = page === 1 ? firstPageDoc : document;
+
+            if (page !== 1) {
+                setStatus(`Dang tai package page ${page} de lay gold...`);
+                const html = await gameGet('index.php', Object.assign({
+                    mod: 'packages',
+                    page,
+                }, goldFilterParams));
+                doc = parseHtml(html);
+            }
+
+            const pageItems = Array.from(doc.querySelectorAll('#packages .packageItem'))
+                .map(getPackageItemData)
+                .filter(Boolean)
+                .filter(packageItemIsGold)
+                .map(function (item) {
+                    item.page = page;
+                    return item;
+                });
+
+            items.push.apply(items, pageItems);
+        }
+
+        return items.sort(function (left, right) {
+            return left.priceGold - right.priceGold;
         });
     }
 
@@ -748,6 +803,23 @@
         });
     }
 
+    async function moveGoldPackageToInventory(item) {
+        const inventory = await getInventorySpot(1, 1);
+        const fallbackBag = getAvailableInventoryBags()[0] || FALLBACK_INVENTORY_BAGS[0];
+
+        return gameMove({
+            mod: 'inventory',
+            submod: 'move',
+            from: `-${item.containerId}`,
+            fromX: 1,
+            fromY: 1,
+            to: inventory ? inventory.bag : fallbackBag,
+            toX: inventory ? inventory.spot.x + 1 : 1,
+            toY: inventory ? inventory.spot.y + 1 : 1,
+            amount: item.amount,
+        });
+    }
+
     async function moveInventoryToShop(item, inventory, shop) {
         return gameMove({
             mod: 'inventory',
@@ -884,6 +956,74 @@
             } else {
                 setStatus(finalStatus || `Da ban ${sold}/${items.length} item, bo qua ${skipped}.`);
             }
+        }
+    }
+
+    async function pickGoldPackages(button) {
+        if (isSelling) {
+            shouldStop = true;
+            setStatus('Dang dung...');
+            return;
+        }
+
+        if (!getSecureHash()) {
+            setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.');
+            return;
+        }
+
+        setStatus('Dang quet gold trong packages...');
+        const items = await getGoldPackageItems();
+
+        if (!items.length) {
+            setStatus('Khong co gold trong packages.');
+            return;
+        }
+
+        const totalGold = items.reduce(function (total, item) {
+            return total + item.priceGold;
+        }, 0);
+
+        if (!confirm(`Lay ${items.length} goi gold trong packages?${totalGold > 0 ? ` Tong khoang ${formatGoldValue(totalGold)} gold.` : ''}`)) {
+            return;
+        }
+
+        isSelling = true;
+        shouldStop = false;
+        button.textContent = 'Stop pick gold';
+
+        let picked = 0;
+        let finalStatus = '';
+
+        try {
+            for (let index = 0; index < items.length; index++) {
+                if (shouldStop) {
+                    break;
+                }
+
+                const item = items[index];
+                setStatus(`Dang lay gold ${index + 1}/${items.length}...`);
+
+                const moved = await moveGoldPackageToInventory(item);
+                if (!moved || moved.error) {
+                    console.warn('TDM pick gold: move package failed', moved);
+                    finalStatus = `Loi lay gold: ${describeApiError(moved)}`;
+                    setStatus(finalStatus);
+                    continue;
+                }
+
+                updateGold(moved.header);
+                item.element.remove();
+                picked++;
+            }
+        } catch (error) {
+            console.error('TDM pick gold failed', error);
+            finalStatus = `Loi: ${error.message || error}`;
+            setStatus(finalStatus);
+        } finally {
+            isSelling = false;
+            shouldStop = false;
+            button.textContent = 'Pick gold';
+            setStatus(finalStatus || `Da lay ${picked}/${items.length} goi gold.`);
         }
     }
 
@@ -1065,7 +1205,16 @@
             sellVisiblePackages(button);
         });
 
+        const pickGoldButton = document.createElement('button');
+        pickGoldButton.type = 'button';
+        pickGoldButton.className = 'awesome-button';
+        pickGoldButton.textContent = 'Pick gold';
+        pickGoldButton.addEventListener('click', function () {
+            pickGoldPackages(pickGoldButton);
+        });
+
         actions.appendChild(button);
+        actions.appendChild(pickGoldButton);
         packages.parentNode.insertBefore(actions, packages);
         addSellFilters(actions);
     }

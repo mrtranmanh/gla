@@ -1,4 +1,9 @@
 function heal() {
+    if (sessionStorage.getItem('autoGoActive') !== 'true') {
+        console.log('Heal khong chay vi Auto GO dang tat');
+        return;
+    }
+
     const enableHeal = localStorage.getItem('healEnabled') === null ? true : localStorage.getItem('healEnabled') === "true";
     const savedUnderHP = Number(localStorage.getItem('healUnderHP'));
     const underHP = Number.isNaN(savedUnderHP) || savedUnderHP < 1 ? 40 : Math.min(100, savedUnderHP);

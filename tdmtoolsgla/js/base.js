@@ -170,6 +170,34 @@
     if (localStorage.getItem('auctionEnabled')) {
         auctionEnabled = localStorage.getItem('auctionEnabled') === "true" ? true : false;
     };
+    let auctionMinGold = parseGoldValue(localStorage.getItem('tdmAuctionMinGold'));
+    const auctionStatusOptions = [
+        { key: 'very short', label: 'Very short' },
+        { key: 'short', label: 'Short' },
+        { key: 'middle', label: 'Middle' },
+        { key: 'long', label: 'Long' },
+        { key: 'very long', label: 'Very long' }
+    ];
+    const defaultAuctionBuyStatuses = ['short', 'very short'];
+    let auctionBuyStatuses = defaultAuctionBuyStatuses.slice();
+    if (localStorage.getItem('tdmAuctionBuyStatuses')) {
+        try {
+            const savedAuctionBuyStatuses = JSON.parse(localStorage.getItem('tdmAuctionBuyStatuses'));
+            if (Array.isArray(savedAuctionBuyStatuses)) {
+                auctionBuyStatuses = savedAuctionBuyStatuses
+                    .map(function (status) { return String(status).trim().toLowerCase(); })
+                    .filter(function (status, index, statuses) {
+                        if (statuses.indexOf(status) !== index) {
+                            return false;
+                        }
+
+                        return auctionStatusOptions.some(function (option) { return option.key === status; });
+                    });
+            }
+        } catch (error) {
+            auctionBuyStatuses = defaultAuctionBuyStatuses.slice();
+        }
+    };
 
     // GCA UI features
 
@@ -188,7 +216,7 @@
         { key: 'dungeon', label: 'Dungeon' },
         { key: 'quests', label: 'Quests' }
     ];
-    const defaultShortcutButtons = ['overview', 'packages', 'auction', 'market', 'training', 'forge', 'smeltery', 'messages'];
+    const defaultShortcutButtons = ['overview', 'packages', 'auction', 'guildMarket', 'training', 'forge', 'smeltery', 'guildBankingHouse', 'messages'];
 
     let shortcutsBarEnabled = true;
     if (localStorage.getItem('tdmShortcutsBarEnabled')) {
@@ -259,6 +287,8 @@
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
         auctionStatusBar: 'Auction Status Bar',
+        auctionBuyStatuses: 'Buy statuses',
+        auctionMinGold: 'Minimum gold',
         gcaUi: 'GCA UI',
         soon: 'Soon...',
         type: 'Type',
@@ -296,6 +326,8 @@
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
         auctionStatusBar: 'Auction Status Bar',
+        auctionBuyStatuses: 'Buy statuses',
+        auctionMinGold: 'Minimum gold',
         gcaUi: 'GCA UI',
         soon: 'Wkrótce...',
         type: 'Rodzaj',
@@ -333,6 +365,8 @@
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
         auctionStatusBar: 'Auction Status Bar',
+        auctionBuyStatuses: 'Buy statuses',
+        auctionMinGold: 'Minimum gold',
         gcaUi: 'GCA UI',
         soon: 'Próximamente...',
         type: 'Tipo',
@@ -557,10 +591,20 @@
                             <div id="do_auction_true" class="settingsButton">${content.yes}</div>
                             <div id="do_auction_false" class="settingsButton">${content.no}</div>
                         </div>
+                        <div class="settingsHeaderSmall">${content.auctionMinGold}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_auction_min_gold" class="settingsInput" type="text" placeholder="10k" value="${auctionMinGold > 0 ? formatGoldValue(auctionMinGold) : ''}">
+                        </div>
                         <div class="settingsHeaderSmall">${content.auctionStatusBar}</div>
                         <div class="settingsSubcontent">
                             <div id="do_auction_status_bar_true" class="settingsButton">${content.yes}</div>
                             <div id="do_auction_status_bar_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.auctionBuyStatuses}</div>
+                        <div class="settingsSubcontent auction-status-settings-list">
+                            ${auctionStatusOptions.map(function (option) {
+                                return `<div id="set_auction_buy_status_${option.key.replace(/\s/g, '_')}" class="settingsButton auction-status-setting-button">${option.label}</div>`;
+                            }).join('')}
                         </div>
                     </div>
 
@@ -803,6 +847,37 @@
         $("#do_auction_true").click(function () { setAuctionEnabled(true) });
         $("#do_auction_false").click(function () { setAuctionEnabled(false) });
 
+        function setAuctionMinGold(value) {
+            auctionMinGold = parseGoldValue(value);
+
+            if (auctionMinGold > 0) {
+                localStorage.setItem('tdmAuctionMinGold', String(auctionMinGold));
+            } else {
+                localStorage.removeItem('tdmAuctionMinGold');
+            }
+
+            reloadSettings();
+        };
+
+        $("#set_auction_min_gold").change(function () { setAuctionMinGold(this.value) });
+
+        function setAuctionBuyStatus(status) {
+            if (auctionBuyStatuses.includes(status)) {
+                auctionBuyStatuses = auctionBuyStatuses.filter(function (savedStatus) {
+                    return savedStatus !== status;
+                });
+            } else {
+                auctionBuyStatuses.push(status);
+            }
+
+            localStorage.setItem('tdmAuctionBuyStatuses', JSON.stringify(auctionBuyStatuses));
+            reloadSettings();
+        };
+
+        auctionStatusOptions.forEach(function (option) {
+            $(`#set_auction_buy_status_${option.key.replace(/\s/g, '_')}`).click(function () { setAuctionBuyStatus(option.key) });
+        });
+
         function notifyGcaFeaturesChanged() {
             window.dispatchEvent(new CustomEvent('tdmGcaFeaturesChanged'));
         };
@@ -904,6 +979,9 @@
             $('#auction_settings').addClass((auctionEnabled || auctionStatusBarEnabled) ? 'active' : 'inactive');
             $(`#do_auction_${auctionEnabled}`).addClass('active');
             $(`#do_auction_status_bar_${auctionStatusBarEnabled}`).addClass('active');
+            auctionBuyStatuses.forEach(function (status) {
+                $(`#set_auction_buy_status_${status.replace(/\s/g, '_')}`).addClass('active');
+            });
 
             $('#gca_ui_settings').addClass(shortcutsBarEnabled ? 'active' : 'inactive');
             $(`#do_shortcuts_bar_${shortcutsBarEnabled}`).addClass('active');
