@@ -41,7 +41,7 @@
         return;
     }
 
-    const auctionItems = document.querySelectorAll('#auction_table tr td');
+    const auctionItems = Array.from(document.querySelectorAll('#auction_table tr td')).reverse();
     let boughtItem = false;
 
     auctionItems.forEach(function (auctionItem) {
