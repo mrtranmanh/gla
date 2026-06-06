@@ -1,6 +1,8 @@
 function heal() {
-    const enableHeal = 1;
-    const underHP = 40;
+    const enableHeal = localStorage.getItem('healEnabled') === null ? true : localStorage.getItem('healEnabled') === "true";
+    const savedUnderHP = Number(localStorage.getItem('healUnderHP'));
+    const underHP = Number.isNaN(savedUnderHP) || savedUnderHP < 1 ? 40 : Math.min(100, savedUnderHP);
+    const healTabs = getHealTabs();
     
     const player = {
         level: Number(document.getElementById("header_values_level").textContent.trim()),
@@ -14,8 +16,8 @@ function heal() {
 
     const avatar = document.querySelector('#avatar .ui-droppable');
     
-    if (enableHeal === 1 && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
-        console.log('Heal đã được bật tại HP dưới: ' + underHP);
+    if (enableHeal && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
+        console.log('Heal đã được bật tại HP dưới: ' + underHP + ', tabs: ' + healTabs.join(', '));
     
         if (player.hp < underHP && !window.location.href.includes("mod=overview")) {
             mainMenu.overview.click();
@@ -31,48 +33,49 @@ function heal() {
             if (avatar) {
                 function Ka() {
                     const tabs = document.querySelectorAll('#inventory_nav .awesome-tabs');
-                    const itemTab1 = tabs[0]; // tab 1
-                    const itemTab4 = tabs[3]; // tab 4
-                    const itemTab5 = tabs[4]; // tab 5
-                    // const itemTab5 = tabs[2]; // tab 3
+                    const selectedTabs = healTabs
+                        .map(function (tab) {
+                            return {
+                                number: tab,
+                                element: tabs[tab - 1]
+                            };
+                        })
+                        .filter(function (tab) {
+                            return tab.element;
+                        });
 
                     const A = avatar.getBoundingClientRect();
                     const x = A.left;
                     const y = A.top;
 
-                    // Ưu tiên tab 5, rồi tab 4, sau đó tab 1
-                    itemTab5.click();
+                    if (!selectedTabs.length) {
+                        console.log('❌ Chưa chọn tab inventory để heal.');
+                        return;
+                    }
+
+                    tryHealFromTab(0, selectedTabs, x, y);
+                }
+
+                function tryHealFromTab(index, selectedTabs, x, y) {
+                    const selectedTab = selectedTabs[index];
+
+                    if (!selectedTab) {
+                        console.log('❌ Không có item ở các tab đã chọn.');
+                        return;
+                    }
+
+                    selectedTab.element.click();
 
                     setTimeout(() => {
                         let item = document.querySelector('#inv .ui-draggable.ui-droppable.ui-draggable-handle');
 
-                        if (!item) {
-                            console.log('❌ Không có item ở tab 5, chuyển sang tab 4');
-                            itemTab4.click();
-
-                            setTimeout(() => {
-                                item = document.querySelector('#inv .ui-draggable.ui-droppable.ui-draggable-handle');
-
-                                if (!item) {
-                                    console.log('❌ Không có item ở tab 4, chuyển sang tab 1');
-                                    itemTab1.click();
-
-                                    setTimeout(() => {
-                                        item = document.querySelector('#inv .ui-draggable.ui-droppable.ui-draggable-handle');
-
-                                        if (!item) {
-                                            console.log('❌ Không có item ở tab 1 luôn.');
-                                            return;
-                                        }
-                                        dragItemToAvatar(item, x, y);
-                                    }, 300);
-                                } else {
-                                    dragItemToAvatar(item, x, y);
-                                }
-                            }, 300);
-                        } else {
+                        if (item) {
                             dragItemToAvatar(item, x, y);
+                            return;
                         }
+
+                        console.log('❌ Không có item ở tab ' + selectedTab.number + ', chuyển tab tiếp theo');
+                        tryHealFromTab(index + 1, selectedTabs, x, y);
                     }, 300);
                 }
 
@@ -110,6 +113,30 @@ function heal() {
         }
     } else {
         console.log('Heal đang tắt');
+    }
+
+    function getHealTabs() {
+        if (!localStorage.getItem('healTabs')) {
+            return [5, 4, 1];
+        }
+
+        try {
+            const savedTabs = JSON.parse(localStorage.getItem('healTabs'));
+
+            if (!Array.isArray(savedTabs)) {
+                return [5, 4, 1];
+            }
+
+            return savedTabs
+                .map(function (tab) {
+                    return Number(tab);
+                })
+                .filter(function (tab, index, tabs) {
+                    return tab >= 1 && tab <= 5 && tabs.indexOf(tab) === index;
+                });
+        } catch (error) {
+            return [5, 4, 1];
+        }
     }
 }
 heal();

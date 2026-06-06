@@ -129,6 +129,37 @@
         };
     };
 
+    // Heal
+
+    let healEnabled = true;
+    if (localStorage.getItem('healEnabled')) {
+        healEnabled = localStorage.getItem('healEnabled') === "true" ? true : false;
+    };
+
+    let healUnderHP = 40;
+    if (localStorage.getItem('healUnderHP')) {
+        const savedHealUnderHP = Number(localStorage.getItem('healUnderHP'));
+        if (!Number.isNaN(savedHealUnderHP)) {
+            healUnderHP = Math.min(100, Math.max(1, savedHealUnderHP));
+        }
+    };
+
+    let healTabs = [5, 4, 1];
+    if (localStorage.getItem('healTabs')) {
+        try {
+            const savedHealTabs = JSON.parse(localStorage.getItem('healTabs'));
+            if (Array.isArray(savedHealTabs)) {
+                healTabs = savedHealTabs
+                    .map(function (tab) { return Number(tab); })
+                    .filter(function (tab, index, tabs) {
+                        return tab >= 1 && tab <= 5 && tabs.indexOf(tab) === index;
+                    });
+            }
+        } catch (error) {
+            healTabs = [5, 4, 1];
+        }
+    };
+
     /*****************
     *  Translations  *
     *****************/
@@ -141,6 +172,9 @@
         dungeon: 'Dungeon',
         eventExpedition: 'Event Expedition',
         expedition: 'Expedition',
+        heal: 'Auto Heal',
+        healHp: 'Use food under HP',
+        healTabs: 'Inventory Tabs',
         highest: 'Highest',
         in: 'In',
         lastUsed: "Last Used",
@@ -167,6 +201,9 @@
         dungeon: 'Lochy',
         eventExpedition: 'Wyprawa Eventowa',
         expedition: 'Wyprawa',
+        heal: 'Auto Heal',
+        healHp: 'Użyj jedzenia poniżej HP',
+        healTabs: 'Zakładki Ekwipunku',
         highest: 'Najwyższy',
         in: 'Za',
         lastUsed: "Ostatnio Używana",
@@ -193,6 +230,9 @@
         dungeon: 'Mazmorra',
         eventExpedition: 'Expedición de Evento',
         expedition: 'Expedición',
+        heal: 'Auto Heal',
+        healHp: 'Usar comida bajo HP',
+        healTabs: 'Pestañas de Inventario',
         highest: 'Más alto',
         in: 'En',
         lastUsed: "Último visitado",
@@ -391,6 +431,29 @@
                             <div id="set_event_monster_id_3" class="settingsButton">Boss</div>
                         </div>
                     </div>
+
+                    <div
+                        id="heal_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.heal}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_heal_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_heal_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.healHp}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_heal_under_hp" class="settingsInput" type="number" min="1" max="100" value="${healUnderHP}">
+                        </div>
+                        <div class="settingsHeaderSmall">${content.healTabs}</div>
+                        <div class="settingsSubcontent">
+                            <div id="set_heal_tab_1" class="settingsButton">1</div>
+                            <div id="set_heal_tab_2" class="settingsButton">2</div>
+                            <div id="set_heal_tab_3" class="settingsButton">3</div>
+                            <div id="set_heal_tab_4" class="settingsButton">4</div>
+                            <div id="set_heal_tab_5" class="settingsButton">5</div>
+                        </div>
+                    </div>
                 </div>`;
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
@@ -547,6 +610,43 @@
         $("#set_event_monster_id_2").click(function () { setEventMonster('2') });
         $("#set_event_monster_id_3").click(function () { setEventMonster('3') });
 
+        function setHealEnabled(bool) {
+            healEnabled = bool;
+            localStorage.setItem('healEnabled', bool);
+            reloadSettings();
+        };
+
+        $("#do_heal_true").click(function () { setHealEnabled(true) });
+        $("#do_heal_false").click(function () { setHealEnabled(false) });
+
+        function setHealUnderHP(value) {
+            const nextValue = Math.min(100, Math.max(1, Number(value) || 40));
+            healUnderHP = nextValue;
+            localStorage.setItem('healUnderHP', nextValue);
+            reloadSettings();
+        };
+
+        $("#set_heal_under_hp").change(function () { setHealUnderHP(this.value) });
+
+        function setHealTab(tab) {
+            if (healTabs.includes(tab)) {
+                healTabs = healTabs.filter(function (savedTab) {
+                    return savedTab !== tab;
+                });
+            } else {
+                healTabs.push(tab);
+            }
+
+            localStorage.setItem('healTabs', JSON.stringify(healTabs));
+            reloadSettings();
+        };
+
+        $("#set_heal_tab_1").click(function () { setHealTab(1) });
+        $("#set_heal_tab_2").click(function () { setHealTab(2) });
+        $("#set_heal_tab_3").click(function () { setHealTab(3) });
+        $("#set_heal_tab_4").click(function () { setHealTab(4) });
+        $("#set_heal_tab_5").click(function () { setHealTab(5) });
+
         function reloadSettings() {
             closeSettings();
             openSettings();
@@ -581,6 +681,12 @@
             $('#event_expedition_settings').addClass(doEventExpedition ? 'active' : 'inactive');
             $(`#do_event_expedition_${doEventExpedition}`).addClass('active');
             $(`#set_event_monster_id_${eventMonsterId}`).addClass('active');
+
+            $('#heal_settings').addClass(healEnabled ? 'active' : 'inactive');
+            $(`#do_heal_${healEnabled}`).addClass('active');
+            healTabs.forEach(function (tab) {
+                $(`#set_heal_tab_${tab}`).addClass('active');
+            });
         };
 
         setActiveButtons();
