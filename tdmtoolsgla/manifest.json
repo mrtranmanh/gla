@@ -27,6 +27,7 @@
                 "js/vendor/jquery.min.js",
                 "js/dungeon.js",
                 "js/base.js",
+                "js/gca_features.js",
                 "js/reloadpage.js",
                 "js/trainning.js",
                 "js/circusProvinciarum.js",

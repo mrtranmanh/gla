@@ -121,6 +121,29 @@
     text-align: center;
 }
 
+.settingsSubcontent.shortcut-settings-list
+{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    justify-content: normal;
+    gap: 5px;
+    padding: 0px 12px;
+}
+
+.shortcut-settings-list .shortcut-setting-button
+{
+    width: auto;
+    min-width: 0;
+    height: 23px;
+    margin: 0px;
+    padding: 0px 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .settings_box.active .settingsButton.active {
     border: solid 1px #44dc46;
     cursor: pointer;
@@ -213,6 +236,78 @@
 
 .quest-type.items.active {
     background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg');
+}
+
+#tdm-shortcuts-bar
+{
+    position: absolute;
+    z-index: 500;
+    top: 114px;
+    left: 500px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+    max-width: 460px;
+    min-height: 25px;
+}
+
+.tdm-shortcut-button
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    height: 24px;
+    box-sizing: border-box;
+    padding: 0px 7px;
+    border: 1px solid #6f4b20;
+    color: #f3d27a;
+    background: linear-gradient(to bottom, #59411f, #241407);
+    font: 700 11px Arial;
+    text-decoration: none;
+    text-align: center;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.tdm-shortcut-button:hover
+{
+    color: #fff5c4;
+    border-color: #d8b76c;
+    filter: brightness(1.15);
+}
+
+#tdm-auction-status-bar
+{
+    position: absolute;
+    z-index: 500;
+    top: 111px;
+    right: 75px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 270px;
+    padding: 4px 8px;
+    border: 1px solid #4b2b10;
+    background: rgba(26, 13, 4, 0.88);
+    box-shadow: 0 0 0 1px rgba(210, 161, 82, 0.5) inset;
+}
+
+.tdm-auction-status-item
+{
+    display: block;
+    color: #f3d27a;
+    font: 700 11px Arial;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tdm-auction-status-item:hover
+{
+    color: #fff5c4;
 }
 
 #tdm-sell-shop-filters

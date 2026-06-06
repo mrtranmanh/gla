@@ -171,6 +171,55 @@
         auctionEnabled = localStorage.getItem('auctionEnabled') === "true" ? true : false;
     };
 
+    // GCA UI features
+
+    const shortcutOptions = [
+        { key: 'overview', label: 'Overview' },
+        { key: 'packages', label: 'Packages' },
+        { key: 'auction', label: 'Auction' },
+        { key: 'guildMarket', label: 'Guild Market' },
+        { key: 'training', label: 'Training' },
+        { key: 'forge', label: 'Forge' },
+        { key: 'smeltery', label: 'Smeltery' },
+        { key: 'workbench', label: 'Workbench' },
+        { key: 'guildBankingHouse', label: 'Guild Bank' },
+        { key: 'messages', label: 'Messages' },
+        { key: 'arena', label: 'Arena' },
+        { key: 'dungeon', label: 'Dungeon' },
+        { key: 'quests', label: 'Quests' }
+    ];
+    const defaultShortcutButtons = ['overview', 'packages', 'auction', 'market', 'training', 'forge', 'smeltery', 'messages'];
+
+    let shortcutsBarEnabled = true;
+    if (localStorage.getItem('tdmShortcutsBarEnabled')) {
+        shortcutsBarEnabled = localStorage.getItem('tdmShortcutsBarEnabled') === "true" ? true : false;
+    };
+
+    let auctionStatusBarEnabled = true;
+    if (localStorage.getItem('tdmAuctionStatusBarEnabled')) {
+        auctionStatusBarEnabled = localStorage.getItem('tdmAuctionStatusBarEnabled') === "true" ? true : false;
+    };
+
+    let shortcutButtons = defaultShortcutButtons.slice();
+    if (localStorage.getItem('tdmShortcutButtons')) {
+        try {
+            const savedShortcutButtons = JSON.parse(localStorage.getItem('tdmShortcutButtons'));
+            if (Array.isArray(savedShortcutButtons)) {
+                shortcutButtons = savedShortcutButtons.map(function (shortcut) {
+                    return shortcut === 'market' ? 'guildMarket' : shortcut;
+                }).filter(function (shortcut, index, shortcuts) {
+                    if (shortcuts.indexOf(shortcut) !== index) {
+                        return false;
+                    }
+                    return shortcutOptions.some(function (option) { return option.key === shortcut; });
+                });
+                localStorage.setItem('tdmShortcutButtons', JSON.stringify(shortcutButtons));
+            }
+        } catch (error) {
+            shortcutButtons = defaultShortcutButtons.slice();
+        }
+    };
+
     // Sell to shop
 
     let sellShopGoldLimit = parseGoldValue(localStorage.getItem('tdmSellShopGoldLimit'));
@@ -207,6 +256,10 @@
         settings: 'Settings',
         sellShop: 'Sell to shop',
         sellShopGoldLimit: 'Gold limit',
+        shortcuts: 'Shortcuts',
+        shortcutsBar: 'Shortcuts Bar',
+        auctionStatusBar: 'Auction Status Bar',
+        gcaUi: 'GCA UI',
         soon: 'Soon...',
         type: 'Type',
         yes: 'Yes'
@@ -240,6 +293,10 @@
         settings: 'Ustawienia',
         sellShop: 'Sell to shop',
         sellShopGoldLimit: 'Gold limit',
+        shortcuts: 'Shortcuts',
+        shortcutsBar: 'Shortcuts Bar',
+        auctionStatusBar: 'Auction Status Bar',
+        gcaUi: 'GCA UI',
         soon: 'Wkrótce...',
         type: 'Rodzaj',
         yes: 'Tak'
@@ -273,6 +330,10 @@
         settings: 'Configuración',
         sellShop: 'Sell to shop',
         sellShopGoldLimit: 'Gold limit',
+        shortcuts: 'Shortcuts',
+        shortcutsBar: 'Shortcuts Bar',
+        auctionStatusBar: 'Auction Status Bar',
+        gcaUi: 'GCA UI',
         soon: 'Próximamente...',
         type: 'Tipo',
         yes: 'Si'
@@ -495,6 +556,29 @@
                         <div class="settingsSubcontent">
                             <div id="do_auction_true" class="settingsButton">${content.yes}</div>
                             <div id="do_auction_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.auctionStatusBar}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_auction_status_bar_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_auction_status_bar_false" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+
+                    <div
+                        id="gca_ui_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.gcaUi}</div>
+                        <div class="settingsHeaderSmall">${content.shortcutsBar}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_shortcuts_bar_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_shortcuts_bar_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.shortcuts}</div>
+                        <div class="settingsSubcontent shortcut-settings-list">
+                            ${shortcutOptions.map(function (option) {
+                                return `<div id="set_shortcut_${option.key}" class="settingsButton shortcut-setting-button">${option.label}</div>`;
+                            }).join('')}
                         </div>
                     </div>
 
@@ -719,6 +803,48 @@
         $("#do_auction_true").click(function () { setAuctionEnabled(true) });
         $("#do_auction_false").click(function () { setAuctionEnabled(false) });
 
+        function notifyGcaFeaturesChanged() {
+            window.dispatchEvent(new CustomEvent('tdmGcaFeaturesChanged'));
+        };
+
+        function setShortcutsBarEnabled(bool) {
+            shortcutsBarEnabled = bool;
+            localStorage.setItem('tdmShortcutsBarEnabled', bool);
+            notifyGcaFeaturesChanged();
+            reloadSettings();
+        };
+
+        $("#do_shortcuts_bar_true").click(function () { setShortcutsBarEnabled(true) });
+        $("#do_shortcuts_bar_false").click(function () { setShortcutsBarEnabled(false) });
+
+        function setAuctionStatusBarEnabled(bool) {
+            auctionStatusBarEnabled = bool;
+            localStorage.setItem('tdmAuctionStatusBarEnabled', bool);
+            notifyGcaFeaturesChanged();
+            reloadSettings();
+        };
+
+        $("#do_auction_status_bar_true").click(function () { setAuctionStatusBarEnabled(true) });
+        $("#do_auction_status_bar_false").click(function () { setAuctionStatusBarEnabled(false) });
+
+        function setShortcutButton(shortcut) {
+            if (shortcutButtons.includes(shortcut)) {
+                shortcutButtons = shortcutButtons.filter(function (savedShortcut) {
+                    return savedShortcut !== shortcut;
+                });
+            } else {
+                shortcutButtons.push(shortcut);
+            }
+
+            localStorage.setItem('tdmShortcutButtons', JSON.stringify(shortcutButtons));
+            notifyGcaFeaturesChanged();
+            reloadSettings();
+        };
+
+        shortcutOptions.forEach(function (option) {
+            $(`#set_shortcut_${option.key}`).click(function () { setShortcutButton(option.key) });
+        });
+
         function setSellShopGoldLimit(value) {
             sellShopGoldLimit = parseGoldValue(value);
 
@@ -775,8 +901,15 @@
                 $(`#set_heal_tab_${tab}`).addClass('active');
             });
 
-            $('#auction_settings').addClass(auctionEnabled ? 'active' : 'inactive');
+            $('#auction_settings').addClass((auctionEnabled || auctionStatusBarEnabled) ? 'active' : 'inactive');
             $(`#do_auction_${auctionEnabled}`).addClass('active');
+            $(`#do_auction_status_bar_${auctionStatusBarEnabled}`).addClass('active');
+
+            $('#gca_ui_settings').addClass(shortcutsBarEnabled ? 'active' : 'inactive');
+            $(`#do_shortcuts_bar_${shortcutsBarEnabled}`).addClass('active');
+            shortcutButtons.forEach(function (shortcut) {
+                $(`#set_shortcut_${shortcut}`).addClass('active');
+            });
         };
 
         setActiveButtons();
