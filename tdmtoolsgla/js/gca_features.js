@@ -177,6 +177,10 @@
             return;
         }
 
+        if (sessionStorage.getItem('autoGoActive') !== 'true') {
+            return;
+        }
+
         if (getCurrentGold() <= 0 || getCurrentGold() < getAuctionMinGold()) {
             return;
         }

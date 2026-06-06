@@ -15,6 +15,7 @@
     const auctionType = url.searchParams.get('ttype') === '3' ? 'mercenary' : 'gladiator';
     const auctionStatus = getAuctionStatus(document);
     const activeStatuses = getActiveStatuses();
+    const mercenaryChecked = hasRecentlyCheckedMercenary();
     const goldValueElement = document.getElementById('sstat_gold_val');
     const currentGold = parseGold(goldValueElement && goldValueElement.textContent);
     const auctionMinGold = getAuctionMinGold();
@@ -34,54 +35,81 @@
         return;
     }
 
-    const itemType = url.searchParams.get('itemType') || getSelectedFilterValue('itemType') || getHiddenFilterValue('itemType');
-
-    if (itemType !== '9') {
-        goToAuctionAmulets(auctionType);
+    if (auctionType === 'gladiator' && !mercenaryChecked) {
+        checkOtherAuctionStatus('gladiator').then(function (otherAuction) {
+            if (otherAuction.active) {
+                goToAuctionAmulets('mercenary');
+            } else {
+                markMercenaryChecked();
+                buyCurrentAuction();
+            }
+        });
         return;
     }
 
-    const auctionItems = Array.from(document.querySelectorAll('#auction_table tr td')).reverse();
-    let boughtItem = false;
+    buyCurrentAuction();
 
-    auctionItems.forEach(function (auctionItem) {
+    function buyCurrentAuction() {
+        const itemType = url.searchParams.get('itemType') || getSelectedFilterValue('itemType') || getHiddenFilterValue('itemType');
+
+        if (itemType !== '9') {
+            goToAuctionAmulets(auctionType);
+            return;
+        }
+
+        const auctionItems = Array.from(document.querySelectorAll('#auction_table tr td')).reverse();
+        let boughtItem = false;
+
+        auctionItems.forEach(function (auctionItem) {
+            if (boughtItem) {
+                return;
+            }
+
+            const auctionItemDiv = auctionItem.querySelector('.auction_item_div');
+            const auctionBidDiv = auctionItem.querySelector('.auction_bid_div');
+
+            if (!auctionItemDiv || !auctionBidDiv) {
+                return;
+            }
+
+            const valueElement = auctionItemDiv.querySelector('[data-tooltip*="Value"]');
+            const lowestPriceElement = auctionBidDiv.querySelector('div:nth-child(2)');
+            const bidBtn = auctionBidDiv.querySelector('input.awesome-button[name="bid"]');
+
+            if (!valueElement || !lowestPriceElement || !bidBtn) {
+                return;
+            }
+
+            const itemValue = parseTooltipValue(valueElement.getAttribute('data-tooltip'));
+            const lowestPrice = parseGold(lowestPriceElement.textContent);
+
+            if (!itemValue || !lowestPrice) {
+                return;
+            }
+
+            if (lowestPrice < itemValue + 2 && lowestPrice <= currentGold) {
+                console.log('san pham nay gia ok');
+                boughtItem = true;
+                bidBtn.click();
+            } else {
+                console.log('san pham nay gia cao qua hoac het gold');
+            }
+        });
+
         if (boughtItem) {
+            clearMercenaryChecked();
             return;
         }
 
-        const auctionItemDiv = auctionItem.querySelector('.auction_item_div');
-        const auctionBidDiv = auctionItem.querySelector('.auction_bid_div');
-
-        if (!auctionItemDiv || !auctionBidDiv) {
+        if (auctionType === 'mercenary') {
+            markMercenaryChecked();
+            goToAuctionAmulets('gladiator');
             return;
         }
 
-        const valueElement = auctionItemDiv.querySelector('[data-tooltip*="Value"]');
-        const lowestPriceElement = auctionBidDiv.querySelector('div:nth-child(2)');
-        const bidBtn = auctionBidDiv.querySelector('input.awesome-button[name="bid"]');
-
-        if (!valueElement || !lowestPriceElement || !bidBtn) {
-            return;
+        if (auctionType === 'gladiator') {
+            clearMercenaryChecked();
         }
-
-        const itemValue = parseTooltipValue(valueElement.getAttribute('data-tooltip'));
-        const lowestPrice = parseGold(lowestPriceElement.textContent);
-
-        if (!itemValue || !lowestPrice) {
-            return;
-        }
-
-        if (lowestPrice < itemValue + 2 && lowestPrice <= currentGold) {
-            console.log('san pham nay gia ok');
-            boughtItem = true;
-            bidBtn.click();
-        } else {
-            console.log('san pham nay gia cao qua hoac het gold');
-        }
-    });
-
-    if (!boughtItem && auctionType === 'gladiator') {
-        goToAuctionAmulets('mercenary');
     }
 
     function goToAuctionAmulets(type) {
@@ -100,6 +128,19 @@
         }
 
         window.location.href = nextUrl.toString();
+    }
+
+    function hasRecentlyCheckedMercenary() {
+        const checkedAt = Number(sessionStorage.getItem('tdmAuctionMercenaryCheckedAt') || '0');
+        return checkedAt > 0 && Date.now() - checkedAt < 120000;
+    }
+
+    function markMercenaryChecked() {
+        sessionStorage.setItem('tdmAuctionMercenaryCheckedAt', String(Date.now()));
+    }
+
+    function clearMercenaryChecked() {
+        sessionStorage.removeItem('tdmAuctionMercenaryCheckedAt');
     }
 
     function checkOtherAuctionStatus(currentType) {
