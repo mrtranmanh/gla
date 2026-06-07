@@ -105,6 +105,13 @@
             return hashMatch[1];
         }
 
+        const scriptHash = Array.from(document.scripts).map(function (script) {
+            return script.textContent || '';
+        }).join('\n').match(/secureHash\s*=\s*['"]([^'"]+)['"]/);
+        if (scriptHash) {
+            return scriptHash[1];
+        }
+
         return '';
     }
 
@@ -1027,6 +1034,83 @@
         }
     }
 
+    async function storeResources(button) {
+        if (isSelling) {
+            shouldStop = true;
+            setStatus('Dang dung...');
+            return;
+        }
+
+        if (!getSecureHash()) {
+            setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.');
+            return;
+        }
+
+        isSelling = true;
+        shouldStop = false;
+        button.disabled = true;
+        button.textContent = 'Storing resources';
+
+        try {
+            setStatus('Dang dua resources vao Horreum...');
+            await storeResourcesRequest({
+                mod: 'forge',
+                submod: 'storageIn',
+                inventory: 0,
+                packages: 1,
+                sell: 1,
+            });
+            setStatus('Da store resources vao Horreum.');
+        } catch (error) {
+            console.error('TDM store resources failed', error);
+            setStatus(`Loi store resources: ${error.message || error}`);
+        } finally {
+            isSelling = false;
+            shouldStop = false;
+            button.disabled = false;
+            button.textContent = 'Store resources';
+        }
+    }
+
+    async function storeResourcesRequest(params) {
+        return runPagePost(buildGameUrl('ajax.php', Object.assign({
+            a: Date.now(),
+        }, params)));
+    }
+
+    function runPagePost(url) {
+        return new Promise(function (resolve, reject) {
+            const requestId = `tdm-store-resources-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            const script = document.createElement('script');
+            const cleanup = function () {
+                window.removeEventListener(requestId, onResult);
+                script.remove();
+            };
+            const timer = setTimeout(function () {
+                cleanup();
+                reject(new Error('Timeout khi gui storageIn trong page context.'));
+            }, 15000);
+            const onResult = function (event) {
+                clearTimeout(timer);
+                cleanup();
+
+                const detail = event.detail || {};
+                if (!detail.ok) {
+                    reject(new Error(detail.error || `HTTP ${detail.status || 0}: ${(detail.text || '').slice(0, 120)}`));
+                    return;
+                }
+
+                resolve(detail.text || '');
+            };
+
+            window.addEventListener(requestId, onResult);
+            script.src = chrome.runtime.getURL('js/page-store-resources.js');
+            script.dataset.requestId = requestId;
+            script.dataset.url = url;
+            (document.head || document.documentElement).appendChild(script);
+        });
+    }
+
     function createFilterLabel(text) {
         const label = document.createElement('div');
         label.className = 'tdm-sell-shop-filter-label';
@@ -1213,8 +1297,17 @@
             pickGoldPackages(pickGoldButton);
         });
 
+        const storeResourcesButton = document.createElement('button');
+        storeResourcesButton.type = 'button';
+        storeResourcesButton.className = 'awesome-button';
+        storeResourcesButton.textContent = 'Store resources';
+        storeResourcesButton.addEventListener('click', function () {
+            storeResources(storeResourcesButton);
+        });
+
         actions.appendChild(button);
         actions.appendChild(pickGoldButton);
+        actions.appendChild(storeResourcesButton);
         packages.parentNode.insertBefore(actions, packages);
         addSellFilters(actions);
     }
