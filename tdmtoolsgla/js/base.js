@@ -1197,6 +1197,12 @@
         ****************/
 
         else if (doQuests === true && nextQuestTime < currentTime) {
+            function continueAfterQuestAction() {
+                setTimeout(function () {
+                    autoGo();
+                }, getRandomInt(1600, 2600));
+            }
+
             function completeQuests() {
                 const inPanteonPage = $("body").first().attr("id") === "questsPage";
 
@@ -1207,6 +1213,7 @@
 
                     if (completedQuests.length) {
                         completedQuests[0].click();
+                        continueAfterQuestAction();
                     } else {
                         repeatQuests();
                     }
@@ -1218,68 +1225,71 @@
 
                 if (failedQuests.length) {
                     failedQuests[0].click();
+                    continueAfterQuestAction();
                 } else {
                     takeQuest();
                 }
             }
 
             // Start Fix custom
+            function rerollQuests() {
+                const rerollButton = document.querySelector('#quest_footer_reroll input');
+                if (!rerollButton) {
+                    checkNextQuestTime();
+                    return;
+                }
+
+                const onclick = rerollButton.getAttribute('onclick') || '';
+                const urlMatch = onclick.match(/document\.location\.href\s*=\s*['"]([^'"]+)['"]/);
+                if (urlMatch) {
+                    window.location.href = urlMatch[1].replace(/&amp;/g, '&');
+                    return;
+                }
+
+                rerollButton.click();
+                continueAfterQuestAction();
+            }
+
             function takeQuest() {
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
 
                 if (canTakeQuest.length) {
                     function getIconName(url, title = "", timeDiv = null) {
-                        // if (url.includes('icon_combat_inactive.jpg')) {
-                        //     return 'combat';
-                        // }
+                        const normalizedTitle = String(title || '').trim();
 
-                        // if (url.includes('icon_arena_inactive.jpg')) {
-                        //     return 'arena';
-                        // }
-
-                        // if (url.includes('icon_grouparena_inactive.jpg')) {
-                        //     return 'circus';
-                        // }
-
-                        if (!timeDiv) {
-                            const patterns1 = [
-                                /^Arena: Win ([3-9]|1[0-9]) attacks against opponents from whom you can loot Gold$/,
-                                /^Arena: Win ([3-9]|1[0-9]) upgrade battles or battles in the Provinciarum Arena$/,
-                                /^Circus Turma: Win ([3-9]|1[0-9]) attacks against opponents from whom you can loot Gold$/,
-                                /^Circus Turma: Win ([3-9]|1[0-9]) upgrade battles or battles in the Circus Provinciarum$/,
-                                /^Forest Fortress: Defeat ([3-9]|1[0-9]) opponents of your choice$/,
-                                /^Defeat ([3-9]|1[0-9]) opponents at expeditions, in dungeons or in the arenas$/
-                            ];
-
-                            if (patterns1.some(pattern => pattern.test(title))) {
-                                return 'arena';
-                            }
+                        if (/\bsuccession\b/i.test(normalizedTitle)) {
+                            return { type: null, reason: 'succession' };
                         }
 
                         if (timeDiv) {
-                            const patterns2 = [
-                                'Forest Fortress: Defeat the boss in this territory'
-                                // 'The Moor: Defeat the boss in this territory',                            
-                            ];
-
-                            if (patterns2.some(pattern => title.includes(pattern))) {
-                                return 'arena';
-                            }
+                            return { type: null, reason: 'time limit' };
                         }
 
-                        // if (url.includes('icon_expedition_inactive.jpg')) {
-                        //     return 'expedition';
-                        // }
-
-                        // if (url.includes('icon_dungeon_inactive.jpg')) {
-                        //     return 'dungeon';
-                        // }
-
-                        if (url.includes('icon_items_inactive.jpg')) {
-                            return 'items';
+                        if (url.includes('icon_combat_')) {
+                            return { type: 'combat' };
                         }
 
-                        return null;
+                        if (url.includes('icon_arena_')) {
+                            return { type: 'arena' };
+                        }
+
+                        if (url.includes('icon_grouparena_')) {
+                            return { type: 'circus' };
+                        }
+
+                        if (url.includes('icon_expedition_')) {
+                            return { type: 'expedition' };
+                        }
+
+                        if (url.includes('icon_dungeon_')) {
+                            return { type: 'dungeon' };
+                        }
+
+                        if (url.includes('icon_items_')) {
+                            return { type: 'items' };
+                        }
+
+                        return { type: null, reason: 'unknown icon' };
                     }
 
                     const availableQuests = $("#content .contentboard_slot_inactive");
@@ -1289,26 +1299,32 @@
                         const titleDiv = quest.getElementsByClassName("quest_slot_title")[0];
                         const timeDiv = quest.getElementsByClassName("quest_slot_time")[0];
 
-                        const icon = getIconName(
+                        const questType = getIconName(
                             iconDiv?.style.backgroundImage || '',
                             titleDiv?.innerText || '',
                             timeDiv
                         );
 
-                        if (!icon) {
-                            console.log('No quest was found');
+                        if (!questType.type) {
+                            console.log(`TDM quest skip (${questType.reason}): ${titleDiv?.innerText || ''}`);
                             continue;
                         }
 
-                        if (questTypes[icon]) {
-                            return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
+                        if (questTypes[questType.type]) {
+                            quest.getElementsByClassName("quest_slot_button_accept")[0].click();
+                            continueAfterQuestAction();
+                            return;
                         }
+
+                        console.log(`TDM quest skip (${questType.type} disabled): ${titleDiv?.innerText || ''}`);
                     }
 
-                    $("#quest_footer_reroll input").first().click();
+                    console.log('TDM quest: khong co quest phu hop voi settings, reroll.');
+                    rerollQuests();
+                    return;
                 }
 
-                checkNextQuestTime();
+                rerollQuests();
             }
             // End fix custom
 
@@ -1342,10 +1358,19 @@
             // }
 
             function checkNextQuestTime() {
-                // hằng số: 6 phút = 360 000 ms
-                const FIXED_COOLDOWN = 4 * 60 * 1000;
+                const ticker = document.querySelector("#quest_header_cooldown span.ticker");
+                const tickerText = ticker && ticker.textContent.trim();
+                let nextQuestIn = tickerText ? convertTimeToMs(tickerText) : 0;
 
-                const nextQuestTime = Date.now() + FIXED_COOLDOWN;
+                if (!Number.isFinite(nextQuestIn) || nextQuestIn <= 0) {
+                    nextQuestIn = Number(ticker && ticker.getAttribute('data-ticker-time-left'));
+                }
+
+                if (!Number.isFinite(nextQuestIn) || nextQuestIn <= 0) {
+                    nextQuestIn = 10 * 1000;
+                }
+
+                const nextQuestTime = Date.now() + nextQuestIn;
                 localStorage.setItem('nextQuestTime', nextQuestTime);
 
                 autoGo();           // tiếp tục logic tự động
@@ -1592,7 +1617,19 @@
                     });
                 };
 
+                if (doQuests === true && nextQuestTime > currentTime) {
+                    actions.push({
+                        name: 'quests',
+                        time: nextQuestTime - currentTime,
+                        index: 5,
+                    });
+                };
+
                 function getNextAction(actions) {
+                    if (!actions.length) {
+                        return null;
+                    }
+
                     let index = 0;
                     let minValue = actions[0].time;
 
@@ -1607,7 +1644,9 @@
 
                 const nextAction = getNextAction(actions);
 
-                // @TODO fix nextAction if !actions.length
+                if (!nextAction) {
+                    return;
+                }
 
                 function formatTime(timeInMs) {
                     if (timeInMs < 1000) {
@@ -1673,6 +1712,9 @@
                     if (nextAction.time <= 0) {
                         if (nextAction.index === 4) {
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
+                        }
+                        else if (nextAction.index === 5) {
+                            $("#mainmenu a.menuitem")[1].click();
                         }
                         else {
                             setTimeout(function () {
