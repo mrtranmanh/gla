@@ -1125,6 +1125,22 @@
         return ms;
     };
 
+    function readQuestCooldownTime() {
+        const ticker = document.querySelector("#quest_header_cooldown span.ticker");
+        if (!ticker) {
+            return null;
+        }
+
+        const tickerText = ticker.textContent.trim();
+        let cooldown = tickerText ? convertTimeToMs(tickerText) : 0;
+
+        if (!Number.isFinite(cooldown) || cooldown <= 0) {
+            cooldown = Number(ticker.getAttribute('data-ticker-time-left'));
+        }
+
+        return Number.isFinite(cooldown) && cooldown > 0 ? cooldown : null;
+    }
+
     /****************
     *    Auto Go    *
     ****************/
@@ -1196,7 +1212,13 @@
         ****************/
 
         else if (doQuests === true && nextQuestTime < currentTime) {
+            function setNextQuestTime(delayMs) {
+                nextQuestTime = Date.now() + delayMs;
+                localStorage.setItem('nextQuestTime', nextQuestTime);
+            }
+
             function continueAfterQuestAction() {
+                setNextQuestTime(10 * 1000);
                 setTimeout(function () {
                     autoGo();
                 }, getRandomInt(1600, 2600));
@@ -1357,20 +1379,7 @@
             // }
 
             function checkNextQuestTime() {
-                const ticker = document.querySelector("#quest_header_cooldown span.ticker");
-                const tickerText = ticker && ticker.textContent.trim();
-                let nextQuestIn = tickerText ? convertTimeToMs(tickerText) : 0;
-
-                if (!Number.isFinite(nextQuestIn) || nextQuestIn <= 0) {
-                    nextQuestIn = Number(ticker && ticker.getAttribute('data-ticker-time-left'));
-                }
-
-                if (!Number.isFinite(nextQuestIn) || nextQuestIn <= 0) {
-                    nextQuestIn = 10 * 1000;
-                }
-
-                const nextQuestTime = Date.now() + nextQuestIn;
-                localStorage.setItem('nextQuestTime', nextQuestTime);
+                setNextQuestTime(readQuestCooldownTime() || 10 * 1000);
 
                 autoGo();           // tiếp tục logic tự động
             }
@@ -1565,6 +1574,11 @@
 
             if (safeMode === false) {
                 const actions = [];
+                const liveQuestCooldown = readQuestCooldownTime();
+                if (liveQuestCooldown) {
+                    nextQuestTime = currentTime + liveQuestCooldown;
+                    localStorage.setItem('nextQuestTime', nextQuestTime);
+                }
 
                 if (doExpedition === true) {
                     const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
