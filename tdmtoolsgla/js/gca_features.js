@@ -1,12 +1,13 @@
 (function () {
     'use strict';
 
-    const DEFAULT_SHORTCUTS = ['overview', 'packages', 'auction', 'guildMarket', 'training', 'forge', 'smeltery', 'guildBankingHouse', 'messages'];
+    const DEFAULT_SHORTCUTS = ['overview', 'packages', 'auction', 'market', 'guildMarket', 'training', 'forge', 'smeltery', 'guildBankingHouse', 'messages'];
     const SHORTCUTS = [
         { key: 'overview', label: 'Overview', title: 'Overview', params: { mod: 'overview' } },
         { key: 'packages', label: 'Packages', title: 'Packages', params: { mod: 'packages' } },
         { key: 'auction', label: 'Auction', title: 'Auction', params: { mod: 'auction' } },
-        { key: 'guildMarket', label: 'Guild Market', title: 'Guild Market', params: { mod: 'market' } },
+        { key: 'market', label: 'Market', title: 'Market', params: { mod: 'market' } },
+        { key: 'guildMarket', label: 'Guild Market', title: 'Guild Market', params: { mod: 'guildMarket' } },
         { key: 'training', label: 'Training', title: 'Training', params: { mod: 'training' } },
         { key: 'forge', label: 'Forge', title: 'Forge', params: { mod: 'forge' } },
         { key: 'smeltery', label: 'Smeltery', title: 'Smeltery', params: { mod: 'smeltery' } },
@@ -30,9 +31,7 @@
         try {
             const savedShortcuts = JSON.parse(localStorage.getItem('tdmShortcutButtons'));
             if (Array.isArray(savedShortcuts)) {
-                const selectedShortcuts = savedShortcuts.map(function (shortcut) {
-                    return shortcut === 'market' ? 'guildMarket' : shortcut;
-                }).filter(function (shortcut, index, shortcuts) {
+                const selectedShortcuts = savedShortcuts.filter(function (shortcut, index, shortcuts) {
                     if (shortcuts.indexOf(shortcut) !== index) {
                         return false;
                     }

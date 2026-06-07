@@ -205,6 +205,7 @@
         { key: 'overview', label: 'Overview' },
         { key: 'packages', label: 'Packages' },
         { key: 'auction', label: 'Auction' },
+        { key: 'market', label: 'Market' },
         { key: 'guildMarket', label: 'Guild Market' },
         { key: 'training', label: 'Training' },
         { key: 'forge', label: 'Forge' },
@@ -216,7 +217,7 @@
         { key: 'dungeon', label: 'Dungeon' },
         { key: 'quests', label: 'Quests' }
     ];
-    const defaultShortcutButtons = ['overview', 'packages', 'auction', 'guildMarket', 'training', 'forge', 'smeltery', 'guildBankingHouse', 'messages'];
+    const defaultShortcutButtons = ['overview', 'packages', 'auction', 'market', 'guildMarket', 'training', 'forge', 'smeltery', 'guildBankingHouse', 'messages'];
 
     let shortcutsBarEnabled = true;
     if (localStorage.getItem('tdmShortcutsBarEnabled')) {
@@ -233,9 +234,7 @@
         try {
             const savedShortcutButtons = JSON.parse(localStorage.getItem('tdmShortcutButtons'));
             if (Array.isArray(savedShortcutButtons)) {
-                shortcutButtons = savedShortcutButtons.map(function (shortcut) {
-                    return shortcut === 'market' ? 'guildMarket' : shortcut;
-                }).filter(function (shortcut, index, shortcuts) {
+                shortcutButtons = savedShortcutButtons.filter(function (shortcut, index, shortcuts) {
                     if (shortcuts.indexOf(shortcut) !== index) {
                         return false;
                     }
