@@ -81,6 +81,7 @@
     ];
 
     let isSelling = false;
+    let isPickingFood = false;
     let shouldStop = false;
 
     function getQuery() {
@@ -172,6 +173,12 @@
 
     function parseHtml(html) {
         return new DOMParser().parseFromString(html, 'text/html');
+    }
+
+    function delay(ms) {
+        return new Promise(function (resolve) {
+            setTimeout(resolve, ms);
+        });
     }
 
     function getGridItems(container) {
@@ -335,6 +342,8 @@
             itemType,
             basis,
             quality: item.dataset.quality || '0',
+            tooltip: item.getAttribute('data-tooltip') || '',
+            soulbound: Boolean(item.dataset.soulboundTo),
             amount: parseInt(item.dataset.amount || '1', 10) || 1,
             priceGold: parseGoldValue(item.dataset.priceGold || '0'),
             width: itemType === '14' ? 1 : parseInt(item.dataset.measurementX || '1', 10) || 1,
@@ -446,6 +455,28 @@
         return item.itemType === '14';
     }
 
+    function packageItemIsFood(item) {
+        if (!item || item.itemType !== '7') {
+            return false;
+        }
+
+        if (item.soulbound || (item.tooltip || '').toLowerCase().includes('soul bound to:')) {
+            return false;
+        }
+
+        const utilityUsables = ['7-23', '7-24', '7-25', '7-26', '7-27', '7-29', '7-31'];
+        if (utilityUsables.includes(item.basis)) {
+            return false;
+        }
+
+        const tooltip = (item.tooltip || '').toLowerCase();
+        return tooltip.includes('using: heals') ||
+            tooltip.includes('heals ') ||
+            tooltip.includes('healing') ||
+            tooltip.includes('health') ||
+            tooltip.includes('life points');
+    }
+
     function getPackageFilterParams() {
         const query = getQuery();
         const filterForm = document.getElementById('pf');
@@ -497,6 +528,24 @@
         }
 
         return parseInt(getQuery().get('page') || '1', 10);
+    }
+
+    function getNextPackagePage(root, currentPage) {
+        const pageRoot = root || document;
+        const nextLink = pageRoot.querySelector('.pagination .paging_right_step[href*="page="]');
+
+        if (!nextLink) {
+            return null;
+        }
+
+        const matches = nextLink.getAttribute('href').match(/(?:[?&])page=(\d+)/g) || [];
+        const nextPage = matches.length ? parseInt(matches[matches.length - 1].replace(/^\D+/, ''), 10) : NaN;
+
+        if (Number.isNaN(nextPage) || nextPage <= currentPage) {
+            return null;
+        }
+
+        return nextPage;
     }
 
     async function getPackageItemsFromPage(page, filters) {
@@ -587,6 +636,48 @@
 
         return items.sort(function (left, right) {
             return left.priceGold - right.priceGold;
+        });
+    }
+
+    async function getFoodPackageItems() {
+        const foodFilterParams = {
+            f: '0',
+            fq: '-1',
+            qry: '',
+        };
+        setStatus('Dang tai tat ca package page 1 de tim food...');
+        const items = [];
+        const visitedPages = new Set();
+        let page = 1;
+
+        while (page && !visitedPages.has(page)) {
+            if (shouldStop) {
+                break;
+            }
+
+            visitedPages.add(page);
+            setStatus(`Dang tai package page ${page} de lay food...`);
+            const html = await gameGet('index.php', Object.assign({
+                mod: 'packages',
+                page,
+            }, foodFilterParams));
+            const doc = parseHtml(html);
+
+            const pageItems = Array.from(doc.querySelectorAll('#packages .packageItem'))
+                .map(getPackageItemData)
+                .filter(Boolean)
+                .filter(packageItemIsFood)
+                .map(function (item) {
+                    item.page = page;
+                    return item;
+                });
+
+            items.push.apply(items, pageItems);
+            page = getNextPackagePage(doc, page);
+        }
+
+        return items.sort(function (left, right) {
+            return (left.width * left.height) - (right.width * right.height);
         });
     }
 
@@ -827,6 +918,10 @@
         });
     }
 
+    function getFirstInventoryBag() {
+        return getAvailableInventoryBags()[0] || FALLBACK_INVENTORY_BAGS[0];
+    }
+
     async function moveInventoryToShop(item, inventory, shop) {
         return gameMove({
             mod: 'inventory',
@@ -1031,6 +1126,97 @@
             shouldStop = false;
             button.textContent = 'Pick gold';
             setStatus(finalStatus || `Da lay ${picked}/${items.length} goi gold.`);
+        }
+    }
+
+    async function pickFoodPackages(button) {
+        if (isPickingFood) {
+            shouldStop = true;
+            setStatus('Dang dung lay food...');
+            return;
+        }
+
+        if (isSelling) {
+            setStatus('Dang co thao tac package khac dang chay.');
+            return;
+        }
+
+        if (!getSecureHash()) {
+            setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.');
+            return;
+        }
+
+        if (!confirm('Lay tat ca food usable trong packages vao inventory tab 1 cho den khi het cho?')) {
+            return;
+        }
+
+        isPickingFood = true;
+        isSelling = true;
+        shouldStop = false;
+        button.textContent = 'Stop food';
+
+        let picked = 0;
+        let skipped = 0;
+        let finalStatus = '';
+        let totalItems = 0;
+
+        try {
+            const tab1Bag = getFirstInventoryBag();
+            const bagState = await loadInventoryBag(tab1Bag);
+            setStatus('Dang quet food trong packages...');
+            const items = await getFoodPackageItems();
+            totalItems = items.length;
+
+            if (!items.length) {
+                setStatus('Khong co food usable trong packages.');
+                return;
+            }
+
+            for (let index = 0; index < items.length; index++) {
+                if (shouldStop) {
+                    finalStatus = 'Da dung theo yeu cau.';
+                    break;
+                }
+
+                const item = items[index];
+                const spot = findGridSpot(item.width, item.height, bagState.grid);
+
+                if (!spot) {
+                    finalStatus = `Tab 1 het cho cho food ${item.width}x${item.height}.`;
+                    skipped += items.length - index;
+                    break;
+                }
+
+                setStatus(`Dang lay food ${index + 1}/${items.length} vao tab 1...`);
+                const moved = await movePackageToInventory(item, {
+                    bag: tab1Bag,
+                    spot,
+                });
+
+                if (!moved || moved.error) {
+                    console.warn('TDM pick food: move package failed', moved);
+                    finalStatus = `Loi lay food: ${describeApiError(moved)}`;
+                    setStatus(finalStatus);
+                    break;
+                }
+
+                item.element.remove();
+                picked++;
+                await delay(250);
+            }
+        } catch (error) {
+            console.error('TDM pick food failed', error);
+            finalStatus = `Loi lay food: ${error.message || error}`;
+            setStatus(finalStatus);
+        } finally {
+            isPickingFood = false;
+            isSelling = false;
+            shouldStop = false;
+            button.textContent = 'Pick food';
+
+            if (totalItems > 0) {
+                setStatus(`${finalStatus ? finalStatus + ' ' : ''}Da lay ${picked}/${totalItems} food, bo qua ${skipped}.`);
+            }
         }
     }
 
@@ -1297,6 +1483,14 @@
             pickGoldPackages(pickGoldButton);
         });
 
+        const pickFoodButton = document.createElement('button');
+        pickFoodButton.type = 'button';
+        pickFoodButton.className = 'awesome-button';
+        pickFoodButton.textContent = 'Pick food';
+        pickFoodButton.addEventListener('click', function () {
+            pickFoodPackages(pickFoodButton);
+        });
+
         const storeResourcesButton = document.createElement('button');
         storeResourcesButton.type = 'button';
         storeResourcesButton.className = 'awesome-button';
@@ -1307,6 +1501,7 @@
 
         actions.appendChild(button);
         actions.appendChild(pickGoldButton);
+        actions.appendChild(pickFoodButton);
         actions.appendChild(storeResourcesButton);
         packages.parentNode.insertBefore(actions, packages);
         addSellFilters(actions);

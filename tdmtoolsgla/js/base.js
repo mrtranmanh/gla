@@ -247,10 +247,6 @@
         }
     };
 
-    // Sell to shop
-
-    let sellShopGoldLimit = parseGoldValue(localStorage.getItem('tdmSellShopGoldLimit'));
-
     // Smelter
 
     let smelterEnabled = true;
@@ -288,8 +284,6 @@
         quests: 'Quests',
         random: 'Random',
         settings: 'Settings',
-        sellShop: 'Sell to shop',
-        sellShopGoldLimit: 'Gold limit',
         smelter: 'Smelter',
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
@@ -328,8 +322,6 @@
         quests: 'Zadania',
         random: 'Losowy',
         settings: 'Ustawienia',
-        sellShop: 'Sell to shop',
-        sellShopGoldLimit: 'Gold limit',
         smelter: 'Smelter',
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
@@ -368,8 +360,6 @@
         quests: 'Misiones',
         random: 'Aleatorio',
         settings: 'Configuración',
-        sellShop: 'Sell to shop',
-        sellShopGoldLimit: 'Gold limit',
         smelter: 'Smelter',
         shortcuts: 'Shortcuts',
         shortcutsBar: 'Shortcuts Bar',
@@ -432,7 +422,7 @@
     };
 
     // Open Settings
-    function openSettings() {
+    function openSettings(scrollTop = 0) {
 
         function closeSettings() {
             document.getElementById("settingsWindow").remove();
@@ -632,17 +622,6 @@
                             ${shortcutOptions.map(function (option) {
                                 return `<div id="set_shortcut_${option.key}" class="settingsButton shortcut-setting-button">${option.label}</div>`;
                             }).join('')}
-                        </div>
-                    </div>
-
-                    <div
-                        id="sell_shop_settings"
-                        class="settings_box"
-                    >
-                        <div class="settingsHeaderBig">${content.sellShop}</div>
-                        <div class="settingsHeaderSmall">${content.sellShopGoldLimit}</div>
-                        <div class="settingsSubcontent">
-                            <input id="set_sell_shop_gold_limit" class="settingsInput" type="text" placeholder="500k" value="${sellShopGoldLimit > 0 ? formatGoldValue(sellShopGoldLimit) : ''}">
                         </div>
                     </div>
 
@@ -941,20 +920,6 @@
             $(`#set_shortcut_${option.key}`).click(function () { setShortcutButton(option.key) });
         });
 
-        function setSellShopGoldLimit(value) {
-            sellShopGoldLimit = parseGoldValue(value);
-
-            if (sellShopGoldLimit > 0) {
-                localStorage.setItem('tdmSellShopGoldLimit', String(sellShopGoldLimit));
-            } else {
-                localStorage.removeItem('tdmSellShopGoldLimit');
-            }
-
-            reloadSettings();
-        };
-
-        $("#set_sell_shop_gold_limit").change(function () { setSellShopGoldLimit(this.value) });
-
         function setSmelterEnabled(bool) {
             smelterEnabled = bool;
             localStorage.setItem('smelterEnabled', bool);
@@ -965,8 +930,10 @@
         $("#do_smelter_false").click(function () { setSmelterEnabled(false) });
 
         function reloadSettings() {
+            const settingsContent = document.getElementById("settingsContent");
+            const currentScrollTop = settingsContent ? settingsContent.scrollTop : 0;
             closeSettings();
-            openSettings();
+            openSettings(currentScrollTop);
         }
 
         function setActiveButtons() {
@@ -1019,13 +986,21 @@
                 $(`#set_shortcut_${shortcut}`).addClass('active');
             });
 
-            $('#sell_shop_settings').addClass('active');
-
             $('#smelter_settings').addClass(smelterEnabled ? 'active' : 'inactive');
             $(`#do_smelter_${smelterEnabled}`).addClass('active');
         };
 
         setActiveButtons();
+
+        if (scrollTop > 0) {
+            requestAnimationFrame(function () {
+                const settingsContent = document.getElementById("settingsContent");
+
+                if (settingsContent) {
+                    settingsContent.scrollTop = scrollTop;
+                }
+            });
+        }
     };
 
     // Auto GO button
