@@ -13,6 +13,7 @@ function heal() {
     const savedUnderHP = Number(localStorage.getItem('healUnderHP'));
     const underHP = Number.isNaN(savedUnderHP) || savedUnderHP < 1 ? 40 : Math.min(100, savedUnderHP);
     const healTabs = getHealTabs();
+    const currentPlayerId = getCurrentPlayerId();
     
     const player = {
         level: Number(document.getElementById("header_values_level").textContent.trim()),
@@ -159,8 +160,23 @@ function heal() {
         return (item.getAttribute('data-tooltip') || '').toLowerCase();
     }
 
+    function getCurrentPlayerId() {
+        const scriptText = Array.from(document.scripts).map(function (script) {
+            return script.textContent || '';
+        }).join('\n');
+        const playerIdMatch = scriptText.match(/\bplayerId\s*=\s*["']?(\d+)["']?/);
+
+        return playerIdMatch ? playerIdMatch[1] : '';
+    }
+
     function isSoulboundItem(item) {
-        return Boolean(item.dataset.soulboundTo) || getItemTooltip(item).includes('soul bound to:');
+        const soulboundTo = item.dataset.soulboundTo || '';
+
+        if (soulboundTo) {
+            return !currentPlayerId || soulboundTo !== currentPlayerId;
+        }
+
+        return getItemTooltip(item).includes('soul bound to:');
     }
 
     function isHealingFoodTooltip(tooltip) {
@@ -417,7 +433,7 @@ function heal() {
             itemType,
             basis,
             tooltip: item.getAttribute('data-tooltip') || '',
-            soulbound: Boolean(item.dataset.soulboundTo),
+            soulboundTo: item.dataset.soulboundTo || '',
             amount: parseInt(item.dataset.amount || '1', 10) || 1,
             width: parseInt(item.dataset.measurementX || '1', 10) || 1,
             height: parseInt(item.dataset.measurementY || '1', 10) || 1,
@@ -429,7 +445,11 @@ function heal() {
             return false;
         }
 
-        if (item.soulbound || (item.tooltip || '').toLowerCase().includes('soul bound to:')) {
+        if (item.soulboundTo) {
+            if (!currentPlayerId || item.soulboundTo !== currentPlayerId) {
+                return false;
+            }
+        } else if ((item.tooltip || '').toLowerCase().includes('soul bound to:')) {
             return false;
         }
 

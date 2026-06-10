@@ -175,6 +175,16 @@
         return new DOMParser().parseFromString(html, 'text/html');
     }
 
+    function getCurrentPlayerId(root) {
+        const pageRoot = root || document;
+        const scriptText = Array.from(pageRoot.scripts || []).map(function (script) {
+            return script.textContent || '';
+        }).join('\n');
+        const playerIdMatch = scriptText.match(/\bplayerId\s*=\s*["']?(\d+)["']?/);
+
+        return playerIdMatch ? playerIdMatch[1] : '';
+    }
+
     function delay(ms) {
         return new Promise(function (resolve) {
             setTimeout(resolve, ms);
@@ -343,7 +353,7 @@
             basis,
             quality: item.dataset.quality || '0',
             tooltip: item.getAttribute('data-tooltip') || '',
-            soulbound: Boolean(item.dataset.soulboundTo),
+            soulboundTo: item.dataset.soulboundTo || '',
             amount: parseInt(item.dataset.amount || '1', 10) || 1,
             priceGold: parseGoldValue(item.dataset.priceGold || '0'),
             width: itemType === '14' ? 1 : parseInt(item.dataset.measurementX || '1', 10) || 1,
@@ -460,7 +470,12 @@
             return false;
         }
 
-        if (item.soulbound || (item.tooltip || '').toLowerCase().includes('soul bound to:')) {
+        if (item.soulboundTo) {
+            const currentPlayerId = getCurrentPlayerId();
+            if (!currentPlayerId || item.soulboundTo !== currentPlayerId) {
+                return false;
+            }
+        } else if ((item.tooltip || '').toLowerCase().includes('soul bound to:')) {
             return false;
         }
 
