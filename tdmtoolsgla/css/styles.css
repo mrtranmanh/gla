@@ -350,6 +350,36 @@
     flex-wrap: wrap;
 }
 
+#tdm-sell-shop-log
+{
+    width: 100%;
+    max-height: 120px;
+    margin: 6px 0 8px;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    border: 1px solid #5b3a1b;
+    background: rgba(0, 0, 0, 0.48);
+    color: #d9c08a;
+    font: 11px/1.45 Arial, sans-serif;
+}
+
+.tdm-sell-shop-log-item
+{
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.tdm-sell-shop-log-item.warn
+{
+    color: #f3d27a;
+}
+
+.tdm-sell-shop-log-item.error
+{
+    color: #ff9b8f;
+}
+
 .tdm-sell-shop-filter-row
 {
     display: flex;

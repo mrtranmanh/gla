@@ -696,7 +696,51 @@
         });
     }
 
-    function setStatus(text) {
+    function ensureSellLog() {
+        let log = document.getElementById('tdm-sell-shop-log');
+
+        if (!log) {
+            log = document.createElement('div');
+            log.id = 'tdm-sell-shop-log';
+
+            const actions = document.getElementById('tdm-sell-shop-actions');
+            if (actions && actions.parentNode) {
+                actions.parentNode.insertBefore(log, actions.nextSibling);
+            }
+        }
+
+        return log;
+    }
+
+    function appendSellLog(text, level) {
+        const log = ensureSellLog();
+        const item = document.createElement('div');
+        const now = new Date();
+        const time = [
+            String(now.getHours()).padStart(2, '0'),
+            String(now.getMinutes()).padStart(2, '0'),
+            String(now.getSeconds()).padStart(2, '0'),
+        ].join(':');
+
+        item.className = `tdm-sell-shop-log-item ${level || 'info'}`;
+        item.textContent = `[${time}] ${text}`;
+        log.appendChild(item);
+
+        while (log.children.length > 80) {
+            log.removeChild(log.firstChild);
+        }
+
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function clearSellLog() {
+        const log = document.getElementById('tdm-sell-shop-log');
+        if (log) {
+            log.textContent = '';
+        }
+    }
+
+    function setStatus(text, level) {
         let status = document.getElementById('tdm-sell-shop-status');
 
         if (!status) {
@@ -711,7 +755,7 @@
         }
 
         status.textContent = text;
-        console.log(`TDM sell to shop: ${text}`);
+        appendSellLog(text, level);
     }
 
     function describeApiError(result) {
@@ -844,7 +888,7 @@
             for (const move of plan.moves) {
                 const moved = await moveInventoryWithinBag(bag, move);
                 if (!moved || moved.error) {
-                    console.warn('TDM sell to shop: cleanup inventory move failed', moved);
+                    appendSellLog(`Loi don tui ${bag}: ${describeApiError(moved)}`, 'warn');
                     movedAll = false;
                     break;
                 }
@@ -954,12 +998,12 @@
     async function sellVisiblePackages(button) {
         if (isSelling) {
             shouldStop = true;
-            setStatus('Dang dung...');
+            setStatus('Dang dung...', 'warn');
             return;
         }
 
         if (!getSecureHash()) {
-            setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.');
+            setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.', 'error');
             return;
         }
 
@@ -968,15 +1012,16 @@
         const currentGold = getCurrentGold();
 
         if (goldLimit > 0 && currentGold >= goldLimit) {
-            setStatus(`Gold hien tai da dat gioi han ${formatGoldValue(goldLimit)}.`);
+            setStatus(`Gold hien tai da dat gioi han ${formatGoldValue(goldLimit)}.`, 'warn');
             return;
         }
 
+        clearSellLog();
         setStatus('Dang quet cac page packages...');
         const items = await getFilteredPackageItems(filters);
 
         if (!items.length) {
-            setStatus('Khong co item khop filter de ban.');
+            setStatus('Khong co item khop filter de ban.', 'warn');
             return;
         }
 
@@ -999,7 +1044,7 @@
 
             if (!shopMaps.length) {
                 finalStatus = 'Khong tim thay shop.';
-                setStatus(finalStatus);
+                setStatus(finalStatus, 'error');
                 return;
             }
 
@@ -1020,7 +1065,7 @@
                 const shop = findShopSpot(shopMaps, item.width, item.height);
                 if (!shop) {
                     finalStatus = 'Shop da day.';
-                    setStatus(finalStatus);
+                    setStatus(finalStatus, 'warn');
                     break;
                 }
 
@@ -1028,23 +1073,21 @@
                 if (!inventory) {
                     skipped++;
                     finalStatus = `Bo qua item ${item.width}x${item.height}: shop co cho, nhung inventory khong co o tam.`;
-                    setStatus(finalStatus);
+                    setStatus(finalStatus, 'warn');
                     continue;
                 }
 
                 const moved = await movePackageToInventory(item, inventory);
                 if (!moved || moved.error || !moved.to) {
-                    console.warn('TDM sell to shop: move package failed', moved);
                     finalStatus = `Loi lay item tu package: ${describeApiError(moved)}`;
-                    setStatus(finalStatus);
+                    setStatus(finalStatus, 'error');
                     continue;
                 }
 
                 const soldResult = await moveInventoryToShop(item, inventory, shop);
                 if (!soldResult || soldResult.error) {
-                    console.warn('TDM sell to shop: sell failed', soldResult);
                     finalStatus = `Loi ban vao shop: ${describeApiError(soldResult)}`;
-                    setStatus(finalStatus);
+                    setStatus(finalStatus, 'error');
                     continue;
                 }
 
@@ -1059,9 +1102,8 @@
                 sold++;
             }
         } catch (error) {
-            console.error('TDM sell to shop failed', error);
             finalStatus = `Loi: ${error.message || error}`;
-            setStatus(finalStatus);
+            setStatus(finalStatus, 'error');
         } finally {
             isSelling = false;
             shouldStop = false;
