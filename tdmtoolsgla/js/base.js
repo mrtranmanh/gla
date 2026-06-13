@@ -140,6 +140,27 @@
         healEnabled = localStorage.getItem('healEnabled') === "true" ? true : false;
     };
 
+    let healMarketBuyEnabled = true;
+    if (localStorage.getItem('tdmHealMarketBuyEnabled')) {
+        healMarketBuyEnabled = localStorage.getItem('tdmHealMarketBuyEnabled') === "true" ? true : false;
+    };
+
+    let healMarketBuyIntervalMinutes = 10;
+    if (localStorage.getItem('tdmHealMarketScanIntervalMinutes')) {
+        const savedHealMarketBuyIntervalMinutes = Number(localStorage.getItem('tdmHealMarketScanIntervalMinutes'));
+        if (!Number.isNaN(savedHealMarketBuyIntervalMinutes)) {
+            healMarketBuyIntervalMinutes = Math.max(1, savedHealMarketBuyIntervalMinutes);
+        }
+    };
+
+    let healMarketFoodPriceMultiplier = 1.2;
+    if (localStorage.getItem('tdmHealMarketFoodPriceMultiplier')) {
+        const savedHealMarketFoodPriceMultiplier = Number(localStorage.getItem('tdmHealMarketFoodPriceMultiplier'));
+        if (!Number.isNaN(savedHealMarketFoodPriceMultiplier)) {
+            healMarketFoodPriceMultiplier = Math.max(0.1, savedHealMarketFoodPriceMultiplier);
+        }
+    };
+
     let healUnderHP = 40;
     if (localStorage.getItem('healUnderHP')) {
         const savedHealUnderHP = Number(localStorage.getItem('healUnderHP'));
@@ -269,6 +290,9 @@
         eventExpedition: 'Event Expedition',
         expedition: 'Expedition',
         heal: 'Auto Heal',
+        healMarketBuy: 'Auto buy market food',
+        healMarketBuyInterval: 'Market scan interval (minutes)',
+        healMarketBuyPriceMultiplier: 'Max price multiplier',
         healHp: 'Use food under HP',
         healTabs: 'Inventory Tabs',
         highest: 'Highest',
@@ -307,6 +331,9 @@
         eventExpedition: 'Wyprawa Eventowa',
         expedition: 'Wyprawa',
         heal: 'Auto Heal',
+        healMarketBuy: 'Auto kupowanie jedzenia',
+        healMarketBuyInterval: 'Interwał marketu (minuty)',
+        healMarketBuyPriceMultiplier: 'Mnożnik maks. ceny',
         healHp: 'Użyj jedzenia poniżej HP',
         healTabs: 'Zakładki Ekwipunku',
         highest: 'Najwyższy',
@@ -345,6 +372,9 @@
         eventExpedition: 'Expedición de Evento',
         expedition: 'Expedición',
         heal: 'Auto Heal',
+        healMarketBuy: 'Auto comprar comida',
+        healMarketBuyInterval: 'Intervalo de mercado (minutos)',
+        healMarketBuyPriceMultiplier: 'Multiplicador de precio máximo',
         healHp: 'Usar comida bajo HP',
         healTabs: 'Pestañas de Inventario',
         highest: 'Más alto',
@@ -566,6 +596,19 @@
                         <div class="settingsSubcontent">
                             <div id="do_heal_true" class="settingsButton">${content.yes}</div>
                             <div id="do_heal_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.healMarketBuy}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_heal_market_buy_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_heal_market_buy_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.healMarketBuyInterval}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_heal_market_buy_interval" class="settingsInput" type="number" min="1" value="${healMarketBuyIntervalMinutes}">
+                        </div>
+                        <div class="settingsHeaderSmall">${content.healMarketBuyPriceMultiplier}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_heal_market_buy_price_multiplier" class="settingsInput" type="number" min="0.1" step="0.1" value="${healMarketFoodPriceMultiplier}">
                         </div>
                         <div class="settingsHeaderSmall">${content.healHp}</div>
                         <div class="settingsSubcontent">
@@ -810,6 +853,33 @@
         $("#do_heal_true").click(function () { setHealEnabled(true) });
         $("#do_heal_false").click(function () { setHealEnabled(false) });
 
+        function setHealMarketBuyEnabled(bool) {
+            healMarketBuyEnabled = bool;
+            localStorage.setItem('tdmHealMarketBuyEnabled', bool);
+            reloadSettings();
+        };
+
+        $("#do_heal_market_buy_true").click(function () { setHealMarketBuyEnabled(true) });
+        $("#do_heal_market_buy_false").click(function () { setHealMarketBuyEnabled(false) });
+
+        function setHealMarketBuyIntervalMinutes(value) {
+            const nextValue = Math.max(1, Number(value) || 10);
+            healMarketBuyIntervalMinutes = nextValue;
+            localStorage.setItem('tdmHealMarketScanIntervalMinutes', nextValue);
+            reloadSettings();
+        };
+
+        $("#set_heal_market_buy_interval").change(function () { setHealMarketBuyIntervalMinutes(this.value) });
+
+        function setHealMarketFoodPriceMultiplier(value) {
+            const nextValue = Math.max(0.1, Number(value) || 1.2);
+            healMarketFoodPriceMultiplier = nextValue;
+            localStorage.setItem('tdmHealMarketFoodPriceMultiplier', nextValue);
+            reloadSettings();
+        };
+
+        $("#set_heal_market_buy_price_multiplier").change(function () { setHealMarketFoodPriceMultiplier(this.value) });
+
         function setHealUnderHP(value) {
             const nextValue = Math.min(100, Math.max(1, Number(value) || 40));
             healUnderHP = nextValue;
@@ -967,8 +1037,9 @@
             $(`#do_event_expedition_${doEventExpedition}`).addClass('active');
             $(`#set_event_monster_id_${eventMonsterId}`).addClass('active');
 
-            $('#heal_settings').addClass(healEnabled ? 'active' : 'inactive');
+            $('#heal_settings').addClass((healEnabled || healMarketBuyEnabled) ? 'active' : 'inactive');
             $(`#do_heal_${healEnabled}`).addClass('active');
+            $(`#do_heal_market_buy_${healMarketBuyEnabled}`).addClass('active');
             healTabs.forEach(function (tab) {
                 $(`#set_heal_tab_${tab}`).addClass('active');
             });

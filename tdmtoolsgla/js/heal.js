@@ -1,8 +1,11 @@
 function heal() {
     const INVENTORY_SIZE = { width: 8, height: 5 };
     const DEFAULT_TAB_1_BAG = 512;
-    const REFILL_COOLDOWN_MS = 15 * 60 * 1000;
+    const REFILL_COOLDOWN_MS = 10 * 60 * 1000;
     const REFILL_CHECKED_AT_KEY = 'tdmHealFoodRefillCheckedAt';
+    const MARKET_SCAN_CHECKED_AT_KEY = 'tdmHealFoodMarketScanCheckedAt';
+    const MARKET_FOOD_PRICE_MULTIPLIER = getMarketFoodPriceMultiplier();
+    const MARKET_SCAN_INTERVAL_MS = getMarketScanIntervalMs();
 
     if (sessionStorage.getItem('autoGoActive') !== 'true') {
         console.log('Heal khong chay vi Auto GO dang tat');
@@ -10,6 +13,7 @@ function heal() {
     }
 
     const enableHeal = localStorage.getItem('healEnabled') === null ? true : localStorage.getItem('healEnabled') === "true";
+    const enableMarketFoodBuy = localStorage.getItem('tdmHealMarketBuyEnabled') === null ? true : localStorage.getItem('tdmHealMarketBuyEnabled') === "true";
     const savedUnderHP = Number(localStorage.getItem('healUnderHP'));
     const underHP = Number.isNaN(savedUnderHP) || savedUnderHP < 1 ? 40 : Math.min(100, savedUnderHP);
     const healTabs = getHealTabs();
@@ -26,6 +30,14 @@ function heal() {
     }
 
     const avatar = document.querySelector('#avatar .ui-droppable');
+
+    if (enableMarketFoodBuy) {
+        runMarketFoodScan();
+
+        if (!window.tdmHealMarketScanTimer) {
+            window.tdmHealMarketScanTimer = setInterval(runMarketFoodScan, MARKET_SCAN_INTERVAL_MS);
+        }
+    }
     
     if (enableHeal && !window.location.href.includes("mod=auction") && !window.location.href.includes("mod=training")) {
         console.log('Heal đã được bật tại HP dưới: ' + underHP + ', tabs: ' + healTabs.join(', '));
@@ -149,6 +161,19 @@ function heal() {
         } catch (error) {
             return [5, 4, 1];
         }
+    }
+
+    function getMarketScanIntervalMs() {
+        const savedInterval = Number(localStorage.getItem('tdmHealMarketScanIntervalMinutes'));
+        const intervalMinutes = Number.isNaN(savedInterval) ? 10 : Math.max(1, savedInterval);
+
+        return intervalMinutes * 60 * 1000;
+    }
+
+    function getMarketFoodPriceMultiplier() {
+        const savedMultiplier = Number(localStorage.getItem('tdmHealMarketFoodPriceMultiplier'));
+
+        return Number.isNaN(savedMultiplier) ? 1.2 : Math.max(0.1, savedMultiplier);
     }
 
     function getItemType(item) {
@@ -547,6 +572,231 @@ function heal() {
         } catch (error) {
             console.warn('TDM Heal: Lỗi refill food từ packages:', error);
         }
+    }
+
+    function parseGoldValue(value) {
+        if (value === null || value === undefined) {
+            return 0;
+        }
+
+        const normalizedValue = String(value).trim().toLowerCase();
+        if (!normalizedValue) {
+            return 0;
+        }
+
+        const multiplier = normalizedValue.endsWith('k') ? 1000 :
+            normalizedValue.endsWith('m') ? 1000000 : 1;
+        const numericValue = Number(normalizedValue
+            .replace(/[km]$/i, '')
+            .replace(/[^\d]/g, ''));
+
+        return Number.isFinite(numericValue) ? numericValue * multiplier : 0;
+    }
+
+    function parseHealValue(tooltip) {
+        const match = String(tooltip || '').match(/heals\s+([\d.]+)\s+(?:of\s+)?life/i);
+        return match ? parseGoldValue(match[1]) : 0;
+    }
+
+    function getMarketPageNumbers(root) {
+        const pageRoot = root || document;
+        const pages = Array.from(pageRoot.querySelectorAll('.pagination .paging_numbers a, .pagination .paging_numbers_current'))
+            .map(function (page) {
+                return parseInt(page.textContent.trim(), 10);
+            })
+            .filter(function (page) {
+                return !Number.isNaN(page) && page > 0;
+            });
+
+        Array.from(pageRoot.querySelectorAll('.pagination a[href*="p="], a[href*="page="]')).forEach(function (link) {
+            const href = link.getAttribute('href') || '';
+            const matches = href.match(/(?:[?&])(?:p|page)=(\d+)/g) || [];
+            matches.forEach(function (match) {
+                const page = parseInt(match.replace(/^\D+/, ''), 10);
+                if (!Number.isNaN(page) && page > 0) {
+                    pages.push(page);
+                }
+            });
+        });
+
+        const maxPage = pages.length ? Math.max.apply(null, pages) : 1;
+        const pageNumbers = [];
+        for (let page = 1; page <= maxPage; page++) {
+            pageNumbers.push(page);
+        }
+
+        return pageNumbers;
+    }
+
+    function getMarketItemData(form) {
+        const fallbackRow = form.nextElementSibling && form.nextElementSibling.matches('tr') ? form.nextElementSibling : null;
+        const item = form.querySelector('[data-content-type]') || (fallbackRow && fallbackRow.querySelector('[data-content-type]'));
+        const buyIdInput = form.querySelector('input[name="buyid"]');
+        const row = item && (item.closest('tr') || fallbackRow);
+
+        if (!item || !buyIdInput || !row) {
+            return null;
+        }
+
+        const basis = item.dataset.basis || '';
+        const itemType = basis.split('-')[0] || item.dataset.contentType || '';
+        const tooltip = item.getAttribute('data-tooltip') || '';
+        const cells = row.querySelectorAll('td');
+        const price = cells.length >= 3 ? parseGoldValue(cells[2].textContent) : 0;
+        const healValue = parseHealValue(tooltip);
+
+        return {
+            form,
+            buyId: buyIdInput.value,
+            fields: getMarketBuyFields(form, buyIdInput.value),
+            itemType,
+            basis,
+            tooltip,
+            soulboundTo: item.dataset.soulboundTo || '',
+            price,
+            healValue,
+            maxPrice: Math.floor(healValue * MARKET_FOOD_PRICE_MULTIPLIER),
+        };
+    }
+
+    function getMarketBuyFields(form, buyId) {
+        const fields = {
+            buyid: buyId,
+            qry: '',
+            seller: '',
+            f: '7',
+            fl: '0',
+            fq: '-1',
+            s: 'p',
+            p: '1',
+            buy: 'Buy',
+        };
+
+        Array.from(form.querySelectorAll('input[name]')).forEach(function (input) {
+            fields[input.name] = input.value || '';
+        });
+        fields.buyid = fields.buyid || buyId;
+        fields.buy = fields.buy || 'Buy';
+
+        return fields;
+    }
+
+    function isMarketFoodItem(item) {
+        if (!item || item.itemType !== '7') {
+            return false;
+        }
+
+        if (item.soulboundTo || String(item.tooltip || '').toLowerCase().includes('soul bound to:')) {
+            return false;
+        }
+
+        const utilityUsables = ['7-23', '7-24', '7-25', '7-26', '7-27', '7-29', '7-31'];
+        if (utilityUsables.includes(item.basis)) {
+            return false;
+        }
+
+        return item.healValue > 0 && item.price > 0 && item.price <= item.maxPrice;
+    }
+
+    async function findMarketFoodItem() {
+        const marketParams = {
+            mod: 'market',
+            fl: '0',
+            fq: '-1',
+            f: '7',
+            qry: '',
+            seller: '',
+            s: 'p',
+            p: 1,
+        };
+        const firstPageHtml = await gameGet('index.php', marketParams);
+        const firstPageDoc = parseHtml(firstPageHtml);
+        const pages = getMarketPageNumbers(firstPageDoc);
+        const candidates = [];
+
+        for (const page of pages) {
+            let doc = firstPageDoc;
+
+            if (page !== 1) {
+                const html = await gameGet('index.php', Object.assign({}, marketParams, {
+                    p: page,
+                }));
+                doc = parseHtml(html);
+            }
+
+            const pageItems = Array.from(doc.querySelectorAll('#market_table form[name="buyForm"], form[name="buyForm"]'))
+                .map(getMarketItemData)
+                .filter(isMarketFoodItem);
+
+            candidates.push.apply(candidates, pageItems);
+        }
+
+        return candidates.sort(function (left, right) {
+            const leftRatio = left.price / left.healValue;
+            const rightRatio = right.price / right.healValue;
+            return leftRatio - rightRatio || right.healValue - left.healValue;
+        })[0] || null;
+    }
+
+    async function buyMarketItem(item) {
+        const formData = new URLSearchParams();
+        Object.keys(item.fields).forEach(function (key) {
+            formData.set(key, item.fields[key]);
+        });
+
+        const action = item.form.getAttribute('action') || buildGameUrl('index.php', { mod: 'market' });
+        const response = await fetch(action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            },
+            credentials: 'same-origin',
+            redirect: 'manual',
+        });
+        const text = await response.text();
+
+        if (response.type === 'opaqueredirect' || response.status === 0) {
+            throw new Error('Game redirect sang lobby. Hay reload trang roi thu lai.');
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${text.slice(0, 120)}`);
+        }
+
+        return text;
+    }
+
+    async function buyFoodFromMarket() {
+        const lastMarketScanAt = Number(localStorage.getItem(MARKET_SCAN_CHECKED_AT_KEY) || '0');
+        if (Date.now() - lastMarketScanAt < MARKET_SCAN_INTERVAL_MS) {
+            console.log('TDM Heal: Vừa quét market tìm food, chờ đủ ' + Math.round(MARKET_SCAN_INTERVAL_MS / 60000) + ' phút trước khi thử lại.');
+            return false;
+        }
+
+        localStorage.setItem(MARKET_SCAN_CHECKED_AT_KEY, String(Date.now()));
+
+        const food = await findMarketFoodItem();
+
+        if (!food) {
+            console.log('TDM Heal: Không có food market hợp lệ, không soulbound, giá <= heal x ' + MARKET_FOOD_PRICE_MULTIPLIER + '.');
+            return false;
+        }
+
+        if (player.gold > 0 && food.price > player.gold) {
+            console.log('TDM Heal: Food market hợp lệ nhưng không đủ gold. Giá: ' + food.price + ', gold: ' + player.gold + '.');
+            return false;
+        }
+
+        await buyMarketItem(food);
+        console.log('TDM Heal: Đã mua food market buyid ' + food.buyId + ', heal ' + food.healValue + ', giá ' + food.price + '.');
+        return true;
+    }
+
+    function runMarketFoodScan() {
+        buyFoodFromMarket().catch(function (error) {
+            console.warn('TDM Heal: Lỗi quét market mua food:', error);
+        });
     }
 }
 heal();
