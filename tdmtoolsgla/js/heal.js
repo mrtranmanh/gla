@@ -6,6 +6,7 @@ function heal() {
     const MARKET_SCAN_CHECKED_AT_KEY = 'tdmHealFoodMarketScanCheckedAt';
     const MARKET_FOOD_PRICE_MULTIPLIER = getMarketFoodPriceMultiplier();
     const MARKET_SCAN_INTERVAL_MS = getMarketScanIntervalMs();
+    const MARKET_FOOD_MIN_GOLD_RESERVE = 5000;
 
     if (sessionStorage.getItem('autoGoActive') !== 'true') {
         console.log('Heal khong chay vi Auto GO dang tat');
@@ -698,7 +699,43 @@ function heal() {
         return item.healValue > 0 && item.price > 0 && item.price <= item.maxPrice;
     }
 
-    async function findMarketFoodItem() {
+    function getSortedMarketFoodItems(root) {
+        return Array.from(root.querySelectorAll('#market_table form[name="buyForm"], form[name="buyForm"]'))
+            .map(getMarketItemData)
+            .filter(isMarketFoodItem)
+            .sort(function (left, right) {
+                const leftRatio = left.price / left.healValue;
+                const rightRatio = right.price / right.healValue;
+                return leftRatio - rightRatio || right.healValue - left.healValue;
+            });
+    }
+
+    async function loadMarketFoodPage(page, marketParams, firstPageDoc) {
+        if (page === 1) {
+            return firstPageDoc;
+        }
+
+        const html = await gameGet('index.php', Object.assign({}, marketParams, {
+            p: page,
+        }));
+
+        return parseHtml(html);
+    }
+
+    async function buyFoodFromMarket() {
+        const lastMarketScanAt = Number(localStorage.getItem(MARKET_SCAN_CHECKED_AT_KEY) || '0');
+        if (Date.now() - lastMarketScanAt < MARKET_SCAN_INTERVAL_MS) {
+            console.log('TDM Heal: Vừa quét market tìm food, chờ đủ ' + Math.round(MARKET_SCAN_INTERVAL_MS / 60000) + ' phút trước khi thử lại.');
+            return false;
+        }
+
+        localStorage.setItem(MARKET_SCAN_CHECKED_AT_KEY, String(Date.now()));
+
+        if (player.gold <= MARKET_FOOD_MIN_GOLD_RESERVE) {
+            console.log('TDM Heal: Gold hiện tại không đủ hoặc dưới mức giữ lại ' + MARKET_FOOD_MIN_GOLD_RESERVE + '.');
+            return false;
+        }
+
         const marketParams = {
             mod: 'market',
             fl: '0',
@@ -712,30 +749,51 @@ function heal() {
         const firstPageHtml = await gameGet('index.php', marketParams);
         const firstPageDoc = parseHtml(firstPageHtml);
         const pages = getMarketPageNumbers(firstPageDoc);
-        const candidates = [];
+        let remainingGold = player.gold - MARKET_FOOD_MIN_GOLD_RESERVE;
+        let bought = 0;
+        let spent = 0;
 
         for (const page of pages) {
-            let doc = firstPageDoc;
-
-            if (page !== 1) {
-                const html = await gameGet('index.php', Object.assign({}, marketParams, {
-                    p: page,
-                }));
-                doc = parseHtml(html);
+            if (remainingGold <= 0) {
+                break;
             }
 
-            const pageItems = Array.from(doc.querySelectorAll('#market_table form[name="buyForm"], form[name="buyForm"]'))
-                .map(getMarketItemData)
-                .filter(isMarketFoodItem);
+            const doc = await loadMarketFoodPage(page, marketParams, firstPageDoc);
+            const foods = getSortedMarketFoodItems(doc);
 
-            candidates.push.apply(candidates, pageItems);
+            if (!foods.length) {
+                console.log('TDM Heal: Page market ' + page + ' không có food hợp lệ.');
+                continue;
+            }
+
+            console.log('TDM Heal: Đang xử lý page market ' + page + ', tìm thấy ' + foods.length + ' food hợp lệ.');
+
+            for (const food of foods) {
+                if (food.price > remainingGold) {
+                    continue;
+                }
+
+                await buyMarketItem(food);
+                bought++;
+                spent += food.price;
+
+                remainingGold -= food.price;
+
+                console.log('TDM Heal: Đã mua food market buyid ' + food.buyId + ', heal ' + food.healValue + ', giá ' + food.price + '.');
+
+                if (remainingGold <= 0) {
+                    break;
+                }
+            }
         }
 
-        return candidates.sort(function (left, right) {
-            const leftRatio = left.price / left.healValue;
-            const rightRatio = right.price / right.healValue;
-            return leftRatio - rightRatio || right.healValue - left.healValue;
-        })[0] || null;
+        if (!bought) {
+            console.log('TDM Heal: Có food market hợp lệ nhưng không đủ gold sau khi giữ lại ' + MARKET_FOOD_MIN_GOLD_RESERVE + '. Gold hiện tại: ' + player.gold + '.');
+            return false;
+        }
+
+        console.log('TDM Heal: Đã mua ' + bought + ' food market, tổng giá ' + spent + ', gold còn lại ước tính ' + (remainingGold + MARKET_FOOD_MIN_GOLD_RESERVE) + '.');
+        return true;
     }
 
     async function buyMarketItem(item) {
@@ -765,32 +823,6 @@ function heal() {
         }
 
         return text;
-    }
-
-    async function buyFoodFromMarket() {
-        const lastMarketScanAt = Number(localStorage.getItem(MARKET_SCAN_CHECKED_AT_KEY) || '0');
-        if (Date.now() - lastMarketScanAt < MARKET_SCAN_INTERVAL_MS) {
-            console.log('TDM Heal: Vừa quét market tìm food, chờ đủ ' + Math.round(MARKET_SCAN_INTERVAL_MS / 60000) + ' phút trước khi thử lại.');
-            return false;
-        }
-
-        localStorage.setItem(MARKET_SCAN_CHECKED_AT_KEY, String(Date.now()));
-
-        const food = await findMarketFoodItem();
-
-        if (!food) {
-            console.log('TDM Heal: Không có food market hợp lệ, không soulbound, giá <= heal x ' + MARKET_FOOD_PRICE_MULTIPLIER + '.');
-            return false;
-        }
-
-        if (player.gold > 0 && food.price > player.gold) {
-            console.log('TDM Heal: Food market hợp lệ nhưng không đủ gold. Giá: ' + food.price + ', gold: ' + player.gold + '.');
-            return false;
-        }
-
-        await buyMarketItem(food);
-        console.log('TDM Heal: Đã mua food market buyid ' + food.buyId + ', heal ' + food.healValue + ', giá ' + food.price + '.');
-        return true;
     }
 
     function runMarketFoodScan() {
