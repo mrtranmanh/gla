@@ -1025,10 +1025,6 @@
             return;
         }
 
-        const limitText = goldLimit > 0 ? `\nDung khi gold dat ${formatGoldValue(goldLimit)}.` : '';
-        if (!confirm(`Ban ${items.length} item khop filter trong tat ca page packages vao shop?${limitText}`)) {
-            return;
-        }
 
         isSelling = true;
         shouldStop = false;
