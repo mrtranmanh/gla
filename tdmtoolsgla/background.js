@@ -197,6 +197,24 @@ chrome.webNavigation.onErrorOccurred.addListener(function (details) {
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request && request.type === 'tdmFetchEquipmentStats') {
+        fetchEquipmentStats(request.payload)
+            .then(function (html) {
+                sendResponse({
+                    success: true,
+                    html
+                });
+            })
+            .catch(function (error) {
+                sendResponse({
+                    success: false,
+                    error: error.message || String(error)
+                });
+            });
+
+        return true;
+    }
+
     const color = '#3aa757';
 
     chrome.storage.sync.set({ color }, function () {
@@ -205,3 +223,32 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     return true;
 });
+
+async function fetchEquipmentStats(payload) {
+    if (!payload || !payload.item) {
+        throw new Error('Thieu cong thuc item.');
+    }
+
+    const params = new URLSearchParams();
+    params.set('prefix', payload.prefix || '0');
+    params.set('item', payload.item);
+    params.set('suffix', payload.suffix || '0');
+
+    const response = await fetch('https://en.gladiatus-tools.com/ajax.php?mode=equipment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: params.toString(),
+        credentials: 'omit',
+        cache: 'no-store'
+    });
+
+    const text = await response.text();
+    if (!response.ok) {
+        throw new Error(`Gladiatus Tools HTTP ${response.status}: ${text.slice(0, 120)}`);
+    }
+
+    return text;
+}

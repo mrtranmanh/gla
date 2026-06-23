@@ -1,0 +1,797 @@
+
+<!DOCTYPE html>
+<html dir="ltr">
+<head>
+	<meta charset="utf-8" />
+	<title>Gladiatus Tools :: Equipment</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+	<meta name="description" content="" />
+	<meta name="author" content="Michalus" />
+	<link rel="icon" href="./favicon.png" />
+    <link href="./css/_CSS_bundle.css?build=20190915_1" rel="stylesheet" />
+    <style id="hide-theme">
+    	body {
+    		visibility: hidden;
+    	}
+    </style>
+    <script src="./js/theme.js?build=20190915_1"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-9BS9HHGENJ"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'G-9BS9HHGENJ');
+	</script>
+</head>
+<body>
+	<div class="container-fluid" id="wrapper">
+		<div class="row">
+			<nav class="sidebar col-xs-12 col-sm-4 col-lg-3 col-xl-2">
+				<h1 class="site-title"><a href="./">Gladiatus Tools</a></h1>
+													
+				<a href="#menu-toggle" class="btn btn-default" id="menu-toggle"><em class="fa fa-bars"></em></a>
+				<ul class="nav nav-pills flex-column sidebar-nav">
+					<li class="nav-item"><a class="nav-link " href="./"><em class="fa fa-book"></em> Read Me</a></li>
+					<li class=""><br /></li>
+					<li class="nav-item"><a class="nav-link active" href="./equipment"><em class="fa fa-shield"></em> Equipment</a></li>
+					<li class="nav-item"><a class="nav-link " href="./prefixes"><em class="fa fa-table"></em> Prefixes</a></li>
+					<li class="nav-item"><a class="nav-link " href="./suffixes"><em class="fa fa-table"></em> Suffixes</a></li>
+					<li class=""><br /></li>
+					<li class="nav-item"><a class="nav-link " href="./charplanner"><em class="fa fa-lightbulb-o"></em> CharPlanner</a></li>
+					<li class=""><br /></li>
+					<li class="nav-item"><a class="nav-link " href="./resources"><em class="fa fa-list"></em> Resources</a></li>
+					<li class=""><br /></li>
+					<li class="parent nav-item"><a class="nav-link  " data-toggle="collapse" href="#sub-item-1">
+						<em class="fa fa-list-ol"></em> Weekly highscore <span data-toggle="collapse" href="#sub-item-1" class="icon pull-right"><i class="fa fa-chevron-down"></i></span>
+					</a>
+						<ul class="children collapse" id="sub-item-1">
+							<li class="nav-item"><a class="nav-link " href="./weekly-highscore">Worldwide</a></li>
+							<li class="nav-item"><a class="nav-link " href="./community-weekly-highscore">Of community</a></li>
+						</ul>
+					</li>
+					<li class="parent nav-item"><a class="nav-link  " data-toggle="collapse" href="#sub-item-2">
+						<em class="fa fa-list-ol"></em> Overall highscore <span data-toggle="collapse" href="#sub-item-2" class="icon pull-right"><i class="fa fa-chevron-down"></i></span>
+					</a>
+						<ul class="children collapse" id="sub-item-2">
+							<li class="nav-item"><a class="nav-link " href="./overall-highscore">Worldwide</a></li>
+							<li class="nav-item"><a class="nav-link " href="./community-overall-highscore">Of community</a></li>
+						</ul>
+					</li>
+					<li class=""><br /></li>
+					<li class="parent nav-item"><a class="nav-link " data-toggle="collapse" href="#sub-item-3">
+						<em class="fa fa-calculator"></em> Calculators <span data-toggle="collapse" href="#sub-item-3" class="icon pull-right"><i class="fa fa-chevron-down"></i></span>
+					</a>
+						<ul class="children collapse" id="sub-item-3">
+							<li class="nav-item"><a class="nav-link " href="./training">Cost of training</a></li>
+						</ul>
+					</li>
+					<li class=""><br /></li>
+					<li class="parent nav-item"><a class="nav-link" data-toggle="collapse" href="#sub-item-4">
+						<em class="fa fa-globe"></em> Community: United Kingdom <span data-toggle="collapse" href="#sub-item-4" class="icon pull-right"><i class="fa fa-chevron-down"></i></span>
+					</a>
+						<ul class="children collapse" id="sub-item-4">
+							<li class="nav-item"><a class="nav-link" href="https://ar.gladiatus-tools.com/equipment?item=1,1-1,0">Argentina</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://br.gladiatus-tools.com/equipment?item=1,1-1,0">Brasil</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://cz.gladiatus-tools.com/equipment?item=1,1-1,0">Česká Republika</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://dk.gladiatus-tools.com/equipment?item=1,1-1,0">Danmark</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://de.gladiatus-tools.com/equipment?item=1,1-1,0">Deutschland</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://ee.gladiatus-tools.com/equipment?item=1,1-1,0">Eesti</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://es.gladiatus-tools.com/equipment?item=1,1-1,0">España</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://fr.gladiatus-tools.com/equipment?item=1,1-1,0">France</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://it.gladiatus-tools.com/equipment?item=1,1-1,0">Italia</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://lv.gladiatus-tools.com/equipment?item=1,1-1,0">Latvija</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://lt.gladiatus-tools.com/equipment?item=1,1-1,0">Lietuva</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://hu.gladiatus-tools.com/equipment?item=1,1-1,0">Magyarország</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://mx.gladiatus-tools.com/equipment?item=1,1-1,0">México</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://nl.gladiatus-tools.com/equipment?item=1,1-1,0">Nederland</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://no.gladiatus-tools.com/equipment?item=1,1-1,0">Norge</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://pl.gladiatus-tools.com/equipment?item=1,1-1,0">Polska</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://pt.gladiatus-tools.com/equipment?item=1,1-1,0">Portugal</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://ro.gladiatus-tools.com/equipment?item=1,1-1,0">Romania</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://sk.gladiatus-tools.com/equipment?item=1,1-1,0">Slovensko</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://fi.gladiatus-tools.com/equipment?item=1,1-1,0">Suomi</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://se.gladiatus-tools.com/equipment?item=1,1-1,0">Sverige</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://tr.gladiatus-tools.com/equipment?item=1,1-1,0">Türkiye</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://en.gladiatus-tools.com/equipment?item=1,1-1,0">United Kingdom</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://us.gladiatus-tools.com/equipment?item=1,1-1,0">USA</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://gr.gladiatus-tools.com/equipment?item=1,1-1,0">Ελλάδα</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://bg.gladiatus-tools.com/equipment?item=1,1-1,0">България</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://ru.gladiatus-tools.com/equipment?item=1,1-1,0">Российская Федерация</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://il.gladiatus-tools.com/equipment?item=1,1-1,0">ישראל</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://ae.gladiatus-tools.com/equipment?item=1,1-1,0">الإمارات العربية المتحدة</a></li>
+							<li class="nav-item"><a class="nav-link" href="https://tw.gladiatus-tools.com/equipment?item=1,1-1,0">台灣</a></li>
+						</ul>
+					</li>
+					<li class="nav-item"><a class="nav-link " href="./contact"><em class="fa fa-comments-o"></em> Contact</a></li>
+					<li class=""><br /></li>
+					<li class="parent nav-item"><a class="nav-link" data-toggle="collapse" href="#sub-item-5">
+						<em class="fa fa-paint-brush"></em> Theme <span data-toggle="collapse" href="#sub-item-5" class="icon pull-right"><i class="fa fa-chevron-down"></i></span>
+					</a>
+						<ul class="children collapse" id="sub-item-5">
+							<li class="nav-item"><a class="nav-link theme-btn" href="#" data-theme="default">default</a></li>
+							<li class="nav-item"><a class="nav-link theme-btn" href="#" data-theme="teal">green</a></li>
+							<li class="nav-item"><a class="nav-link theme-btn" href="#" data-theme="ruby">red</a></li>
+							<li class="nav-item"><a class="nav-link theme-btn" href="#" data-theme="organic">coffee</a></li>
+							<li class="nav-item"><a class="nav-link theme-btn" href="#" data-theme="nightfall">dark</a></li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+			<main class="col-xs-12 col-sm-8 col-lg-9 col-xl-10 pt-3 pl-4 ml-auto">
+				<header class="page-header row justify-center">
+					<div class="col">
+						<h1 class="float-left text-center text-md-left">Equipment</h1>
+					</div>
+				</header>
+				<section class="row">
+					<div class="col-sm-12">
+						<section class="row">
+							<div class="col-lg-12">
+								<form id="equipmentCalcForm" method="post">
+									<div class="card mb-4">
+										<div class="card-block">
+											<h3 class="card-title">Equipment stats calculator</h3>
+											<p>Pick item, prefix and suffix. Results will be shown below the form</p>
+											<div class="row">
+												<div class="col-lg-3">
+													<div class="card mb-4">
+														<div class="card-header">Prefix</div>
+														<div class="card-block">
+															<select name="prefix" class="form-control">
+																<option value="0">-</option>
+																<option value="186">Accas (140)</option>
+																<option value="46">Adendathiels (36)</option>
+																<option value="183">Africanus` (120)</option>
+																<option value="162">Ambrosius` (106)</option>
+																<option value="2">Amelias (30)</option>
+																<option value="35">Amoviels (16)</option>
+																<option value="160">Amulius (105)</option>
+																<option value="109">Anchorons (80)</option>
+																<option value="173">Angelus` (112)</option>
+																<option value="142">Antonius (92)</option>
+																<option value="116">Appius (82)</option>
+																<option value="175">Arpagius` (114)</option>
+																<option value="40">Asayseths (32)</option>
+																<option value="17">Asendacs (29)</option>
+																<option value="50">Ashitills (40)</option>
+																<option value="156">Asphodel`s (102)</option>
+																<option value="182">Aulus` (120)</option>
+																<option value="154">Aurelius (100)</option>
+																<option value="180">Auroras (119)</option>
+																<option value="151">Avalonius (99)</option>
+																<option value="45">Bacias (30)</option>
+																<option value="98">Barbekuus (65)</option>
+																<option value="28">Beasthammers (32)</option>
+																<option value="148">Belisarius (96)</option>
+																<option value="76">Bereccas (37)</option>
+																<option value="9">Berrys (31)</option>
+																<option value="27">Bilgs (28)</option>
+																<option value="178">Caesius` (117)</option>
+																<option value="170">Caldus` (110)</option>
+																<option value="36">Calódiens (16)</option>
+																<option value="177">Camillus` (116)</option>
+																<option value="13">Chabdyns (32)</option>
+																<option value="41">Chalinis (28)</option>
+																<option value="18">Chealoths (24)</option>
+																<option value="95">Cheggovs (62)</option>
+																<option value="105">Chucks (74)</option>
+																<option value="42">Ciallans (31)</option>
+																<option value="44">Cisiens (31)</option>
+																<option value="149">Constantius (97)</option>
+																<option value="112">Dairus (87)</option>
+																<option value="120">Decimus (83)</option>
+																<option value="30">Demonkillers (32)</option>
+																<option value="12">Denovs * (21)</option>
+																<option value="138">Dexterus (86)</option>
+																<option value="4">Doitrems (25)</option>
+																<option value="100">Doomeniks * (68)</option>
+																<option value="158">Dragonus` (104)</option>
+																<option value="19">Elrarangs (31)</option>
+																<option value="5">Elvilmandels (20)</option>
+																<option value="37">Elywens (26)</option>
+																<option value="52">Evotavs (50)</option>
+																<option value="96">Fernabasts (63)</option>
+																<option value="79">Fitschis (41)</option>
+																<option value="23">Frabos (23)</option>
+																<option value="67">Frickoys (26)</option>
+																<option value="72">Frientas (32)</option>
+																<option value="84">Fustriels (48)</option>
+																<option value="20">Gadriewens (28)</option>
+																<option value="185">Gaias (130)</option>
+																<option value="118">Gaius (90)</option>
+																<option value="8">Galarands (33)</option>
+																<option value="83">Gidras (46)</option>
+																<option value="141">Giganticus (92)</option>
+																<option value="25">Gonaks (31)</option>
+																<option value="26">Granks (28)</option>
+																<option value="3">Grasscrawlers (30)</option>
+																<option value="179">Gratias (118)</option>
+																<option value="174">Gratius` (113)</option>
+																<option value="88">Grills * (53)</option>
+																<option value="74">Heudois (35)</option>
+																<option value="85">Heuhois (49)</option>
+																<option value="15">Ibiwans (29)</option>
+																<option value="55">Ichorus (80)</option>
+																<option value="70">Ismaels (30)</option>
+																<option value="6">Isundels (30)</option>
+																<option value="102">Jennifers (71)</option>
+																<option value="172">Joves (111)</option>
+																<option value="43">Kedyssis (30)</option>
+																<option value="49">Kerrannas (33)</option>
+																<option value="93">Korks (59)</option>
+																<option value="60">Kosmonas (17)</option>
+																<option value="101">Leandronimus (69)</option>
+																<option value="145">Lepidus (94)</option>
+																<option value="155">Lethe`s (101)</option>
+																<option value="91">Liloels (56)</option>
+																<option value="16">Lothays (26)</option>
+																<option value="122">Lucius (84)</option>
+																<option value="77">Lulus (39)</option>
+																<option value="71">Lurtscharas (31)</option>
+																<option value="171">Magnus` (111)</option>
+																<option value="139">Mandalus (90)</option>
+																<option value="124">Manius (85)</option>
+																<option value="146">Marcellus (95)</option>
+																<option value="115">Marcus (81)</option>
+																<option value="135">Mateus (85)</option>
+																<option value="82">Medonis (45)</option>
+																<option value="75">Melanchaetas (36)</option>
+																<option value="86">Melaneos (50)</option>
+																<option value="168">Mercurialis` (109)</option>
+																<option value="65">Mermereus (23)</option>
+																<option value="62">Mimas (19)</option>
+																<option value="167">Minucius` (109)</option>
+																<option value="97">Monychustas * (64)</option>
+																<option value="29">Mooncruchers (30)</option>
+																<option value="159">Mycandrilles` (104)</option>
+																<option value="31">Nariths (21)</option>
+																<option value="54">Opiehnzas (70)</option>
+																<option value="166">Oranius` (108)</option>
+																<option value="1">Orlelds (35)</option>
+																<option value="21">Peragos (32)</option>
+																<option value="78">Phalangens (40)</option>
+																<option value="176">Pilatus` (115)</option>
+																<option value="39">Poirins (23)</option>
+																<option value="152">Pontius (99)</option>
+																<option value="184">Porcius` (120)</option>
+																<option value="164">Primulus` (107)</option>
+																<option value="94">Purmanns (60)</option>
+																<option value="187">Quintas (150)</option>
+																<option value="144">Quintus (93)</option>
+																<option value="14">Rakrests (33)</option>
+																<option value="10">Rayols (27)</option>
+																<option value="24">Redos (27)</option>
+																<option value="61">Reinkes (18)</option>
+																<option value="81">Ronaldas (44)</option>
+																<option value="11">Rynightes (28)</option>
+																<option value="181">Scribonius` (120)</option>
+																<option value="157">Sebastianus` (103)</option>
+																<option value="108">Sentarions (78)</option>
+																<option value="169">Sergius` (110)</option>
+																<option value="130">Servius (86)</option>
+																<option value="131">Sextus (89)</option>
+																<option value="106">Shivas (76)</option>
+																<option value="140">Silvanus (91)</option>
+																<option value="68">Skiterus (27)</option>
+																<option value="64">Solitanis (22)</option>
+																<option value="92">Sphingens (58)</option>
+																<option value="132">Spurius (88)</option>
+																<option value="103">Stoybaers (72)</option>
+																<option value="22">Sugos (22)</option>
+																<option value="7">Táliths (45)</option>
+																<option value="34">Tanias (25)</option>
+																<option value="114">Tantus (81)</option>
+																<option value="143">Tellus (93)</option>
+																<option value="104">Thorstens (73)</option>
+																<option value="161">Tiberius` (105)</option>
+																<option value="32">Tinothiels (16)</option>
+																<option value="150">Titanius (98)</option>
+																<option value="134">Titus (88)</option>
+																<option value="53">Trafans (60)</option>
+																<option value="73">Tûnêsés (33)</option>
+																<option value="99">Umbros (67)</option>
+																<option value="80">Umfetas (42)</option>
+																<option value="48">Umilawens (27)</option>
+																<option value="51">Uridos (42)</option>
+																<option value="38">Uróthiens (25)</option>
+																<option value="163">Ursus` (107)</option>
+																<option value="165">Valentinus` (107)</option>
+																<option value="153">Valerius (100)</option>
+																<option value="147">Vergilius (95)</option>
+																<option value="33">Vuthiels (22)</option>
+																<option value="66">Watzmanns (24)</option>
+																<option value="90">Xenphlames (55)</option>
+																<option value="69">Xus (28)</option>
+																<option value="87">Yas * (51)</option>
+																<option value="47">Zeindras (32)</option>
+																<option value="63">Zickezackes (21)</option>
+																<option value="107">Zimbris (77)</option>
+																<option value="89">Zombers (54)</option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-lg-3">
+													<div class="card mb-4">
+														<div class="card-header">Item</div>
+														<div class="card-block">
+															<select name="item" class="form-control">
+																<optgroup label="Weapons">
+																	<option value="1-1">Club (1)</option>
+																	<option value="1-2">Short sword (1)</option>
+																	<option value="1-3">Short dagger (1)</option>
+																	<option value="1-4">Battle sickle (2)</option>
+																	<option value="1-5">Broad sword (3)</option>
+																	<option value="1-6">Gut graze (3)</option>
+																	<option value="1-7">Trident (4)</option>
+																	<option value="1-8">Long sword (4)</option>
+																	<option value="1-9">Axe (4)</option>
+																	<option value="1-10">Trident lance (5)</option>
+																	<option value="1-11">Broad axe (6)</option>
+																	<option value="1-12">Hammer (6)</option>
+																	<option value="1-13">Sharp dagger (2)</option>
+																	<option value="1-14">Angel of death (7)</option>
+																	<option value="1-15">Schiavone (8)</option>
+																	<option value="1-16">Gladius (9)</option>
+																	<option value="1-17">Khopesh (8)</option>
+																	<option value="1-18">Spear (9)</option>
+																	<option value="1-19">Seax (5)</option>
+																	<option value="1-20">Battle Staff (7)</option>
+																</optgroup>
+																<optgroup label="Shields">
+																	<option value="2-1">Planks (1)</option>
+																	<option value="2-2">Wooden shield (2)</option>
+																	<option value="2-3">Round shield (3)</option>
+																	<option value="2-4">Net (4)</option>
+																	<option value="2-5">Dragonshield (5)</option>
+																	<option value="2-6">Silvershield (6)</option>
+																	<option value="2-7">Towershield (7)</option>
+																	<option value="2-8">Fireshield (8)</option>
+																	<option value="2-9">Firetowershield (9)</option>
+																	<option value="2-10">Titanium Shield (10)</option>
+																	<option value="2-11">Viking Shield (3)</option>
+																	<option value="2-12">Egyptian Shield (5)</option>
+																</optgroup>
+																<optgroup label="Armors">
+																	<option value="3-1">Rags (1)</option>
+																	<option value="3-2">Leather armour (1)</option>
+																	<option value="3-3">Double leather (2)</option>
+																	<option value="3-4">Copper shoulders (3)</option>
+																	<option value="3-5">Half plate (4)</option>
+																	<option value="3-6">Copper plate (5)</option>
+																	<option value="3-7">Chainmail armour (6)</option>
+																	<option value="3-8">Iron plate (7)</option>
+																	<option value="3-9">Full plate (8)</option>
+																	<option value="3-10">Iron shoulders (9)</option>
+																	<option value="3-11">Hard leather armour (10)</option>
+																	<option value="3-12">Crocodile Plate Armour (4)</option>
+																</optgroup>
+																<optgroup label="Helmets">
+																	<option value="4-1">Leather cap (1)</option>
+																	<option value="4-2">Iron cap (1)</option>
+																	<option value="4-3">Myrmillo (2)</option>
+																	<option value="4-4">Thracian (2)</option>
+																	<option value="4-5">Gladiator helmet (3)</option>
+																	<option value="4-6">Skull helmet (4)</option>
+																	<option value="4-7">Viking helmet (6)</option>
+																	<option value="4-8">Centurio (7)</option>
+																	<option value="4-9">Centurio full helmet (9)</option>
+																	<option value="4-10">Brass centurio (10)</option>
+																	<option value="4-11">Copper helmet (5)</option>
+																	<option value="4-12">Spike helmet (8)</option>
+																	<option value="4-13">Spectacled Helmet (7)</option>
+																</optgroup>
+																<optgroup label="Gloves">
+																	<option value="5-1">Leather gloves (1)</option>
+																	<option value="5-2">Copper bracers (2)</option>
+																	<option value="5-3">Copper gloves (3)</option>
+																	<option value="5-4">Leather battle gloves (4)</option>
+																	<option value="5-5">Leather bracers (5)</option>
+																	<option value="5-6">Iron gauntlets (6)</option>
+																	<option value="5-7">Studded gloves (7)</option>
+																	<option value="5-8">Plate bracers (8)</option>
+																	<option value="5-9">Plate gauntlets (9)</option>
+																</optgroup>
+																<optgroup label="Rings">
+																	<option value="6-1">Blue ring (1)</option>
+																	<option value="6-2">Malachite ring (1)</option>
+																	<option value="6-3">Golden ring (1)</option>
+																	<option value="6-4">Silver ring (1)</option>
+																	<option value="6-5">Dragon ring (1)</option>
+																	<option value="6-6">Ruby ring (1)</option>
+																	<option value="6-7">Scarab (1)</option>
+																	<option value="6-8">Triskele (1)</option>
+																</optgroup>
+																<optgroup label="Shoes">
+																	<option value="8-1">Sandals (1)</option>
+																	<option value="8-2">Leather sandals (2)</option>
+																	<option value="8-3">Leather boots (3)</option>
+																	<option value="8-4">Leather battle boots (4)</option>
+																	<option value="8-5">Copper bandages (5)</option>
+																	<option value="8-6">Hunting boots (6)</option>
+																	<option value="8-7">Hard leather bandages (7)</option>
+																	<option value="8-8">Silver battle boots (8)</option>
+																	<option value="8-9">Studded boots (9)</option>
+																	<option value="8-10">Plate boots (10)</option>
+																</optgroup>
+																<optgroup label="Necklaces">
+																	<option value="9-1">Gold symbol (1)</option>
+																	<option value="9-2">Silver wreath (1)</option>
+																	<option value="9-3">Carnelian pendant (1)</option>
+																	<option value="9-4">Silver relict (1)</option>
+																	<option value="9-5">Sugilith pendant (1)</option>
+																	<option value="9-6">Malachite pendant (1)</option>
+																	<option value="9-7">Star talisman (1)</option>
+																	<option value="9-8">Ruby pendant (1)</option>
+																	<option value="9-9">Ra`s Eye (1)</option>
+																	<option value="9-10">Fibula (1)</option>
+																</optgroup>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-lg-3">
+													<div class="card mb-4">
+														<div class="card-header">Suffix</div>
+														<div class="card-block">
+															<select name="suffix" class="form-control">
+																<option value="0">-</option>
+																<option value="100">(+1) (1)</option>
+																<option value="101">(+2) (2)</option>
+																<option value="102">(+3) (3)</option>
+																<option value="103">(+4) (4)</option>
+																<option value="104">(+5) (5)</option>
+																<option value="105">(+6) (6)</option>
+																<option value="106">(+7) (7)</option>
+																<option value="107">(+8) (8)</option>
+																<option value="108">(+9) (9)</option>
+																<option value="191">of Accuracy (34)</option>
+																<option value="258">of Acheron (55)</option>
+																<option value="190">of Aggression (34)</option>
+																<option value="284">of Agony (59)</option>
+																<option value="186">of Alleluia (33)</option>
+																<option value="269">of Angst (57)</option>
+																<option value="283">of Anguish (59)</option>
+																<option value="178">of Antiquity (30)</option>
+																<option value="63">of Apprenticeship (20)</option>
+																<option value="64">of Arrogance * (18)</option>
+																<option value="34">of Assassination (20)</option>
+																<option value="137">of Attrition (18)</option>
+																<option value="38">of Balance (15)</option>
+																<option value="171">of Baptism (28)</option>
+																<option value="33">of Battle (20)</option>
+																<option value="97">of Belief (18)</option>
+																<option value="201">of Benevolence (37)</option>
+																<option value="206">of Blocking (39)</option>
+																<option value="40">of Blood (13)</option>
+																<option value="272">of Bondage (58)</option>
+																<option value="90">of Boost (22)</option>
+																<option value="16">of Brightness (10)</option>
+																<option value="31">of Brutality (19)</option>
+																<option value="194">of Caesar * (35)</option>
+																<option value="179">of Calling (31)</option>
+																<option value="124">of Capriciousness (14)</option>
+																<option value="261">of Cerberus (56)</option>
+																<option value="138">of Ceremony (18)</option>
+																<option value="142">of Chakra (19)</option>
+																<option value="144">of Cleverness (20)</option>
+																<option value="241">of Cold (51)</option>
+																<option value="125">of Concealment * (14)</option>
+																<option value="168">of Concentration (27)</option>
+																<option value="20">of Conflict (15)</option>
+																<option value="86">of Confusion (15)</option>
+																<option value="123">of Consecration (14)</option>
+																<option value="195">of Considerateness (35)</option>
+																<option value="158">of Corniness (24)</option>
+																<option value="160">of Corrosion (25)</option>
+																<option value="66">of Courage (20)</option>
+																<option value="166">of Crime * (27)</option>
+																<option value="45">of Darkness * (23)</option>
+																<option value="196">of Death (36)</option>
+																<option value="121">of Decapitation (13)</option>
+																<option value="287">of Decay (60)</option>
+																<option value="96">of Delicacy (21)</option>
+																<option value="133">of Demolition (17)</option>
+																<option value="266">of Demons (56)</option>
+																<option value="177">of Denomination (30)</option>
+																<option value="246">of Despair (52)</option>
+																<option value="30">of Desperation (17)</option>
+																<option value="277">of Destruction (58)</option>
+																<option value="19">of Difficulty * (15)</option>
+																<option value="44">of Diligence (20)</option>
+																<option value="37">of Distraction (18)</option>
+																<option value="151">of Division (22)</option>
+																<option value="248">of Dolour (54)</option>
+																<option value="239">of Dominance (42)</option>
+																<option value="113">of Downfall * (11)</option>
+																<option value="273">of Dread (58)</option>
+																<option value="247">of Dusk (53)</option>
+																<option value="215">of Earth (48)</option>
+																<option value="210">of Ease (43)</option>
+																<option value="187">of Elimination (33)</option>
+																<option value="129">of Emasculation (16)</option>
+																<option value="32">of Endurance (20)</option>
+																<option value="115">of Eradication (11)</option>
+																<option value="270">of Escape (58)</option>
+																<option value="146">of Evasion (21)</option>
+																<option value="202">of Execution * (37)</option>
+																<option value="175">of Expansion (29)</option>
+																<option value="60">of Failure * (15)</option>
+																<option value="71">of Fairness (17)</option>
+																<option value="291">of Faith (70)</option>
+																<option value="198">of Fatuity (36)</option>
+																<option value="78">of Favour (20)</option>
+																<option value="2">of Fear (10)</option>
+																<option value="234">of Fire (41)</option>
+																<option value="157">of Fragmentation (24)</option>
+																<option value="205">of Freedom (38)</option>
+																<option value="72">of Generosity (16)</option>
+																<option value="243">of Gloom (52)</option>
+																<option value="11">of Glory (10)</option>
+																<option value="6">of Grace (10)</option>
+																<option value="14">of Greed * (15)</option>
+																<option value="70">of Harmony (20)</option>
+																<option value="42">of Haste (19)</option>
+																<option value="1">of Hate (25)</option>
+																<option value="59">of Haughtiness (18)</option>
+																<option value="204">of Healing * (38)</option>
+																<option value="15">of Health (20)</option>
+																<option value="242">of Heat (52)</option>
+																<option value="77">of Heaven (35)</option>
+																<option value="76">of Hell (40)</option>
+																<option value="290">of Hellfire (65)</option>
+																<option value="79">of Hesitation (15)</option>
+																<option value="88">of Hindrance (15)</option>
+																<option value="120">of Holiness (13)</option>
+																<option value="173">of Homunculus (29)</option>
+																<option value="35">of Honour (15)</option>
+																<option value="221">of Hope (44)</option>
+																<option value="183">of Hypocrisy (32)</option>
+																<option value="161">of Ignorance (25)</option>
+																<option value="74">of Illusion (20)</option>
+																<option value="140">of Inadequacy * (19)</option>
+																<option value="68">of Incompetence * (15)</option>
+																<option value="80">of Independence (20)</option>
+																<option value="128">of Inevitability (15)</option>
+																<option value="207">of Ingenuity (39)</option>
+																<option value="114">of Inquisitiveness (11)</option>
+																<option value="236">of Insanity (41)</option>
+																<option value="153">of Inspiration (23)</option>
+																<option value="84">of Insult (15)</option>
+																<option value="119">of Invisibility (13)</option>
+																<option value="254">of Judgement (55)</option>
+																<option value="174">of Knowledge (29)</option>
+																<option value="274">of Languor (58)</option>
+																<option value="81">of Learning (15)</option>
+																<option value="23">of Life (25)</option>
+																<option value="24">of Light (22)</option>
+																<option value="111">of Liturgy (10)</option>
+																<option value="110">of Looseness (10)</option>
+																<option value="224">of Love (50)</option>
+																<option value="29">of Madness (15)</option>
+																<option value="26">of Magic (15)</option>
+																<option value="82">of Magnificence (20)</option>
+																<option value="67">of Magnitude (15)</option>
+																<option value="39">of Malediction (14)</option>
+																<option value="98">of Malice (33)</option>
+																<option value="164">of Marriage (26)</option>
+																<option value="181">of Mars (31)</option>
+																<option value="130">of Martial Arts (16)</option>
+																<option value="148">of Masculinity (21)</option>
+																<option value="136">of Meat (18)</option>
+																<option value="127">of Melting (15)</option>
+																<option value="256">of Mercury (55)</option>
+																<option value="176">of Mercy (30)</option>
+																<option value="154">of Merit (23)</option>
+																<option value="245">of Misery (52)</option>
+																<option value="69">of Mourning (15)</option>
+																<option value="83">of Mystery (21)</option>
+																<option value="250">of Night (54)</option>
+																<option value="43">of Normality (12)</option>
+																<option value="139">of Nostalgia (19)</option>
+																<option value="27">of Obsession * (20)</option>
+																<option value="132">of Ordinance (16)</option>
+																<option value="185">of Orion (32)</option>
+																<option value="3">of Pain (16)</option>
+																<option value="150">of Pandemic (22)</option>
+																<option value="85">of Passion (25)</option>
+																<option value="8">of Peace (20)</option>
+																<option value="145">of Perdition (20)</option>
+																<option value="10">of Perfection * (30)</option>
+																<option value="268">of Peril (57)</option>
+																<option value="87">of Poison (20)</option>
+																<option value="9">of Power (20)</option>
+																<option value="193">of Pressure (35)</option>
+																<option value="182">of Prevention (31)</option>
+																<option value="13">of Pride (15)</option>
+																<option value="220">of Promise (47)</option>
+																<option value="36">of Protection (25)</option>
+																<option value="159">of Purity (25)</option>
+																<option value="170">of Purposefulness (28)</option>
+																<option value="244">of Qualm (52)</option>
+																<option value="17">of Rapidity (12)</option>
+																<option value="21">of Readiness (10)</option>
+																<option value="189">of Recovery (34)</option>
+																<option value="192">of Regeneration (34)</option>
+																<option value="112">of Regret * (10)</option>
+																<option value="141">of Religiousness (19)</option>
+																<option value="118">of Reprisal (12)</option>
+																<option value="165">of Restitution (26)</option>
+																<option value="92">of Retreat (20)</option>
+																<option value="232">of Retribution (40)</option>
+																<option value="91">of Return (20)</option>
+																<option value="12">of Revenge (20)</option>
+																<option value="131">of Reversion (16)</option>
+																<option value="180">of Rigor Mortis (31)</option>
+																<option value="99">of Riot (25)</option>
+																<option value="229">of Rivalry (49)</option>
+																<option value="147">of Sacrament (21)</option>
+																<option value="167">of Sacrifice (27)</option>
+																<option value="93">of Satisfaction (15)</option>
+																<option value="94">of Security (21)</option>
+																<option value="134">of Self-Assurance (17)</option>
+																<option value="155">of Self-Discipline (23)</option>
+																<option value="249">of Shrieks (54)</option>
+																<option value="197">of Sickness (36)</option>
+																<option value="89">of Silence (20)</option>
+																<option value="5">of Skill (10)</option>
+																<option value="22">of Slaughtering * (25)</option>
+																<option value="253">of Solitude (55)</option>
+																<option value="162">of Spiritual Superiority (25)</option>
+																<option value="126">of Spirituality (15)</option>
+																<option value="169">of Spreader (28)</option>
+																<option value="188">of Stamina (33)</option>
+																<option value="18">of Stars (10)</option>
+																<option value="265">of Stone (56)</option>
+																<option value="230">of Strength (46)</option>
+																<option value="61">of Success (15)</option>
+																<option value="163">of Suffering (26)</option>
+																<option value="184">of Superiority * (32)</option>
+																<option value="95">of Suspicion * (15)</option>
+																<option value="263">of Tartarus (56)</option>
+																<option value="25">of Tears * (10)</option>
+																<option value="58">of Terror (20)</option>
+																<option value="275">of the Abyss (58)</option>
+																<option value="172">of the Amazons (28)</option>
+																<option value="282">of the Apparition (58)</option>
+																<option value="259">of the Behemoth (55)</option>
+																<option value="135">of the Blessed (17)</option>
+																<option value="293">of the Chasm (80)</option>
+																<option value="48">of the Clouds (11)</option>
+																<option value="41">of the Creature * (14)</option>
+																<option value="208">of the Critical Strike (39)</option>
+																<option value="223">of the Curse (45)</option>
+																<option value="56">of the Cursed (23)</option>
+																<option value="54">of the Damned * (35)</option>
+																<option value="278">of the Deep (58)</option>
+																<option value="237">of the Dragon (50)</option>
+																<option value="276">of the Dream (58)</option>
+																<option value="292">of the Druid (75)</option>
+																<option value="240">of the Elysian Fields (51)</option>
+																<option value="199">of the Flesh Wound (37)</option>
+																<option value="289">of the Gods (60)</option>
+																<option value="51">of the Hills (12)</option>
+																<option value="262">of the Hydra (56)</option>
+																<option value="279">of the Inferno (58)</option>
+																<option value="143">of the Moment (20)</option>
+																<option value="47">of the Moon (18)</option>
+																<option value="52">of the Mountains (14)</option>
+																<option value="149">of the Parade (22)</option>
+																<option value="252">of the Phantom (54)</option>
+																<option value="285">of the Plague (60)</option>
+																<option value="49">of the Rain (13)</option>
+																<option value="200">of the Safe Parade (37)</option>
+																<option value="53">of the Sea (12)</option>
+																<option value="255">of the Shadows (55)</option>
+																<option value="271">of the Snake (58)</option>
+																<option value="257">of the Soul (55)</option>
+																<option value="288">of the Sphinx (60)</option>
+																<option value="251">of the Spirit (54)</option>
+																<option value="46">of the Sun (22)</option>
+																<option value="55">of the Undead (25)</option>
+																<option value="260">of the Unknown (56)</option>
+																<option value="209">of the Vanquishers * (40)</option>
+																<option value="75">of the Victim (22)</option>
+																<option value="50">of the Woods (14)</option>
+																<option value="28">of Thorns * (30)</option>
+																<option value="152">of Tightrope Walk (22)</option>
+																<option value="281">of Torment (58)</option>
+																<option value="280">of Torsion (58)</option>
+																<option value="286">of Torture (60)</option>
+																<option value="203">of Total Defence (38)</option>
+																<option value="264">of Transition (56)</option>
+																<option value="122">of Triumph (13)</option>
+																<option value="218">of Triviality (43)</option>
+																<option value="62">of Trouble * (14)</option>
+																<option value="222">of Truth (48)</option>
+																<option value="4">of Vigour (15)</option>
+																<option value="65">of Violence (20)</option>
+																<option value="156">of Virtuousness (24)</option>
+																<option value="7">of War * (30)</option>
+																<option value="73">of Warning (16)</option>
+																<option value="57">of Weakness * (10)</option>
+																<option value="116">of Willpower (12)</option>
+																<option value="267">of Wings (57)</option>
+																<option value="117">of Wounds (12)</option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-lg-3">
+													<div class="card mb-4">
+														<div class="card-header">... and click!</div>
+														<div class="card-block text-center">
+																<button id="equipmentCalc" class="btn btn-md btn-primary">Calculate</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div class="col-lg-12">
+									<div class="card mb-4">
+										<div class="card-block">
+											<div class="row" id="equipmentCalcResult">
+											
+											</div>
+										</div>
+									</div>
+							</div>
+						</section>
+						<section class="row">
+							<div class="col-12 mt-2 mb-2 text-right">
+								&copy; 2016 - 2024 <a href="https://forum.gladiatus.gameforge.com/user/69-michalus/" target="_blank">Michalus</a>. 
+							</div>
+						</section>
+					</div>
+				</section>
+			</main>
+		</div>
+	</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <script src="./js/_JS_bundle.js?build=20190915_1"></script>
+	<script>
+		$(document).ready(function() {
+			$("#equipmentCalcForm").on("submit", function(e){
+				e.preventDefault();
+			});
+			$("#equipmentCalc").on("click", function(e){
+				e.preventDefault();
+				$.ajax({
+					data: $("#equipmentCalcForm").serialize(),
+					type: "POST",
+					url: "./ajax.php?mode=equipment",
+					success: function(response) {
+						$('#equipmentCalcResult').html(response);
+					}
+				});
+			});
+			$("body").on("click", "button#copyDataLink", function(e){
+			    e.preventDefault();
+                $("#dataLinkCode").focus();
+                $("#dataLinkCode").select();
+                document.execCommand('copy');
+                $("#dataLinkCode").blur();			    
+			});
+
+
+				$("select[name='prefix']").val('1');
+				$("select[name='item']").val('1-1');
+				$("select[name='suffix']").val('0');
+				$("#equipmentCalc").click();
+
+
+
+
+
+
+		} );
+	</script>
+	</body>
+</html>

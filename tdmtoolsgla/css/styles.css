@@ -261,6 +261,172 @@
     background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/icon_items_active.jpg');
 }
 
+#tdm-forge-equipment-stats {
+    width: 515px;
+    margin: 10px 0;
+    padding: 8px;
+    border: 1px solid #7b4a1d;
+    background: #2b1608;
+    color: #f5e2b4;
+    font: 12px Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.tdm-forge-equipment-stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    color: #f3c36d;
+    font-weight: 700;
+}
+
+#tdm-forge-equipment-stats-link {
+    color: #ffd783;
+    text-decoration: underline;
+}
+
+#tdm-forge-equipment-stats-status {
+    margin-bottom: 6px;
+    color: #bcd38e;
+}
+
+#tdm-forge-equipment-stats-status.error {
+    color: #ff9c89;
+}
+
+.tdm-forge-equipment-title {
+    margin-bottom: 6px;
+    color: #ffffff;
+}
+
+#tdm-forge-equipment-stats table,
+.tdm-forge-equipment-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tdm-forge-equipment-stats th,
+#tdm-forge-equipment-stats td {
+    padding: 3px 5px;
+    border-bottom: 1px solid rgba(245, 226, 180, 0.18);
+    text-align: left;
+    vertical-align: top;
+}
+
+#tdm-forge-equipment-stats th {
+    width: 45%;
+    color: #f3c36d;
+    font-weight: 700;
+}
+
+#tdm-forge-equipment-stats .row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+}
+
+#tdm-forge-equipment-stats .tdm-forge-equipment-results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+}
+
+#tdm-forge-equipment-stats .tdm-forge-equipment-results-grid > div {
+    min-width: 0;
+}
+
+#tdm-forge-equipment-stats .card {
+    min-height: 78px;
+    border: 1px solid rgba(243, 195, 109, 0.38);
+    background: rgba(0, 0, 0, 0.22);
+}
+
+#tdm-forge-equipment-stats .card-header {
+    min-height: 30px;
+    padding: 4px 5px;
+    border-bottom: 1px solid rgba(243, 195, 109, 0.24);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+#tdm-forge-equipment-stats .card-block {
+    padding: 5px;
+    line-height: 1.45;
+}
+
+.tdm-forge-equipment-empty {
+    color: #ffcf8a;
+}
+
+.tdm-scroll-book-stats-row td {
+    padding: 0 6px 6px 28px;
+    border-top: 0;
+}
+
+#tdm-scroll-book-stats-controls {
+    margin: 0 0 8px;
+    color: #000;
+    font-size: 12px;
+}
+
+#tdm-scroll-book-update,
+#tdm-scroll-book-export,
+#tdm-scroll-book-import,
+#tdm-scroll-book-sort-id,
+#tdm-scroll-book-sort-level {
+    display: inline-block;
+    min-width: 96px;
+    height: 22px;
+    margin-right: 8px;
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+#tdm-scroll-book-update-status {
+    color: #000;
+}
+
+.tdm-scroll-book-stats-cell {
+    margin: 3px 0 7px;
+    max-width: 100%;
+    color: #d9c08a;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.tdm-scroll-book-stats-details summary {
+    cursor: pointer;
+    color: #000;
+}
+
+.tdm-scroll-book-stats-card {
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid rgba(243, 195, 109, 0.25);
+    background: rgba(0, 0, 0, 0.28);
+}
+
+.tdm-scroll-book-stats-title {
+    margin-bottom: 3px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.tdm-scroll-book-stats-empty {
+    color: #ffcf8a;
+}
+
+.tdm-scroll-book-real-name {
+    color: #d40000;
+    font-weight: 700;
+}
+
+.tdm-scroll-book-real-level {
+    color: #d40000;
+    font-weight: 700;
+}
+
 #tdm-shortcuts-bar
 {
     position: absolute;

@@ -14,7 +14,8 @@
         "webRequest"
     ],
     "host_permissions": [
-        "https://*.gladiatus.gameforge.com/*"
+        "https://*.gladiatus.gameforge.com/*",
+        "https://*.gladiatus-tools.com/*"
     ],
     "manifest_version": 3,
     "background": {
@@ -41,7 +42,8 @@
                 "js/heal.js",
                 "js/auction.js",
                 "js/searchitem.js",
-                "js/shop.js"
+                "js/shop.js",
+                "js/forge-equipment-stats.js"
             ],
             "matches": [
                 "https://*.gladiatus.gameforge.com/*"
