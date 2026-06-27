@@ -43,6 +43,7 @@
                 "js/auction.js",
                 "js/searchitem.js",
                 "js/shop.js",
+                "js/guild-storage.js",
                 "js/forge-equipment-stats.js"
             ],
             "matches": [
