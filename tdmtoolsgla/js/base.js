@@ -192,6 +192,16 @@
         auctionEnabled = localStorage.getItem('auctionEnabled') === "true" ? true : false;
     };
     let auctionMinGold = parseGoldValue(localStorage.getItem('tdmAuctionMinGold'));
+
+    // Guild Market
+
+    let guildMarketAutoBuyEnabled = true;
+    if (localStorage.getItem('tdmGuildMarketAutoBuyEnabled')) {
+        guildMarketAutoBuyEnabled = localStorage.getItem('tdmGuildMarketAutoBuyEnabled') === "true" ? true : false;
+    };
+    let guildMarketAutoBuyMinGold = parseGoldValue(localStorage.getItem('tdmGuildMarketAutoBuyMinGold')) || 100000;
+    let guildMarketAutoBuyMaxPrice = parseGoldValue(localStorage.getItem('tdmGuildMarketAutoBuyMaxPrice')) || 100000;
+
     const auctionStatusOptions = [
         { key: 'very short', label: 'Very short' },
         { key: 'short', label: 'Short' },
@@ -314,6 +324,10 @@
         auctionStatusBar: 'Auction Status Bar',
         auctionBuyStatuses: 'Buy statuses',
         auctionMinGold: 'Minimum gold',
+        guildMarket: 'Guild Market',
+        guildMarketAutoBuy: 'Auto buy and relist',
+        guildMarketMinGold: 'Minimum gold to start',
+        guildMarketMaxPrice: 'Maximum item price',
         gcaUi: 'GCA UI',
         soon: 'Soon...',
         type: 'Type',
@@ -355,6 +369,10 @@
         auctionStatusBar: 'Auction Status Bar',
         auctionBuyStatuses: 'Buy statuses',
         auctionMinGold: 'Minimum gold',
+        guildMarket: 'Guild Market',
+        guildMarketAutoBuy: 'Auto buy and relist',
+        guildMarketMinGold: 'Minimum gold to start',
+        guildMarketMaxPrice: 'Maximum item price',
         gcaUi: 'GCA UI',
         soon: 'Wkrótce...',
         type: 'Rodzaj',
@@ -396,6 +414,10 @@
         auctionStatusBar: 'Auction Status Bar',
         auctionBuyStatuses: 'Buy statuses',
         auctionMinGold: 'Minimum gold',
+        guildMarket: 'Guild Market',
+        guildMarketAutoBuy: 'Auto buy and relist',
+        guildMarketMinGold: 'Minimum gold to start',
+        guildMarketMaxPrice: 'Maximum item price',
         gcaUi: 'GCA UI',
         soon: 'Próximamente...',
         type: 'Tipo',
@@ -647,6 +669,26 @@
                             ${auctionStatusOptions.map(function (option) {
                                 return `<div id="set_auction_buy_status_${option.key.replace(/\s/g, '_')}" class="settingsButton auction-status-setting-button">${option.label}</div>`;
                             }).join('')}
+                        </div>
+                    </div>
+
+                    <div
+                        id="guild_market_settings"
+                        class="settings_box"
+                    >
+                        <div class="settingsHeaderBig">${content.guildMarket}</div>
+                        <div class="settingsHeaderSmall">${content.guildMarketAutoBuy}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_guild_market_auto_buy_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_guild_market_auto_buy_false" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.guildMarketMinGold}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_guild_market_auto_buy_min_gold" class="settingsInput" type="text" placeholder="100k" value="${formatGoldValue(guildMarketAutoBuyMinGold)}">
+                        </div>
+                        <div class="settingsHeaderSmall">${content.guildMarketMaxPrice}</div>
+                        <div class="settingsSubcontent">
+                            <input id="set_guild_market_auto_buy_max_price" class="settingsInput" type="text" placeholder="100k" value="${formatGoldValue(guildMarketAutoBuyMaxPrice)}">
                         </div>
                     </div>
 
@@ -948,6 +990,31 @@
             $(`#set_auction_buy_status_${option.key.replace(/\s/g, '_')}`).click(function () { setAuctionBuyStatus(option.key) });
         });
 
+        function setGuildMarketAutoBuyEnabled(bool) {
+            guildMarketAutoBuyEnabled = bool;
+            localStorage.setItem('tdmGuildMarketAutoBuyEnabled', bool);
+            reloadSettings();
+        };
+
+        $("#do_guild_market_auto_buy_true").click(function () { setGuildMarketAutoBuyEnabled(true) });
+        $("#do_guild_market_auto_buy_false").click(function () { setGuildMarketAutoBuyEnabled(false) });
+
+        function setGuildMarketAutoBuyMinGold(value) {
+            guildMarketAutoBuyMinGold = parseGoldValue(value) || 100000;
+            localStorage.setItem('tdmGuildMarketAutoBuyMinGold', String(guildMarketAutoBuyMinGold));
+            reloadSettings();
+        };
+
+        $("#set_guild_market_auto_buy_min_gold").change(function () { setGuildMarketAutoBuyMinGold(this.value) });
+
+        function setGuildMarketAutoBuyMaxPrice(value) {
+            guildMarketAutoBuyMaxPrice = parseGoldValue(value) || 100000;
+            localStorage.setItem('tdmGuildMarketAutoBuyMaxPrice', String(guildMarketAutoBuyMaxPrice));
+            reloadSettings();
+        };
+
+        $("#set_guild_market_auto_buy_max_price").change(function () { setGuildMarketAutoBuyMaxPrice(this.value) });
+
         function notifyGcaFeaturesChanged() {
             window.dispatchEvent(new CustomEvent('tdmGcaFeaturesChanged'));
         };
@@ -1050,6 +1117,9 @@
             auctionBuyStatuses.forEach(function (status) {
                 $(`#set_auction_buy_status_${status.replace(/\s/g, '_')}`).addClass('active');
             });
+
+            $('#guild_market_settings').addClass(guildMarketAutoBuyEnabled ? 'active' : 'inactive');
+            $(`#do_guild_market_auto_buy_${guildMarketAutoBuyEnabled}`).addClass('active');
 
             $('#gca_ui_settings').addClass(shortcutsBarEnabled ? 'active' : 'inactive');
             $(`#do_shortcuts_bar_${shortcutsBarEnabled}`).addClass('active');
@@ -1187,6 +1257,65 @@
         return Number.isFinite(cooldown) && cooldown > 0 ? cooldown : null;
     }
 
+    function goToQuestsPage() {
+        const questLink = document.querySelector('a[href*="mod=quests"]');
+        if (questLink) {
+            questLink.click();
+            return;
+        }
+
+        const url = new URL('/game/index.php', window.location.origin);
+        url.searchParams.set('mod', 'quests');
+
+        const hash = getSecureHash();
+        if (hash) {
+            url.searchParams.set('sh', hash);
+        }
+
+        window.location.href = url.toString();
+    }
+
+    function getSecureHash() {
+        const queryHash = new URLSearchParams(window.location.search).get('sh');
+        if (queryHash) {
+            return queryHash;
+        }
+
+        if (typeof secureHash !== 'undefined' && secureHash) {
+            return secureHash;
+        }
+
+        const hashInput = document.querySelector('input[name="sh"], input[name="secureHash"]');
+        return hashInput ? hashInput.value : '';
+    }
+
+    function buildGuildMarketUrl() {
+        const url = new URL('/game/index.php', window.location.origin);
+        url.searchParams.set('mod', 'guildMarket');
+
+        const hash = getSecureHash();
+        if (hash) {
+            url.searchParams.set('sh', hash);
+        }
+
+        return url.toString();
+    }
+
+    function shouldPauseForGuildMarket() {
+        if (!guildMarketAutoBuyEnabled || player.gold < guildMarketAutoBuyMinGold) {
+            return false;
+        }
+
+        const currentMod = new URL(window.location.href).searchParams.get('mod');
+        if (currentMod === 'guildMarket') {
+            console.log('TDM Guild Market: pause Auto Go tren guildMarket de mua/ban.');
+            return true;
+        }
+
+        window.location.href = buildGuildMarketUrl();
+        return true;
+    }
+
     /****************
     *    Auto Go    *
     ****************/
@@ -1197,6 +1326,10 @@
 
         const currentTime = new Date().getTime();
         const clickDelay = getRandomInt(900, 2400);
+
+        if (shouldPauseForGuildMarket()) {
+            return;
+        }
 
         // Claim Daily Reward
 
@@ -1274,7 +1407,7 @@
                 const inPanteonPage = $("body").first().attr("id") === "questsPage";
 
                 if (!inPanteonPage) {
-                    $("#mainmenu a.menuitem")[1].click();
+                    goToQuestsPage();
                 } else {
                     const completedQuests = $("#content .contentboard_slot a.quest_slot_button_finish");
 
@@ -1321,6 +1454,12 @@
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
 
                 if (canTakeQuest.length) {
+                    const liveQuestCooldown = readQuestCooldownTime();
+                    if (liveQuestCooldown) {
+                        setNextQuestTime(liveQuestCooldown + 1500);
+                        return;
+                    }
+
                     function getIconName(url, title = "", timeDiv = null) {
                         const normalizedTitle = String(title || '').trim();
 
@@ -1378,8 +1517,13 @@
                         }
 
                         if (questTypes[questType.type]) {
-                            quest.getElementsByClassName("quest_slot_button_accept")[0].click();
-                            continueAfterQuestAction();
+                            const acceptButton = quest.getElementsByClassName("quest_slot_button_accept")[0];
+                            if (acceptButton) {
+                                acceptButton.click();
+                                continueAfterQuestAction();
+                            } else {
+                                checkNextQuestTime();
+                            }
                             return;
                         }
 
@@ -1425,9 +1569,7 @@
             // }
 
             function checkNextQuestTime() {
-                setNextQuestTime(readQuestCooldownTime() || 10 * 1000);
-
-                autoGo();           // tiếp tục logic tự động
+                setNextQuestTime((readQuestCooldownTime() || 60 * 1000) + 1500);
             }
 
             setTimeout(function () {
@@ -1769,11 +1911,13 @@
                         <span>${formatTime(nextAction.time)}</span>`;
 
                     if (nextAction.time <= 0) {
+                        clearInterval(nextActionCounter);
+
                         if (nextAction.index === 4) {
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
                         }
                         else if (nextAction.index === 5) {
-                            $("#mainmenu a.menuitem")[1].click();
+                            goToQuestsPage();
                         }
                         else {
                             setTimeout(function () {

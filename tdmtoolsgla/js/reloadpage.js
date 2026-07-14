@@ -6,6 +6,12 @@ if (shouldEnableReload) {
     setInterval(function () {
         const autoGoActive = sessionStorage.getItem('autoGoActive') === "true";
         if (autoGoActive) {
+            const currentMod = new URLSearchParams(window.location.search).get('mod');
+            if (currentMod === 'quests') {
+                console.log('autoGoActive is active -> skip reloadpage on quests');
+                return;
+            }
+
             console.log('autoGoActive is active -> reloadpage');
             location.reload();
         } else {
