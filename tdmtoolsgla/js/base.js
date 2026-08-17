@@ -6,6 +6,20 @@
     *****************/
 
     const assetsUrl = 'https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets';
+    const extensionAssetUrl = (path) => chrome.runtime.getURL(path);
+
+    document.documentElement.style.setProperty('--tdm-icon-combat-inactive', `url("${extensionAssetUrl('images/icon_combat_inactive.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-combat-active', `url("${extensionAssetUrl('images/icon_combat_active.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-arena-inactive', `url("${extensionAssetUrl('images/icon_arena_inactive.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-arena-active', `url("${extensionAssetUrl('images/icon_arena_active.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-circus-inactive', `url("${extensionAssetUrl('images/icon_grouparena_inactive.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-circus-active', `url("${extensionAssetUrl('images/icon_grouparena_active.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-expedition-inactive', `url("${extensionAssetUrl('images/icon_expedition_inactive.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-expedition-active', `url("${extensionAssetUrl('images/icon_expedition_active.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-dungeon-inactive', `url("${extensionAssetUrl('images/icon_dungeon_inactive.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-dungeon-active', `url("${extensionAssetUrl('images/icon_dungeon_active.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-items-inactive', `url("${extensionAssetUrl('images/icon_items_inactive.jpg')}")`);
+    document.documentElement.style.setProperty('--tdm-icon-items-active', `url("${extensionAssetUrl('images/icon_items_active.jpg')}")`);
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
@@ -424,6 +438,51 @@
         yes: 'Si'
     }
 
+    const contentVI = {
+        advanced: 'Nâng cao',
+        arena: 'Đấu trường',
+        auction: 'Đấu giá',
+        circusTurma: 'Circus Turma',
+        difficulty: 'Độ khó',
+        dungeon: 'Phụ bản',
+        fightBoss: 'Đánh Boss',
+        eventExpedition: 'Thám hiểm sự kiện',
+        expedition: 'Thám hiểm',
+        heal: 'Tự động hồi máu',
+        healMarketBuy: 'Tự động mua thức ăn',
+        healMarketBuyInterval: 'Thời gian quét chợ (phút)',
+        healMarketBuyPriceMultiplier: 'Hệ số giá tối đa',
+        healHp: 'Dùng thức ăn khi HP dưới',
+        healTabs: 'Tab túi đồ',
+        highest: 'Cao nhất',
+        in: 'Trong',
+        lastUsed: "Dùng gần nhất",
+        location: 'Địa điểm',
+        lowest: 'Thấp nhất',
+        nextAction: 'Hành động tiếp theo',
+        no: 'Không',
+        normal: 'Thường',
+        opponent: 'Đối thủ',
+        opponentLevel: 'Cấp đối thủ',
+        quests: 'Nhiệm vụ',
+        random: 'Ngẫu nhiên',
+        settings: 'Cài đặt',
+        smelter: 'Luyện kim',
+        shortcuts: 'Phím tắt',
+        shortcutsBar: 'Thanh phím tắt',
+        auctionStatusBar: 'Thanh trạng thái đấu giá',
+        auctionBuyStatuses: 'Trạng thái mua',
+        auctionMinGold: 'Vàng tối thiểu',
+        guildMarket: 'Chợ liên minh',
+        guildMarketAutoBuy: 'Tự động mua và đăng lại',
+        guildMarketMinGold: 'Vàng tối thiểu để bắt đầu',
+        guildMarketMaxPrice: 'Giá vật phẩm tối đa',
+        gcaUi: 'GCA UI',
+        soon: 'Sắp có...',
+        type: 'Loại',
+        yes: 'Có'
+    }
+
     let content;
 
     const language = localStorage.getItem('settings.language')
@@ -437,6 +496,9 @@
             break;
         case 'ES':
             content = { ...contentES }
+            break;
+        case 'VI':
+            content = { ...contentVI }
             break;
         default:
             content = { ...contentEN }
@@ -483,11 +545,13 @@
 
         var settingsWindow = document.createElement("div");
         settingsWindow.setAttribute("id", "settingsWindow")
+        settingsWindow.style.backgroundImage = `url("${extensionAssetUrl('images/settings.png')}")`;
         settingsWindow.innerHTML = `
                 <span id="settingsLanguage">
-                    <img id="languageEN" src="${assetsUrl}/GB.png">
-                    <img id="languagePL" src="${assetsUrl}/PL.png">
-                    <img id="languageES" src="${assetsUrl}/ES.png">
+                    <img id="languageEN" src="${extensionAssetUrl('images/GB.png')}">
+                    <img id="languagePL" src="${extensionAssetUrl('images/PL.png')}">
+                    <img id="languageES" src="${extensionAssetUrl('images/ES.png')}">
+                    <img id="languageVI" src="${extensionAssetUrl('images/VI.png')}">
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
                 <div id="settingsContent" style=" row-gap: 30px; ">
@@ -746,6 +810,9 @@
                 case 'ES':
                     content = { ...contentES }
                     break;
+                case 'VI':
+                    content = { ...contentVI }
+                    break;
                 default:
                     content = { ...contentEN }
             };
@@ -756,6 +823,7 @@
         $("#languageEN").click(function () { setLanguage('EN') });
         $("#languagePL").click(function () { setLanguage('PL') });
         $("#languageES").click(function () { setLanguage('ES') });
+        $("#languageVI").click(function () { setLanguage('VI') });
 
         // Change Settings
 
@@ -1164,7 +1232,9 @@
 
     var settingsButton = document.createElement("button");
     settingsButton.className = 'menuitem';
-    settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
+    settingsButton.setAttribute("title", "Ustawienia");
+    settingsButton.setAttribute("aria-label", "Ustawienia");
+    settingsButton.innerHTML = `<span style="font-size: 20px; line-height: 1; z-index: 999;">&#9881;</span>`;
     settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')");
     settingsButton.addEventListener("click", openSettings);
     document.getElementById("mainmenu").insertBefore(settingsButton, document.getElementById("mainmenu").children[1]);

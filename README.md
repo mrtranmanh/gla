@@ -1,2 +1,2 @@
-# gla
-js/base.js: tool chính
+workbench.js doing
+smelter.js doing
