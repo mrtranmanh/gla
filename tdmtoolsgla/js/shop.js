@@ -1114,6 +1114,136 @@
         }
     }
 
+    async function sellPackagesFast(button) {
+        if (isSelling) {
+            shouldStop = true;
+            setStatus('Dang dung...', 'warn');
+            return;
+        }
+
+        if (!getSecureHash()) {
+            setStatus('Khong tim thay sh. Hay reload trang packages roi thu lai.', 'error');
+            return;
+        }
+
+        const filters = getSellFilters();
+        const goldLimit = getActiveGoldLimit();
+        const currentGold = getCurrentGold();
+
+        if (goldLimit > 0 && currentGold >= goldLimit) {
+            setStatus(`Gold hien tai da dat gioi han ${formatGoldValue(goldLimit)}.`, 'warn');
+            return;
+        }
+
+        clearSellLog();
+        isSelling = true;
+        shouldStop = false;
+        button.textContent = 'Stop sell fast';
+
+        let sold = 0;
+        let skipped = 0;
+        let finalStatus = '';
+
+        try {
+            setStatus('Dang kiem tra o trong shop...');
+            const shopMaps = await getShopMaps();
+
+            if (!shopMaps.length) {
+                finalStatus = 'Khong tim thay shop.';
+                setStatus(finalStatus, 'error');
+                return;
+            }
+
+            const pages = getPackagePageNumbers();
+            
+            for (const page of pages) {
+                if (shouldStop) {
+                    break;
+                }
+
+                setStatus(`Dang quet page ${page}...`);
+                const pageItems = await getPackageItemsFromPage(page, filters);
+                pageItems.sort(function (left, right) {
+                    return (left.width * left.height) - (right.width * right.height);
+                });
+
+                if (!pageItems.length) {
+                    continue;
+                }
+
+                for (let index = 0; index < pageItems.length; index++) {
+                    if (shouldStop) {
+                        break;
+                    }
+
+                    if (goldLimit > 0 && getCurrentGold() >= goldLimit) {
+                        finalStatus = `Da dat gioi han ${formatGoldValue(goldLimit)} gold.`;
+                        setStatus(finalStatus);
+                        shouldStop = true;
+                        break;
+                    }
+
+                    const item = pageItems[index];
+                    setStatus(`Dang ban item tren page ${page} (${index + 1}/${pageItems.length})...`);
+
+                    const shop = findShopSpot(shopMaps, item.width, item.height);
+                    if (!shop) {
+                        finalStatus = 'Shop da day.';
+                        setStatus(finalStatus, 'warn');
+                        shouldStop = true;
+                        break;
+                    }
+
+                    const inventory = await getInventorySpotWithCleanup(item.width, item.height);
+                    if (!inventory) {
+                        skipped++;
+                        finalStatus = `Bo qua item ${item.width}x${item.height}: shop co cho, nhung inventory khong co o tam.`;
+                        setStatus(finalStatus, 'warn');
+                        continue;
+                    }
+
+                    const moved = await movePackageToInventory(item, inventory);
+                    if (!moved || moved.error || !moved.to) {
+                        finalStatus = `Loi lay item tu package: ${describeApiError(moved)}`;
+                        setStatus(finalStatus, 'error');
+                        continue;
+                    }
+
+                    const soldResult = await moveInventoryToShop(item, inventory, shop);
+                    if (!soldResult || soldResult.error) {
+                        finalStatus = `Loi ban vao shop: ${describeApiError(soldResult)}`;
+                        setStatus(finalStatus, 'error');
+                        continue;
+                    }
+
+                    updateGold(soldResult.header);
+                    if (goldLimit > 0 && getUpdatedGold(soldResult.header) >= goldLimit) {
+                        shouldStop = true;
+                        finalStatus = `Da dat gioi han ${formatGoldValue(goldLimit)} gold.`;
+                    }
+
+                    markGrid(shop.grid, shop.spot.x, shop.spot.y, item.width, item.height, true);
+                    item.element.remove();
+                    sold++;
+                }
+            }
+        } catch (error) {
+            finalStatus = `Loi: ${error.message || error}`;
+            setStatus(finalStatus, 'error');
+        } finally {
+            isSelling = false;
+            shouldStop = false;
+            button.textContent = 'Sell fast (page by page)';
+            if (finalStatus && goldLimit > 0 && getCurrentGold() >= goldLimit) {
+                setStatus(`${finalStatus} Da ban ${sold} item, bo qua ${skipped}.`);
+            } else if (sold || skipped) {
+                setStatus(`Da ban ${sold} item, bo qua ${skipped}.`);
+            } else {
+                setStatus(finalStatus || `Da ban ${sold} item, bo qua ${skipped}.`);
+            }
+        }
+    }
+
     async function pickGoldPackages(button) {
         if (isSelling) {
             shouldStop = true;
@@ -1523,9 +1653,17 @@
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'awesome-button';
-        button.textContent = 'Sell to shop';
+        button.textContent = 'Sell to shop (all)';
         button.addEventListener('click', function () {
             sellVisiblePackages(button);
+        });
+
+        const sellFastButton = document.createElement('button');
+        sellFastButton.type = 'button';
+        sellFastButton.className = 'awesome-button';
+        sellFastButton.textContent = 'Sell fast (page by page)';
+        sellFastButton.addEventListener('click', function () {
+            sellPackagesFast(sellFastButton);
         });
 
         const pickGoldButton = document.createElement('button');
@@ -1553,6 +1691,7 @@
         });
 
         actions.appendChild(button);
+        actions.appendChild(sellFastButton);
         actions.appendChild(pickGoldButton);
         actions.appendChild(pickFoodButton);
         actions.appendChild(storeResourcesButton);
