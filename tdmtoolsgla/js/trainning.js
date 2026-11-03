@@ -22,40 +22,39 @@ const trainingData = {
 const enableTrainning = 0;
 const autoGoActive = sessionStorage.getItem('autoGoActive') === 'true';
 
+function parseGold(text) {
+    if (!text) return 0;
+    const clean = String(text).replace(/[^0-9]/g, '');
+    return Number(clean) || 0;
+}
+
 if (autoGoActive && enableTrainning == 1) {
     console.log('Trainning co hoat dong');
 
     if (trainingData.goldValueElement) {
-        // Lấy nội dung (textContent hoặc innerText) và chuyển đổi thành số
-        var goldValue = parseFloat(trainingData.goldValueElement.textContent || trainingData.goldValueElement.innerText);
+        // Lấy nội dung và chuyển đổi thành số sau khi bỏ dấu chấm hàng nghìn
+        const goldText = trainingData.goldValueElement.textContent || trainingData.goldValueElement.innerText;
+        const goldValue = parseGold(goldText);
 
-        // Kiểm tra xem giá trị có là một số hợp lệ không
-        if (!isNaN(goldValue)) {
-            // In ra console để kiểm tra
+        if (goldValue > 0) {
             console.log('Giá trị vàng là:', goldValue);
 
-            // Lấy đối tượng div có class là "training_costs"
-            var trainingCostsElement_ag = trainingData.trainingCosts.agility;
-
-
+            const trainingCostsElement_ag = trainingData.trainingCosts.agility;
             if (trainingCostsElement_ag) {
-                // Lấy nội dung (textContent hoặc innerText) và chuyển đổi thành số
-                var trainingCosts_ag = parseFloat(trainingCostsElement_ag.textContent || trainingCostsElement_ag.innerText);
+                const costText = trainingCostsElement_ag.textContent || trainingCostsElement_ag.innerText;
+                const trainingCosts_ag = parseGold(costText);
 
-                // Kiểm tra xem giá trị có là một số hợp lệ không
-                if (!isNaN(trainingCosts_ag)) {
-                    // In ra console để kiểm tra
+                if (trainingCosts_ag > 0) {
                     console.log('Chi phí đào tạo là:', trainingCosts_ag);
 
                     // So sánh giá trị vàng và chi phí đào tạo
                     if (goldValue > trainingCosts_ag) {
-                        // Nếu điều kiện đúng, nhấp chuột vào phần tử '#char_f2_tt + .training_link a.training_button'
-                        var trainingButton = trainingData.trainingButton.agility;
+                        const trainingButton = trainingData.trainingButton.agility;
                         if (trainingButton) {
-                            trainingButton.click(); // Kích hoạt sự kiện nhấp chuột
+                            trainingButton.click();
                             console.log('Đã nhấp chuột vào nút đào tạo.');
                         } else {
-                            console.error('Không tìm thấy phần tử ');
+                            console.error('Không tìm thấy nút đào tạo.');
                         }
                     } else {
                         console.log('Không đủ vàng để đào tạo.');

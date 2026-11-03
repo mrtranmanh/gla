@@ -1,6 +1,6 @@
 const GLADIATUS_URL_PATTERN = 'https://*.gladiatus.gameforge.com/*';
 const WATCHDOG_ALARM = 'gladiatusWatchdog';
-const CHECK_INTERVAL_MINUTES = 0.5;
+const CHECK_INTERVAL_MINUTES = 5;
 const MIN_RELOAD_GAP_MS = 45 * 1000;
 const MAX_BACKOFF_MS = 10 * 60 * 1000;
 
@@ -20,7 +20,9 @@ function getState(tabId) {
 function isGladiatusUrl(url) {
     try {
         const parsedUrl = new URL(url);
-        return parsedUrl.protocol === 'https:' && parsedUrl.hostname.endsWith('.gladiatus.gameforge.com');
+        return parsedUrl.protocol === 'https:' &&
+            parsedUrl.hostname.endsWith('.gladiatus.gameforge.com') &&
+            !parsedUrl.hostname.startsWith('lobby.');
     } catch (error) {
         return false;
     }
@@ -38,30 +40,16 @@ async function checkUrl(url) {
     }, 12000);
 
     try {
-        const response = await fetch(url, {
+        const parsedUrl = new URL(url);
+        const safeUrl = new URL('/game/index.php', parsedUrl.origin).href;
+
+        const response = await fetch(safeUrl, {
             method: 'HEAD',
             credentials: 'include',
             cache: 'no-store',
             redirect: 'follow',
             signal: controller.signal
         });
-
-        if (response.status === 405) {
-            const parsedUrl = new URL(url);
-            const safeUrl = new URL('/game/index.php', parsedUrl.origin).href;
-            const safeResponse = await fetch(safeUrl, {
-                method: 'GET',
-                credentials: 'include',
-                cache: 'no-store',
-                redirect: 'follow',
-                signal: controller.signal
-            });
-
-            return {
-                ok: safeResponse.status < 500,
-                status: safeResponse.status
-            };
-        }
 
         return {
             ok: response.status < 500,
@@ -154,12 +142,6 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 
 chrome.tabs.onRemoved.addListener(function (tabId) {
     tabState.delete(tabId);
-});
-
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-    if (changeInfo.status === 'complete' && isGladiatusUrl(tab.url)) {
-        checkTab(tab);
-    }
 });
 
 chrome.webRequest.onCompleted.addListener(function (details) {
