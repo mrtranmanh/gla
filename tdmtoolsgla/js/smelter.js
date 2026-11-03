@@ -75,9 +75,13 @@
         }
     }
 
+    function isAutoGoActive() {
+        return sessionStorage.getItem('autoGoActive') === 'true';
+    }
+
     function isSmelterEnabled() {
-        if (!localStorage.getItem('smelterEnabled')) {
-            return true;
+        if (!isAutoGoActive()) {
+            return false;
         }
 
         return localStorage.getItem('smelterEnabled') === 'true';

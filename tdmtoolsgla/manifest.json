@@ -46,6 +46,7 @@
                 "js/shop.js",
                 "js/guild-storage.js",
                 "js/guild-market.js",
+                "js/smelter.js",
                 "js/forge-equipment-stats.js"
             ],
             "matches": [
@@ -81,7 +82,8 @@
                 "images/*.png",
                 "images/*.jpg",
                 "images/*.jpeg",
-                "images/*.gif"
+                "images/*.gif",
+                "js/page-store-resources.js"
             ],
             "matches": [
                 "https://*.gladiatus.gameforge.com/*"

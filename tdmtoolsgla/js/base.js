@@ -1730,12 +1730,15 @@
                     if (!inArenaProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
                     } else {
-                        const levels = new Array();
-                        levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
-                        levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
-                        levels[2] = Number(document.getElementById("own2").getElementsByTagName("td")[9].firstChild.nodeValue)
-                        levels[3] = Number(document.getElementById("own2").getElementsByTagName("td")[13].firstChild.nodeValue)
-                        levels[4] = Number(document.getElementById("own2").getElementsByTagName("td")[17].firstChild.nodeValue)
+                        const own2 = document.getElementById("own2");
+                        if (!own2) {
+                            return;
+                        }
+                        const tds = own2.getElementsByTagName("td");
+                        const levels = [];
+                        [1, 5, 9, 13, 17].forEach(function (idx) {
+                            levels.push(Number(tds[idx]?.firstChild?.nodeValue || 0));
+                        });
 
                         let opponentIndex;
 
@@ -1747,7 +1750,7 @@
                             opponentIndex = getRandomIntIndex(levels)
                         }
 
-                        document.getElementsByClassName("attack")[opponentIndex].click();
+                        document.getElementsByClassName("attack")[opponentIndex]?.click();
                     }
                 }
             };
@@ -1774,12 +1777,15 @@
                     if (!inCircusProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[3].firstElementChild.click();
                     } else {
-                        const levels = new Array();
-                        levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
-                        levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
-                        levels[2] = Number(document.getElementById("own3").getElementsByTagName("td")[9].firstChild.nodeValue)
-                        levels[3] = Number(document.getElementById("own3").getElementsByTagName("td")[13].firstChild.nodeValue)
-                        levels[4] = Number(document.getElementById("own3").getElementsByTagName("td")[17].firstChild.nodeValue)
+                        const own3 = document.getElementById("own3");
+                        if (!own3) {
+                            return;
+                        }
+                        const tds = own3.getElementsByTagName("td");
+                        const levels = [];
+                        [1, 5, 9, 13, 17].forEach(function (idx) {
+                            levels.push(Number(tds[idx]?.firstChild?.nodeValue || 0));
+                        });
 
                         let opponentIndex;
 
@@ -1791,7 +1797,7 @@
                             opponentIndex = getRandomIntIndex(levels)
                         }
 
-                        document.getElementsByClassName("attack")[opponentIndex].click();
+                        document.getElementsByClassName("attack")[opponentIndex]?.click();
                     };
                 };
             };
@@ -1869,7 +1875,7 @@
                 }
 
                 if (doExpedition === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition")?.innerText || "");
 
                     actions.push({
                         name: 'expedition',
@@ -1879,7 +1885,7 @@
                 };
 
                 if (doDungeon === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_dungeon").innerText);
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_dungeon")?.innerText || "");
 
                     actions.push({
                         name: 'dungeon',
@@ -1889,7 +1895,7 @@
                 };
 
                 if (doArena === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_arena").innerText);
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_arena")?.innerText || "");
 
                     actions.push({
                         name: 'arena',
@@ -1899,7 +1905,7 @@
                 };
 
                 if (doCircus === true) {
-                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_ct").innerText);
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_ct")?.innerText || "");
 
                     actions.push({
                         name: 'circusTurma',

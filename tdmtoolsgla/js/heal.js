@@ -21,9 +21,9 @@ function heal() {
     const currentPlayerId = getCurrentPlayerId();
     
     const player = {
-        level: Number(document.getElementById("header_values_level").textContent.trim()),
-        hp: Number(document.getElementById("header_values_hp_percent").textContent.trim().replace(/[^0-9]/g, '')),
-        gold: Number(document.getElementById("sstat_gold_val").textContent.trim().replace(/\./g, '')),
+        level: Number(document.getElementById("header_values_level")?.textContent?.trim() || 0),
+        hp: Number(document.getElementById("header_values_hp_percent")?.textContent?.trim()?.replace(/[^0-9]/g, '') || 100),
+        gold: Number(document.getElementById("sstat_gold_val")?.textContent?.trim()?.replace(/\./g, '') || 0),
     };
     
     const mainMenu = {
@@ -44,7 +44,7 @@ function heal() {
         console.log('Heal đã được bật tại HP dưới: ' + underHP + ', tabs: ' + healTabs.join(', '));
     
         if (player.hp < underHP && !window.location.href.includes("mod=overview")) {
-            mainMenu.overview.click();
+            mainMenu.overview?.click();
         } else if (player.hp < underHP && window.location.href.includes("mod=overview")) {
 
             const mainDoll1Active = document.querySelector('.charmercsel.active .charmercpic.doll1');
