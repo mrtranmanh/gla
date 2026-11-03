@@ -29,7 +29,8 @@
                 "css/styles.css"
             ],
             "exclude_matches": [
-                "*://*.gladiatus.gameforge.com/game/index.php?mod=start"
+                "*://*.gladiatus.gameforge.com/game/index.php?mod=start",
+                "*://lobby.gladiatus.gameforge.com/*"
             ],
             "js": [
                 "js/vendor/jquery.min.js",
@@ -54,6 +55,10 @@
         },
         {
             "all_frames": true,
+            "exclude_matches": [
+                "*://*.gladiatus.gameforge.com/game/index.php?mod=start",
+                "*://lobby.gladiatus.gameforge.com/*"
+            ],
             "js": [
                 "js/workbench.js"
             ],

@@ -23,12 +23,17 @@
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
-    const currentDate = $("#server-time").html().split(',')[0];
+    const serverTimeEl = $("#server-time");
+    if (!serverTimeEl.length) {
+        return;
+    }
+
+    const currentDate = (serverTimeEl.html() || '').split(',')[0];
 
     const player = {
-        level: Number($("#header_values_level").first().html()),
-        hp: Number($("#header_values_hp_percent").first().html().replace(/[^0-9]/gi, '')),
-        gold: Number($("#sstat_gold_val").first().html().replace(/\./g, '')),
+        level: Number($("#header_values_level").first().html() || 0),
+        hp: Number(($("#header_values_hp_percent").first().html() || '0').replace(/[^0-9]/gi, '')),
+        gold: Number(($("#sstat_gold_val").first().html() || '0').replace(/\./g, '')),
     };
 
     /*****************
@@ -1306,25 +1311,54 @@
     };
 
     function convertTimeToMs(t) {
-        const ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
+        if (!t || typeof t !== 'string') {
+            return 0;
+        }
 
-        return ms;
+        const clean = t.replace(/[()]/g, '').trim();
+        const parts = clean.split(':').map(Number);
+        if (parts.some(p => !Number.isFinite(p))) {
+            return 0;
+        }
+
+        if (parts.length === 3) {
+            return (parts[0] * 3600 + parts[1] * 60 + parts[2]) * 1000;
+        } else if (parts.length === 2) {
+            return (parts[0] * 60 + parts[1]) * 1000;
+        } else if (parts.length === 1) {
+            return parts[0] * 1000;
+        }
+
+        return 0;
     };
 
     function readQuestCooldownTime() {
+        // 1. Kiem tra tren trang quests (#quest_header_cooldown)
         const ticker = document.querySelector("#quest_header_cooldown span.ticker");
-        if (!ticker) {
-            return null;
+        if (ticker) {
+            const rawTimeLeft = Number(ticker.getAttribute('data-ticker-time-left'));
+            if (Number.isFinite(rawTimeLeft) && rawTimeLeft > 0) {
+                return rawTimeLeft;
+            }
+
+            const tickerText = ticker.textContent.trim();
+            const cooldown = tickerText ? convertTimeToMs(tickerText) : 0;
+            if (Number.isFinite(cooldown) && cooldown > 0) {
+                return cooldown;
+            }
         }
 
-        const tickerText = ticker.textContent.trim();
-        let cooldown = tickerText ? convertTimeToMs(tickerText) : 0;
-
-        if (!Number.isFinite(cooldown) || cooldown <= 0) {
-            cooldown = Number(ticker.getAttribute('data-ticker-time-left'));
+        // 2. Kiem tra tren menu Pantheon (GCA chen vao <font id="QuestTime">(00:06)</font>)
+        const questTimeFont = document.querySelector('#QuestTime') || document.querySelector('a[href*="mod=quests"] #QuestTime');
+        if (questTimeFont) {
+            const text = questTimeFont.textContent.trim();
+            const cooldown = convertTimeToMs(text);
+            if (Number.isFinite(cooldown) && cooldown > 0) {
+                return cooldown;
+            }
         }
 
-        return Number.isFinite(cooldown) && cooldown > 0 ? cooldown : null;
+        return null;
     }
 
     function goToQuestsPage() {
@@ -1399,6 +1433,13 @@
 
         if (shouldPauseForGuildMarket()) {
             return;
+        }
+
+        // Cap nhat cooldown quest tu live DOM (menu Pantheon hoac trang Quest) neu co
+        const liveQuestCooldown = readQuestCooldownTime();
+        if (liveQuestCooldown && liveQuestCooldown > 0) {
+            nextQuestTime = currentTime + liveQuestCooldown;
+            localStorage.setItem('nextQuestTime', nextQuestTime);
         }
 
         // Claim Daily Reward
@@ -1504,10 +1545,19 @@
             // Start Fix custom
             function rerollQuests() {
                 const rerollButton = document.querySelector('#quest_footer_reroll input');
-                if (!rerollButton) {
+                if (!rerollButton || rerollButton.disabled || rerollButton.classList.contains('disabled')) {
                     checkNextQuestTime();
                     return;
                 }
+
+                // Tranh loop reroll lien tuc
+                const lastReroll = Number(sessionStorage.getItem('tdmLastQuestReroll') || 0);
+                if (Date.now() - lastReroll < 10 * 1000) {
+                    console.log('TDM quest: vua reroll cach day duoi 10s, tranh loop.');
+                    checkNextQuestTime();
+                    return;
+                }
+                sessionStorage.setItem('tdmLastQuestReroll', Date.now());
 
                 const onclick = rerollButton.getAttribute('onclick') || '';
                 const urlMatch = onclick.match(/document\.location\.href\s*=\s*['"]([^'"]+)['"]/);
@@ -1521,15 +1571,18 @@
             }
 
             function takeQuest() {
+                const liveQuestCooldown = readQuestCooldownTime();
+                if (liveQuestCooldown && liveQuestCooldown > 0) {
+                    setNextQuestTime(liveQuestCooldown + 1500);
+                    setTimeout(function () {
+                        autoGo();
+                    }, getRandomInt(1000, 2000));
+                    return;
+                }
+
                 const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
 
                 if (canTakeQuest.length) {
-                    const liveQuestCooldown = readQuestCooldownTime();
-                    if (liveQuestCooldown) {
-                        setNextQuestTime(liveQuestCooldown + 1500);
-                        return;
-                    }
-
                     function getIconName(url, title = "", timeDiv = null) {
                         const normalizedTitle = String(title || '').trim();
 
@@ -1603,43 +1656,20 @@
                     console.log('TDM quest: khong co quest phu hop voi settings, reroll.');
                     rerollQuests();
                     return;
+                } else {
+                    // Khong con slot nao de nhan quest
+                    checkNextQuestTime();
                 }
-
-                rerollQuests();
             }
             // End fix custom
 
-            // function checkNextQuestTime() {
-            //     const span = document.querySelector("#quest_header_cooldown span.ticker");
-
-            //     let nextQuestIn;
-
-            //     if (span) {
-            //         const text = span.textContent.trim(); // Ví dụ: "0:04:39"
-
-            //         const parts = text.split(':').map(Number);
-            //         if (parts.length === 3) {
-            //             const [h, m, s] = parts;
-            //             nextQuestIn = ((h * 60 + m) * 60 + s) * 1000;
-            //         } else if (parts.length === 2) {
-            //             const [m, s] = parts;
-            //             nextQuestIn = (m * 60 + s) * 1000;
-            //         } else {
-            //             nextQuestIn = 1 * 60 * 1000; // fallback nếu không đúng định dạng
-            //         }
-
-            //     } else {
-            //         nextQuestIn = 1 * 60 * 1000; // fallback nếu không tìm thấy span
-            //     }
-
-            //     const nextQuestTime = Date.now() + nextQuestIn;
-            //     localStorage.setItem('nextQuestTime', nextQuestTime);
-
-            //     autoGo(); // tiếp tục logic tự động
-            // }
-
             function checkNextQuestTime() {
-                setNextQuestTime((readQuestCooldownTime() || 60 * 1000) + 1500);
+                const cd = readQuestCooldownTime();
+                const delay = (cd && cd > 0) ? cd + 1500 : 3 * 60 * 1000;
+                setNextQuestTime(delay);
+                setTimeout(function () {
+                    autoGo();
+                }, getRandomInt(1000, 2000));
             }
 
             setTimeout(function () {
