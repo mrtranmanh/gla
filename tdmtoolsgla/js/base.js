@@ -1717,7 +1717,7 @@
         ************************/
 
         else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goArena() {
+            function goArena(retryCount = 0) {
                 const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
 
                 if (!inArenaPage && player.level < 10) {
@@ -1732,6 +1732,11 @@
                     } else {
                         const own2 = document.getElementById("own2");
                         if (!own2) {
+                            if (retryCount < 4) {
+                                setTimeout(function () {
+                                    goArena(retryCount + 1);
+                                }, 1200);
+                            }
                             return;
                         }
                         const tds = own2.getElementsByTagName("td");
@@ -1766,7 +1771,7 @@
         *************************/
 
         else if (doCircus === true && document.getElementById("cooldown_bar_fill_ct").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goCircus() {
+            function goCircus(retryCount = 0) {
                 const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
 
                 if (!inArenaPage) {
@@ -1779,6 +1784,11 @@
                     } else {
                         const own3 = document.getElementById("own3");
                         if (!own3) {
+                            if (retryCount < 4) {
+                                setTimeout(function () {
+                                    goCircus(retryCount + 1);
+                                }, 1200);
+                            }
                             return;
                         }
                         const tds = own3.getElementsByTagName("td");
