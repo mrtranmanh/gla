@@ -33,7 +33,7 @@
 
         const currentMod = new URLSearchParams(window.location.search).get('mod') || '';
         // Chi bo qua cac trang thao tac thu cong de tranh mat du lieu/do
-        const skipMods = ['guildMarket', 'forge', 'guildStorage'];
+        const skipMods = ['guildMarket', 'forge', 'guildStorage', 'packages'];
         if (skipMods.includes(currentMod)) {
             return false;
         }
