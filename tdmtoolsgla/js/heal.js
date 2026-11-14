@@ -65,7 +65,7 @@ function heal() {
                             };
                         })
                         .filter(function (tab) {
-                            return tab.element;
+                            return tab.element && tab.element.getAttribute('data-available') !== 'false';
                         });
 
                     const A = avatar.getBoundingClientRect();
@@ -73,7 +73,7 @@ function heal() {
                     const y = A.top;
 
                     if (!selectedTabs.length) {
-                        console.log('❌ Chưa chọn tab inventory để heal.');
+                        console.log('❌ Chưa chọn tab inventory để heal hoặc tất cả tab đều unavailable.');
                         return;
                     }
 
@@ -89,9 +89,22 @@ function heal() {
                         return;
                     }
 
+                    if (selectedTab.element.getAttribute('data-available') === 'false') {
+                        console.log(`⚠️ Tab ${selectedTab.number} đang unavailable trên thanh điều hướng, bỏ qua.`);
+                        tryHealFromTab(index + 1, selectedTabs, x, y);
+                        return;
+                    }
+
                     selectedTab.element.click();
 
                     setTimeout(() => {
+                        const invBox = document.getElementById('inv');
+                        if (invBox && invBox.classList.contains('unavailable')) {
+                            console.log(`⚠️ Tab ${selectedTab.number} bị unavailable (<div id="inv" class="... unavailable">), chuyển tab tiếp theo.`);
+                            tryHealFromTab(index + 1, selectedTabs, x, y);
+                            return;
+                        }
+
                         let item = findHealItemInInventory();
 
                         if (item) {
@@ -396,12 +409,14 @@ function heal() {
         });
         const doc = parseHtml(`<div>${html}</div>`);
         const container = doc.querySelector('#inv') || doc.body;
+        const isUnavailable = container.classList.contains('unavailable');
         const size = getGridSize(container, INVENTORY_SIZE);
-        const items = getGridItems(container);
+        const items = isUnavailable ? [] : getGridItems(container);
 
         return {
             bag,
             size,
+            isUnavailable,
             grid: createGrid(size.width, size.height, items),
         };
     }
@@ -535,6 +550,12 @@ function heal() {
         try {
             const bag = getTab1BagNumber();
             const bagState = await loadInventoryBag(bag);
+
+            if (bagState.isUnavailable) {
+                console.log('TDM Heal: Tab 1 đang bị unavailable, không thể lấy đồ ăn từ packages.');
+                return;
+            }
+
             const food = await findFoodPackageItem();
 
             if (!food) {
