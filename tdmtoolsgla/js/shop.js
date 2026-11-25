@@ -159,7 +159,7 @@
         }
     }
 
-    async function gameGet(file, params, retries = 3) {
+    async function gameGet(file, params, retries = 5) {
         const url = buildGameUrl(file, params);
         let lastError = null;
 
@@ -172,16 +172,14 @@
                 const text = await response.text();
                 if (!response.ok) {
                     const httpError = new Error(`HTTP ${response.status}: ${text.slice(0, 120)}`);
-                    if (response.status >= 500 || response.status === 429) {
-                        throw httpError;
-                    }
+                    httpError.noRetry = response.status < 500 && response.status !== 429;
                     throw httpError;
                 }
 
                 return text;
             } catch (error) {
                 lastError = error;
-                if (attempt < retries && !shouldStop) {
+                if (!error.noRetry && attempt < retries && !shouldStop) {
                     setStatus(`Loi ket noi (${error.message || error}), thu lai lan ${attempt + 1}/${retries}...`, 'warn');
                     await delay(1000 * attempt);
                     continue;
