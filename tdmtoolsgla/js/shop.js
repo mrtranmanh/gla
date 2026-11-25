@@ -83,6 +83,7 @@
     let isSelling = false;
     let isPickingFood = false;
     let shouldStop = false;
+    let sellFastResumePage = null;
 
     function getQuery() {
         return new URLSearchParams(window.location.search);
@@ -158,17 +159,36 @@
         }
     }
 
-    async function gameGet(file, params) {
-        const response = await fetch(buildGameUrl(file, params), {
-            credentials: 'same-origin',
-        });
+    async function gameGet(file, params, retries = 3) {
+        const url = buildGameUrl(file, params);
+        let lastError = null;
 
-        const text = await response.text();
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${text.slice(0, 120)}`);
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const response = await fetch(url, {
+                    credentials: 'same-origin',
+                });
+
+                const text = await response.text();
+                if (!response.ok) {
+                    const httpError = new Error(`HTTP ${response.status}: ${text.slice(0, 120)}`);
+                    if (response.status >= 500 || response.status === 429) {
+                        throw httpError;
+                    }
+                    throw httpError;
+                }
+
+                return text;
+            } catch (error) {
+                lastError = error;
+                if (attempt < retries && !shouldStop) {
+                    setStatus(`Loi ket noi (${error.message || error}), thu lai lan ${attempt + 1}/${retries}...`, 'warn');
+                    await delay(1000 * attempt);
+                    continue;
+                }
+                throw lastError;
+            }
         }
-
-        return text;
     }
 
     function parseHtml(html) {
@@ -1114,7 +1134,21 @@
         }
     }
 
-    async function sellPackagesFast(button) {
+    function updateContinueSellFastButton() {
+        const continueBtn = document.getElementById('tdm-continue-sell-fast-btn');
+        if (!continueBtn) {
+            return;
+        }
+
+        if (sellFastResumePage !== null && !isSelling) {
+            continueBtn.textContent = `Continue (page ${sellFastResumePage})`;
+            continueBtn.style.display = '';
+        } else {
+            continueBtn.style.display = 'none';
+        }
+    }
+
+    async function sellPackagesFast(button, startPage) {
         if (isSelling) {
             shouldStop = true;
             setStatus('Dang dung...', 'warn');
@@ -1135,14 +1169,22 @@
             return;
         }
 
-        clearSellLog();
+        if (!startPage) {
+            clearSellLog();
+        } else {
+            setStatus(`Tiep tuc Sell fast tu page ${startPage}...`);
+        }
+
         isSelling = true;
         shouldStop = false;
         button.textContent = 'Stop sell fast';
+        updateContinueSellFastButton();
 
         let sold = 0;
         let skipped = 0;
         let finalStatus = '';
+        let currentScanPage = startPage || null;
+        let completedAll = false;
 
         try {
             setStatus('Dang kiem tra o trong shop...');
@@ -1155,10 +1197,29 @@
             }
 
             const pages = getPackagePageNumbers();
-            
-            for (const page of pages) {
+            const pagesToScan = startPage
+                ? pages.filter(function (page) { return page >= startPage; })
+                : pages;
+
+            if (!pagesToScan.length) {
+                finalStatus = `Khong tim thay page nao tu page ${startPage}.`;
+                setStatus(finalStatus, 'warn');
+                sellFastResumePage = null;
+                return;
+            }
+
+            for (let pageIdx = 0; pageIdx < pagesToScan.length; pageIdx++) {
+                const page = pagesToScan[pageIdx];
                 if (shouldStop) {
                     break;
+                }
+
+                currentScanPage = page;
+                if (pageIdx > 0) {
+                    await delay(150);
+                    if (shouldStop) {
+                        break;
+                    }
                 }
 
                 setStatus(`Dang quet page ${page}...`);
@@ -1226,18 +1287,36 @@
                     item.element.remove();
                     sold++;
                 }
+
+                if (shouldStop) {
+                    break;
+                }
+            }
+
+            if (!shouldStop) {
+                completedAll = true;
+                sellFastResumePage = null;
+            } else if (currentScanPage !== null) {
+                sellFastResumePage = currentScanPage;
             }
         } catch (error) {
+            if (currentScanPage !== null) {
+                sellFastResumePage = currentScanPage;
+            }
             finalStatus = `Loi: ${error.message || error}`;
             setStatus(finalStatus, 'error');
         } finally {
             isSelling = false;
             shouldStop = false;
             button.textContent = 'Sell fast (page by page)';
+            updateContinueSellFastButton();
             if (finalStatus && goldLimit > 0 && getCurrentGold() >= goldLimit) {
                 setStatus(`${finalStatus} Da ban ${sold} item, bo qua ${skipped}.`);
             } else if (sold || skipped) {
-                setStatus(`Da ban ${sold} item, bo qua ${skipped}.`);
+                const suffix = !completedAll && sellFastResumePage !== null
+                    ? ` (Co the bam Continue tu page ${sellFastResumePage})`
+                    : '';
+                setStatus(`Da ban ${sold} item, bo qua ${skipped}.${suffix}`);
             } else {
                 setStatus(finalStatus || `Da ban ${sold} item, bo qua ${skipped}.`);
             }
@@ -1666,6 +1745,18 @@
             sellPackagesFast(sellFastButton);
         });
 
+        const continueSellFastButton = document.createElement('button');
+        continueSellFastButton.id = 'tdm-continue-sell-fast-btn';
+        continueSellFastButton.type = 'button';
+        continueSellFastButton.className = 'awesome-button';
+        continueSellFastButton.textContent = 'Continue';
+        continueSellFastButton.style.display = 'none';
+        continueSellFastButton.addEventListener('click', function () {
+            if (sellFastResumePage !== null) {
+                sellPackagesFast(sellFastButton, sellFastResumePage);
+            }
+        });
+
         const pickGoldButton = document.createElement('button');
         pickGoldButton.type = 'button';
         pickGoldButton.className = 'awesome-button';
@@ -1692,6 +1783,7 @@
 
         actions.appendChild(button);
         actions.appendChild(sellFastButton);
+        actions.appendChild(continueSellFastButton);
         actions.appendChild(pickGoldButton);
         actions.appendChild(pickFoodButton);
         actions.appendChild(storeResourcesButton);
